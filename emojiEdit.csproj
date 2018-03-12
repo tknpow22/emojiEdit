@@ -63,8 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commons.cs" />
-    <Compile Include="ConfigBag.cs" />
-    <Compile Include="DataBags.cs" />
+    <Compile Include="DataBag\ConfigBag.cs" />
+    <Compile Include="DataBag\DataBags.cs" />
     <Compile Include="DrawStringUtils.cs" />
     <Compile Include="EditEmojiOperation.cs" />
     <Compile Include="Forms\EditOnelineTextForm.cs">
@@ -93,7 +93,7 @@
     <Compile Include="Forms\EditSettingsForm.Designer.cs">
       <DependentUpon>EditSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EmojiBag.cs" />
+    <Compile Include="DataBag\EmojiBag.cs" />
     <Compile Include="Forms\EditTextForm.cs">
       <SubType>Form</SubType>
     </Compile>
