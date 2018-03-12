@@ -173,7 +173,9 @@ namespace emojiEdit
 
             string mailAddr = dialog.MailAddr.Trim();
             string mailTo = this.textBoxMailTo.Text.Trim();
-            if (0 <= mailTo.IndexOf(mailAddr)) {
+
+            List<string> mailToList =  new List<string>(mailTo.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            if (mailToList.Contains(mailAddr)) {
                 return;
             }
 

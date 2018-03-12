@@ -64,8 +64,9 @@ namespace emojiEdit
             }
 
             this.listViewMailAddress.ListViewItemSorter = new ListViewMailAddressComparer(this.currentSortColumn, this.currentSortOrder);
-            this.buttonDelete.Enabled = false;
+            this.buttonSelectFromList.Enabled = false;
             this.buttonUpsert.Enabled = false;
+            this.buttonDelete.Enabled = false;
         }
 
         // このダイアログを表示する
@@ -92,23 +93,21 @@ namespace emojiEdit
         // イベントハンドラ
         //
 
+        // フォームロード時
+        private void MailAddressForm_Load(object sender, EventArgs e)
+        {
+            this.ActiveControl = this.textBoxMailAddr;
+        }
+
         // 一覧選択
         private void listViewMailAddress_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListView.SelectedListViewItemCollection items = this.listViewMailAddress.SelectedItems;
             if (items.Count == 0) {
-                this.textBoxMailAddr.Text = "";
-                this.textBoxNote.Text = "";
+                this.buttonSelectFromList.Enabled = false;
                 this.buttonDelete.Enabled = false;
             } else {
-                ListViewItem item = items[0];
-
-                string mailAddr = item.Text;
-                string note = item.SubItems[1].Text;
-
-                this.textBoxMailAddr.Text = mailAddr;
-                this.textBoxNote.Text = note;
-
+                this.buttonSelectFromList.Enabled = true;
                 this.buttonDelete.Enabled = true;
             }
         }
@@ -150,17 +149,25 @@ namespace emojiEdit
         {
             string mailAddr = this.textBoxMailAddr.Text.Trim();
             if (mailAddr.Length == 0) {
-                this.buttonDelete.Enabled = false;
                 this.buttonUpsert.Enabled = false;
             } else {
-                ListViewItem item = this.FindItem(mailAddr);
-                if (item != null) {
-                    this.buttonDelete.Enabled = true;
-                } else {
-                    this.buttonDelete.Enabled = false;
-                }
                 this.buttonUpsert.Enabled = true;
             }
+        }
+
+        // 一覧から取得
+        private void buttonSelectFromList_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection items = this.listViewMailAddress.SelectedItems;
+            if (items.Count == 0) {
+                return;
+            }
+
+            ListViewItem item = items[0];
+            this.textBoxMailAddr.Text = item.Text;
+            this.textBoxNote.Text = item.SubItems[1].Text;
+
+            this.textBoxMailAddr.Focus();
         }
 
         // 追加・更新
@@ -186,15 +193,13 @@ namespace emojiEdit
         // 削除
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-            string mailAddr = this.textBoxMailAddr.Text.Trim();
-            if (mailAddr.Length == 0) {
+            ListView.SelectedListViewItemCollection items = this.listViewMailAddress.SelectedItems;
+            if (items.Count == 0) {
                 return;
             }
 
-            ListViewItem item = this.FindItem(mailAddr);
-            if (item != null) {
-                this.RemoveItem(item);
-            }
+            ListViewItem item = items[0];
+            this.RemoveItem(item);
         }
 
         // 設定
@@ -254,7 +259,6 @@ namespace emojiEdit
         private void RemoveItem(ListViewItem item)
         {
             this.listViewMailAddress.Items.Remove(item);
-            this.buttonDelete.Enabled = false;
             this.textBoxMailAddr.Focus();
         }
 
