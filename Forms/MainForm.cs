@@ -80,7 +80,7 @@ namespace emojiEdit
         // フォームが閉じられた時
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            DataBags.Config.Save();
+            DataBags.Save();
         }
 
         // 画面サイズが変更された時

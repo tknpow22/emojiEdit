@@ -55,5 +55,12 @@ namespace emojiEdit
 
             initialize = true;
         }
+
+        // 保存する
+        public static void Save()
+        {
+            config.Save();
+            mailAddresses.Save();
+        }
     }
 }

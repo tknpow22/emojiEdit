@@ -344,7 +344,6 @@ namespace emojiEdit
             }
 
             DataBags.MailAddresses.Set(addrList);
-            DataBags.MailAddresses.Save();
         }
     }
 }
