@@ -32,8 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>SMILING_FACE_WITH_OPEN_MOUTH.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
@@ -149,6 +148,7 @@
     <Content Include="FormIcons\PENCIL.ico" />
     <Content Include="FormIcons\SMILING_CAT_FACE_WITH_OPEN_MOUTH.ico" />
     <Content Include="FormIcons\SMILING_FACE_WITH_OPEN_MOUTH.ico" />
+    <Content Include="SMILING_FACE_WITH_OPEN_MOUTH.ico" />
     <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
