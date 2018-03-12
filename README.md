@@ -24,7 +24,7 @@ KDDI株式会社様および株式会社NTTドコモ様に帰属します。
 
 https://www.au.com/developer/android/kaihatsu/emoji_download/
 
-## 図形タイプ D と上記サイトでダウンロードできる絵文字のマッピングについて
+## 図柄タイプ D と上記サイトでダウンロードできる絵文字のマッピングについて
 
 以下の au（KDDI株式会社）様のサイトの
 「絵文字変換表」－「au絵文字 → au/docomo共通絵文字、iPhone絵文字、他社絵文字」
