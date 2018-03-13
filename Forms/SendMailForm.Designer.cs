@@ -79,7 +79,7 @@
             this.groupBoxServer.Size = new System.Drawing.Size(439, 124);
             this.groupBoxServer.TabIndex = 0;
             this.groupBoxServer.TabStop = false;
-            this.groupBoxServer.Text = "SMTPサーバー設定(&E)";
+            this.groupBoxServer.Text = "SMTPサーバー設定";
             // 
             // textBoxSmtpPassword
             // 

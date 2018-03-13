@@ -193,7 +193,7 @@
             this.buttonTest.Name = "buttonTest";
             this.buttonTest.Size = new System.Drawing.Size(89, 35);
             this.buttonTest.TabIndex = 11;
-            this.buttonTest.Text = "テスト(&T)";
+            this.buttonTest.Text = "テスト(&E)";
             this.buttonTest.UseVisualStyleBackColor = true;
             this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
             // 
@@ -219,14 +219,14 @@
             // menuLoadFile
             // 
             this.menuLoadFile.Name = "menuLoadFile";
-            this.menuLoadFile.Size = new System.Drawing.Size(115, 22);
+            this.menuLoadFile.Size = new System.Drawing.Size(152, 22);
             this.menuLoadFile.Text = "読込(&O)";
             this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
             // 
             // menuSaveFile
             // 
             this.menuSaveFile.Name = "menuSaveFile";
-            this.menuSaveFile.Size = new System.Drawing.Size(115, 22);
+            this.menuSaveFile.Size = new System.Drawing.Size(152, 22);
             this.menuSaveFile.Text = "保存(&S)";
             this.menuSaveFile.Click += new System.EventHandler(this.menuSaveFile_Click);
             // 
@@ -237,25 +237,25 @@
             this.toolStripSeparatorVersion,
             this.menuVersion});
             this.menuSettings.Name = "menuSettings";
-            this.menuSettings.Size = new System.Drawing.Size(57, 20);
-            this.menuSettings.Text = "設定(&S)";
+            this.menuSettings.Size = new System.Drawing.Size(59, 20);
+            this.menuSettings.Text = "設定(&G)";
             // 
             // menuEditSettings
             // 
             this.menuEditSettings.Name = "menuEditSettings";
-            this.menuEditSettings.Size = new System.Drawing.Size(136, 22);
+            this.menuEditSettings.Size = new System.Drawing.Size(152, 22);
             this.menuEditSettings.Text = "編集設定(&E)";
             this.menuEditSettings.Click += new System.EventHandler(this.menuEditSettings_Click);
             // 
             // toolStripSeparatorVersion
             // 
             this.toolStripSeparatorVersion.Name = "toolStripSeparatorVersion";
-            this.toolStripSeparatorVersion.Size = new System.Drawing.Size(133, 6);
+            this.toolStripSeparatorVersion.Size = new System.Drawing.Size(149, 6);
             // 
             // menuVersion
             // 
             this.menuVersion.Name = "menuVersion";
-            this.menuVersion.Size = new System.Drawing.Size(136, 22);
+            this.menuVersion.Size = new System.Drawing.Size(152, 22);
             this.menuVersion.Text = "バージョン(&V)";
             this.menuVersion.Click += new System.EventHandler(this.menuVersion_Click);
             // 
@@ -266,7 +266,7 @@
             this.buttonSend.Name = "buttonSend";
             this.buttonSend.Size = new System.Drawing.Size(89, 35);
             this.buttonSend.TabIndex = 10;
-            this.buttonSend.Text = "送信(&M)";
+            this.buttonSend.Text = "送信(&S)";
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
@@ -297,9 +297,9 @@
             this.labelSubject.AutoSize = true;
             this.labelSubject.Location = new System.Drawing.Point(12, 82);
             this.labelSubject.Name = "labelSubject";
-            this.labelSubject.Size = new System.Drawing.Size(46, 12);
+            this.labelSubject.Size = new System.Drawing.Size(47, 12);
             this.labelSubject.TabIndex = 7;
-            this.labelSubject.Text = "件名(&T):";
+            this.labelSubject.Text = "件名(&B):";
             // 
             // textBoxMailTo
             // 
@@ -341,7 +341,7 @@
             this.lableFrom.Name = "lableFrom";
             this.lableFrom.Size = new System.Drawing.Size(58, 12);
             this.lableFrom.TabIndex = 4;
-            this.lableFrom.Text = "送信元(&F):";
+            this.lableFrom.Text = "送信元(&T):";
             // 
             // contextMenuSubject
             // 
