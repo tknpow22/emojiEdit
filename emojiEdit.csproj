@@ -149,7 +149,6 @@
     <Content Include="FormIcons\SMILING_CAT_FACE_WITH_OPEN_MOUTH.ico" />
     <Content Include="FormIcons\SMILING_FACE_WITH_OPEN_MOUTH.ico" />
     <Content Include="SMILING_FACE_WITH_OPEN_MOUTH.ico" />
-    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
