@@ -280,7 +280,8 @@ namespace emojiEdit
         {
             ListViewItem item = this.FindItem(mailAddr);
             if (item == null) {
-                this.AddItem(mailAddr, "");
+                string note = this.textBoxNote.Text.Trim();
+                this.AddItem(mailAddr, note);
             }
 
             this.MailAddr = mailAddr;
