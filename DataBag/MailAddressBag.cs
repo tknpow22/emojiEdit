@@ -5,6 +5,9 @@ using System.Text;
 
 namespace emojiEdit
 {
+    //
+    // メールアドレス
+    //
     class MailAddress
     {
         public MailAddress(string address, string note)

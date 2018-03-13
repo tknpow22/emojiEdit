@@ -218,13 +218,6 @@ namespace emojiEdit
                         return;
                     }
                 }
-
-                ////int subjectLength = this.GetSubjectLength();
-                ////if (subjectLength == 0) {
-                ////    MsgBox.Show(this, string.Format("「{0}」は必ず入力してください。", "件名"), "必須項目", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                ////    this.editEmojiOperationSubject.ScrollTop();
-                ////    return;
-                ////}
             }
 
             // チェック(半角)
@@ -520,6 +513,7 @@ namespace emojiEdit
                 if (5 <= chCount) {
                     base64BlockList.Add(this.GetBase64Block(stream));
 
+                    stream.Dispose();
                     stream = new MemoryStream();
                     chCount = 0;
                 }

@@ -7,9 +7,9 @@ using System.Text;
 
 namespace emojiEdit
 {
-    /// <summary>
-    /// 絵文字データ
-    /// </summary>
+    //
+    // 絵文字データ
+    //
     class Emoji
     {
         public Emoji(int code, Image image)
@@ -31,9 +31,9 @@ namespace emojiEdit
         }
     }
 
-    /// <summary>
-    /// 絵文字を保持する
-    /// </summary>
+    //
+    // 絵文字を保持する
+    //
     class EmojiBag
     {
         // グループ毎の絵文字のキャプション
