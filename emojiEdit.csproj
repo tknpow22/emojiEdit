@@ -79,7 +79,7 @@
     <Compile Include="Forms\MailAddressForm.Designer.cs">
       <DependentUpon>MailAddressForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MailAddressBag.cs" />
+    <Compile Include="DataBag\MailAddressBag.cs" />
     <Compile Include="MsgBox.cs" />
     <Compile Include="Forms\SendMailForm.cs">
       <SubType>Form</SubType>
