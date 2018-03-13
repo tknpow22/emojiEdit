@@ -278,6 +278,11 @@ namespace emojiEdit
         // 入力されたメールアドレスを設定する
         private void SetAddr(string mailAddr)
         {
+            ListViewItem item = this.FindItem(mailAddr);
+            if (item == null) {
+                this.AddItem(mailAddr, "");
+            }
+
             this.MailAddr = mailAddr;
 
             this.formResult = MailAddressFormResult.SetAddr;
