@@ -107,7 +107,7 @@ namespace emojiEdit
                         DataBags.Config.SmtpPort = smtpPort;
                         DataBags.Config.SmtpUserId = smtpUserId;
                         DataBags.Config.SmtpPassword = smtpPassword;
-                        System.Diagnostics.Debug.WriteLine(message.From.ToString());
+
                         if (0 < message.From.Count) {
                             MailboxAddress mailboxAddress = message.From[0] as MailboxAddress;
                             if (mailboxAddress != null) {

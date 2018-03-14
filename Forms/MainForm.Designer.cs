@@ -35,6 +35,7 @@
             this.contextMenuBody = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuInsertTextBody = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPasteTextBody = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuInsertTemplateBody = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorInsertBody = new System.Windows.Forms.ToolStripSeparator();
             this.menuNewLineBody = new System.Windows.Forms.ToolStripMenuItem();
             this.menuInsertEmptyLineBody = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,6 +117,7 @@
             this.contextMenuBody.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuInsertTextBody,
             this.menuPasteTextBody,
+            this.menuInsertTemplateBody,
             this.toolStripSeparatorInsertBody,
             this.menuNewLineBody,
             this.menuInsertEmptyLineBody,
@@ -124,65 +126,72 @@
             this.menuRemoveLineBody,
             this.menuRemoveCharBody});
             this.contextMenuBody.Name = "contextMenuBody";
-            this.contextMenuBody.Size = new System.Drawing.Size(156, 170);
+            this.contextMenuBody.Size = new System.Drawing.Size(177, 214);
             this.contextMenuBody.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuBody_Opening);
             // 
             // menuInsertTextBody
             // 
             this.menuInsertTextBody.Name = "menuInsertTextBody";
-            this.menuInsertTextBody.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertTextBody.Size = new System.Drawing.Size(176, 22);
             this.menuInsertTextBody.Text = "文字列挿入(&I)";
             this.menuInsertTextBody.Click += new System.EventHandler(this.menuInsertTextBody_Click);
             // 
             // menuPasteTextBody
             // 
             this.menuPasteTextBody.Name = "menuPasteTextBody";
-            this.menuPasteTextBody.Size = new System.Drawing.Size(155, 22);
+            this.menuPasteTextBody.Size = new System.Drawing.Size(176, 22);
             this.menuPasteTextBody.Text = "貼り付け挿入(&V)";
             this.menuPasteTextBody.Click += new System.EventHandler(this.menuPasteTextBody_Click);
+            // 
+            // menuInsertTemplateBody
+            // 
+            this.menuInsertTemplateBody.Name = "menuInsertTemplateBody";
+            this.menuInsertTemplateBody.Size = new System.Drawing.Size(176, 22);
+            this.menuInsertTemplateBody.Text = "テンプレート行挿入(&T)";
+            this.menuInsertTemplateBody.Click += new System.EventHandler(this.menuInsertTemplateBody_Click);
             // 
             // toolStripSeparatorInsertBody
             // 
             this.toolStripSeparatorInsertBody.Name = "toolStripSeparatorInsertBody";
-            this.toolStripSeparatorInsertBody.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorInsertBody.Size = new System.Drawing.Size(173, 6);
             // 
             // menuNewLineBody
             // 
             this.menuNewLineBody.Name = "menuNewLineBody";
-            this.menuNewLineBody.Size = new System.Drawing.Size(155, 22);
+            this.menuNewLineBody.Size = new System.Drawing.Size(176, 22);
             this.menuNewLineBody.Text = "改行(&N)";
             this.menuNewLineBody.Click += new System.EventHandler(this.menuNewLineBody_Click);
             // 
             // menuInsertEmptyLineBody
             // 
             this.menuInsertEmptyLineBody.Name = "menuInsertEmptyLineBody";
-            this.menuInsertEmptyLineBody.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertEmptyLineBody.Size = new System.Drawing.Size(176, 22);
             this.menuInsertEmptyLineBody.Text = "空行挿入(&R)";
             this.menuInsertEmptyLineBody.Click += new System.EventHandler(this.menuInsertEmptyLineBody_Click);
             // 
             // menuInsertCharBody
             // 
             this.menuInsertCharBody.Name = "menuInsertCharBody";
-            this.menuInsertCharBody.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertCharBody.Size = new System.Drawing.Size(176, 22);
             this.menuInsertCharBody.Text = "空1文字挿入(&C)";
             this.menuInsertCharBody.Click += new System.EventHandler(this.menuInsertCharBody_Click);
             // 
             // toolStripSeparatorRemoveBody
             // 
             this.toolStripSeparatorRemoveBody.Name = "toolStripSeparatorRemoveBody";
-            this.toolStripSeparatorRemoveBody.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorRemoveBody.Size = new System.Drawing.Size(173, 6);
             // 
             // menuRemoveLineBody
             // 
             this.menuRemoveLineBody.Name = "menuRemoveLineBody";
-            this.menuRemoveLineBody.Size = new System.Drawing.Size(155, 22);
+            this.menuRemoveLineBody.Size = new System.Drawing.Size(176, 22);
             this.menuRemoveLineBody.Text = "行削除(&L)";
             this.menuRemoveLineBody.Click += new System.EventHandler(this.menuRemoveLineBody_Click);
             // 
             // menuRemoveCharBody
             // 
             this.menuRemoveCharBody.Name = "menuRemoveCharBody";
-            this.menuRemoveCharBody.Size = new System.Drawing.Size(155, 22);
+            this.menuRemoveCharBody.Size = new System.Drawing.Size(176, 22);
             this.menuRemoveCharBody.Text = "1文字削除(&D)";
             this.menuRemoveCharBody.Click += new System.EventHandler(this.menuRemoveCharBody_Click);
             // 
@@ -219,14 +228,14 @@
             // menuLoadFile
             // 
             this.menuLoadFile.Name = "menuLoadFile";
-            this.menuLoadFile.Size = new System.Drawing.Size(152, 22);
+            this.menuLoadFile.Size = new System.Drawing.Size(115, 22);
             this.menuLoadFile.Text = "読込(&O)";
             this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
             // 
             // menuSaveFile
             // 
             this.menuSaveFile.Name = "menuSaveFile";
-            this.menuSaveFile.Size = new System.Drawing.Size(152, 22);
+            this.menuSaveFile.Size = new System.Drawing.Size(115, 22);
             this.menuSaveFile.Text = "保存(&S)";
             this.menuSaveFile.Click += new System.EventHandler(this.menuSaveFile_Click);
             // 
@@ -243,19 +252,19 @@
             // menuEditSettings
             // 
             this.menuEditSettings.Name = "menuEditSettings";
-            this.menuEditSettings.Size = new System.Drawing.Size(152, 22);
+            this.menuEditSettings.Size = new System.Drawing.Size(136, 22);
             this.menuEditSettings.Text = "編集設定(&E)";
             this.menuEditSettings.Click += new System.EventHandler(this.menuEditSettings_Click);
             // 
             // toolStripSeparatorVersion
             // 
             this.toolStripSeparatorVersion.Name = "toolStripSeparatorVersion";
-            this.toolStripSeparatorVersion.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparatorVersion.Size = new System.Drawing.Size(133, 6);
             // 
             // menuVersion
             // 
             this.menuVersion.Name = "menuVersion";
-            this.menuVersion.Size = new System.Drawing.Size(152, 22);
+            this.menuVersion.Size = new System.Drawing.Size(136, 22);
             this.menuVersion.Text = "バージョン(&V)";
             this.menuVersion.Click += new System.EventHandler(this.menuVersion_Click);
             // 
@@ -503,6 +512,7 @@
         private System.Windows.Forms.Button buttonSelectMailFrom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparatorVersion;
         private System.Windows.Forms.ToolStripMenuItem menuVersion;
+        private System.Windows.Forms.ToolStripMenuItem menuInsertTemplateBody;
     }
 }
 

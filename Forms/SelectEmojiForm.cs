@@ -286,10 +286,7 @@ namespace emojiEdit
                         int col = emojiId % maxCols;
                         int row = emojiId / maxCols;
 
-                        Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                        Rectangle desRect = new Rectangle(Commons.FRAME_WIDTH * col + 1, Commons.FRAME_HEIGHT * row + 1, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-
-                        graphics.DrawImage(emoji.Image, desRect, srcRect, GraphicsUnit.Pixel);
+                        DrawUtils.DrawImage(emoji.Image, col, row, graphics);
                     }
                 }
 
@@ -319,10 +316,7 @@ namespace emojiEdit
                     int col = i % maxCols;
                     int row = i / maxCols;
 
-                    Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                    Rectangle desRect = new Rectangle(Commons.FRAME_WIDTH * col + 1, Commons.FRAME_HEIGHT * row + 1, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-
-                    graphics.DrawImage(emoji.Image, desRect, srcRect, GraphicsUnit.Pixel);
+                    DrawUtils.DrawImage(emoji.Image, col, row, graphics);
                 }
             }
             this.pictureEmojiGroup0.Image = emojiGroupHistoryImage;

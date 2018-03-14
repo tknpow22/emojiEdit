@@ -126,6 +126,39 @@ namespace emojiEdit
             this.InsertTextDataToContentsWithDraw(text, col, row);
         }
 
+        // コード一覧を挿入する
+        public void InsertCodes(List<int> codeList, int srcCols, int srcRows, int col, int row)
+        {
+            // NOTE: col は未使用
+            if (0 <= col && col < this.MaxCols) {
+                // OK
+            } else {
+                return;
+            }
+
+            if (0 <= row && row < this.MaxRows) {
+                // OK
+            } else {
+                return;
+            }
+
+            List<int> codeListNew = new List<int>(new int[this.MaxCols * srcRows]);
+
+            for (int crow = 0; crow < srcRows; ++crow) {
+                for (int ccol = 0; ccol < srcCols && ccol < this.MaxCols; ++ccol) {
+                    int srcIndex = srcCols * crow + ccol;
+                    int destIndex = this.MaxCols * crow + ccol;
+                    codeListNew[destIndex] = codeList[srcIndex];
+                }
+            }
+
+            // FIXME: 全部作り直してるので遅いかも
+            List<int> contentsNew = this.CopyContents(this.contents);
+            this.InsertCodesToContents(codeListNew.ToArray(), 0, row, contentsNew);
+
+            this.DrawContentsToNewPictureImage(contentsNew);
+        }
+
         // テスト用に絵文字を設定する
         public void SetTestData()
         {
@@ -422,6 +455,10 @@ namespace emojiEdit
             string zenkakuTextData = StringUtils.ToZenkaku(textData);
             int count = this.SetTextDataToContents(zenkakuTextData, col, row, null);
 
+            if (0 <= zenkakuTextData.IndexOf('\n')) {
+                count = (int)Math.Ceiling((decimal)count / this.MaxCols) * this.MaxCols;
+            }
+
             List<int> contentsNew = this.CopyContents(this.contents);
             this.InsertCodesToContents(new int[count], col, row, contentsNew);
 
@@ -559,14 +596,12 @@ namespace emojiEdit
         // ピクチャーイメージに枠線を描画する
         private void DrawFramesToPictureImage(Graphics graphicsContents)
         {
-            using (Pen pen = new Pen(Brushes.Black, 1)) {
-                for (int row = 0; row < this.MaxRows; ++row) {
-                    int y = Commons.FRAME_HEIGHT * row;
-                    for (int col = 0; col < this.MaxCols; ++col) {
-                        int x = Commons.FRAME_WIDTH * col;
-                        Rectangle rectFrame = new Rectangle(x, y, Commons.FRAME_WIDTH, Commons.FRAME_HEIGHT);
-                        graphicsContents.DrawRectangle(pen, rectFrame);
-                    }
+            for (int row = 0; row < this.MaxRows; ++row) {
+                int y = Commons.FRAME_HEIGHT * row;
+                for (int col = 0; col < this.MaxCols; ++col) {
+                    int x = Commons.FRAME_WIDTH * col;
+                    Rectangle rectFrame = new Rectangle(x, y, Commons.FRAME_WIDTH, Commons.FRAME_HEIGHT);
+                    graphicsContents.DrawRectangle(Pens.Black, rectFrame);
                 }
             }
         }
@@ -577,46 +612,11 @@ namespace emojiEdit
             Image imagePictureNew = this.GetInitialPictureImage();
 
             using (Graphics graphics = Graphics.FromImage(imagePictureNew)) {
-                this.DrawContentsToPictureImage(contentsNew, graphics);
+                DrawUtils.DrawCodes(this.MaxCols, this.MaxRows, contentsNew, graphics);
             }
 
             this.contents = contentsNew;
             this.pictureContents.Image = imagePictureNew;
-        }
-
-        // 文字コードデータをピクチャーイメージに描画する
-        private void DrawContentsToPictureImage(List<int> contentsNew, Graphics graphicsContentsNew)
-        {
-            // NOTE: 描画先は初期化済み(枠などを描画済み)であること
-
-            for (int row = 0; row < this.MaxRows; ++row) {
-                for (int col = 0; col < this.MaxCols; ++col) {
-
-                    int index = this.MaxCols * row + col;
-                    int code = contentsNew[index];
-                    if (code == 0) {
-                        continue;
-                    }
-
-                    Emoji emoji = DataBags.Emojis.Get(code);
-                    if (emoji != null) {
-
-                        Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                        Rectangle desRect = new Rectangle(Commons.FRAME_WIDTH * col + 1, Commons.FRAME_HEIGHT * row + 1, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-
-                        graphicsContentsNew.DrawImage(emoji.Image, desRect, srcRect, GraphicsUnit.Pixel);
-
-                    } else {
-                        string sch = JisUtils.GetChar(code);
-                        if (sch != null) {
-                            int x = Commons.FRAME_WIDTH * col;
-                            int y = Commons.FRAME_HEIGHT * row;
-
-                            DrawStringUtils.DrawIconString(graphicsContentsNew, sch, x + 1, y + 1);
-                        }
-                    }
-                }
-            }
         }
 
         // 絵文字イメージをピクチャーイメージに描画する
@@ -625,11 +625,7 @@ namespace emojiEdit
             Image imageContents = this.pictureContents.Image;
 
             using (Graphics graphicsContents = Graphics.FromImage(imageContents)) {
-
-                Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                Rectangle desRect = new Rectangle(Commons.FRAME_WIDTH * col + 1, Commons.FRAME_HEIGHT * row + 1, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-
-                graphicsContents.DrawImage(imgChar, desRect, srcRect, GraphicsUnit.Pixel);
+                DrawUtils.DrawImage(imgChar, col, row, graphicsContents);
             }
 
             this.pictureContents.Image = imageContents;

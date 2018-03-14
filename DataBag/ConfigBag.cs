@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -152,14 +153,8 @@ namespace emojiEdit
         {
             // 絵文字履歴
             {
-                StringBuilder buffer = new StringBuilder();
-                foreach (int code in emojiHistory) {
-                    if (buffer.Length != 0) {
-                        buffer.Append(",");
-                    }
-                    buffer.AppendFormat("{0:X4}", code);
-                }
-                this.WriteString(SECTION_NAME, KEY_EMOJI_HISTORY, buffer.ToString());
+                string hexaStr = Commons.GetHexaStringsFromCodes(this.emojiHistory);
+                this.WriteString(SECTION_NAME, KEY_EMOJI_HISTORY, hexaStr);
             }
 
             // 画面サイズ
@@ -284,19 +279,10 @@ namespace emojiEdit
             {
                 string emojiHistoryText = this.GetString(SECTION_NAME, KEY_EMOJI_HISTORY);
 
-                string[] histories = emojiHistoryText.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string history in histories) {
-                    int code;
-
-                    if (history.Length != 4) {
-                        continue;
-                    }
-
-                    if (int.TryParse(history, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out code)
-                     && code != 0 && !this.emojiHistory.Contains(code)) {
-                        this.emojiHistory.Add(code);
-                    }
-                }
+                List<int> codes = Commons.GetCodesFromHexaStrings(emojiHistoryText);
+                var distinctCodes = codes.Distinct(); // 一意にする
+                var nonezeroCodes = distinctCodes.Where(val => val != 0);   // 0 を除く
+                this.emojiHistory.AddRange(nonezeroCodes);
             }
 
             // 画面サイズ

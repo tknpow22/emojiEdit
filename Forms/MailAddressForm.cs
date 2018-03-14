@@ -170,7 +170,7 @@ namespace emojiEdit
             this.textBoxMailAddr.Focus();
         }
 
-        // 追加・更新
+        // 一覧へ設定
         private void buttonUpsert_Click(object sender, EventArgs e)
         {
             if (!this.CheckAddr()) {

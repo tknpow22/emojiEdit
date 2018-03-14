@@ -104,7 +104,7 @@
             this.buttonUpsert.Name = "buttonUpsert";
             this.buttonUpsert.Size = new System.Drawing.Size(106, 25);
             this.buttonUpsert.TabIndex = 2;
-            this.buttonUpsert.Text = "追加・更新(&U)";
+            this.buttonUpsert.Text = "一覧へ設定(&U)";
             this.buttonUpsert.UseVisualStyleBackColor = true;
             this.buttonUpsert.Click += new System.EventHandler(this.buttonUpsert_Click);
             // 

@@ -60,7 +60,7 @@ namespace emojiEdit
                     this.pictureContentsSubject,
                     Commons.MAX_SUBJECT_COLS,
                     Commons.MAX_SUBJECT_ROWS
-               );
+                );
             this.editEmojiOperationSubject.Clear();
 
             this.editEmojiOperationBody = new EditEmojiOperation(
@@ -69,7 +69,7 @@ namespace emojiEdit
                     this.pictureContentsBody,
                     DataBags.Config.BodyMaxCols,
                     DataBags.Config.BodyMaxRows
-               );
+                );
             this.editEmojiOperationBody.Clear();
         }
 
@@ -146,7 +146,6 @@ namespace emojiEdit
         private void menuVersion_Click(object sender, EventArgs e)
         {
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath);
-            System.Diagnostics.Debug.WriteLine(fvi.FileVersion);
 
             StringBuilder message = new StringBuilder();
             message.AppendLine("絵文字エディット");
@@ -347,7 +346,7 @@ namespace emojiEdit
         // イベントハンドラ - コンテキストメニュー(ボディ部)
         //
 
-        // 制御
+        // コンテキストメニュー制御
         private void contextMenuBody_Opening(object sender, CancelEventArgs e)
         {
             if (Clipboard.ContainsText(TextDataFormat.Text)) {
@@ -374,6 +373,22 @@ namespace emojiEdit
 
             string text = Clipboard.GetText() ?? "";
             this.editEmojiOperationBody.InsertText(text, col, row);
+        }
+
+        // テンプレート挿入
+        private void menuInsertTemplateBody_Click(object sender, EventArgs e)
+        {
+            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
+            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
+
+            TemplateInputForm dialog = new TemplateInputForm();
+            TemplateInputFormResult dr = dialog.ShowDialog(this);
+            if (dr == TemplateInputFormResult.Cancel) {
+                return;
+            }
+            if (dr == TemplateInputFormResult.SetTemplate) {
+                this.editEmojiOperationBody.InsertCodes(dialog.Template, dialog.Cols, dialog.Rows, col, row);
+            }
         }
 
         // 改行

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace emojiEdit
 {
@@ -39,6 +41,21 @@ namespace emojiEdit
 
         // 送信したメール内容を保存するディレクトリ
         public const string MAIL_LOG_DIR = "mails";
+
+        // テンプレートを保管するファイル名
+        public const string TEMPLATE_FILE_NAME = "templates.txt";
+
+        // テンプレートの文字数と行数
+
+        // TEMPLATE_MAX_COLS_MINIMUM <= TEMPLATE_MAX_COLS_DEFALUT <= TEMPLATE_MAX_COLS_MAXIMUM となること
+        public const int TEMPLATE_MAX_COLS_MINIMUM = 9;
+        public const int TEMPLATE_MAX_COLS_DEFALUT = 12;
+        public const int TEMPLATE_MAX_COLS_MAXIMUM = 20;
+
+        // TEMPLATE_MAX_ROWS_MINIMUM <= TEMPLATE_MAX_ROWS_DEFALUT <= TEMPLATE_MAX_ROWS_MAXIMUM となること
+        public const int TEMPLATE_MAX_ROWS_MINIMUM = 1;
+        public const int TEMPLATE_MAX_ROWS_DEFALUT = 5;
+        public const int TEMPLATE_MAX_ROWS_MAXIMUM = 10;
 
         // 件名に入力できる文字数
         public const int MAX_SUBJECT_COLS = 256;
@@ -100,6 +117,44 @@ namespace emojiEdit
             }
 
             return true;
+        }
+
+        // カンマ区切りの16進数コードの羅列(XXXX,XXXX,...)からコード一覧を得る
+        public static List<int> GetCodesFromHexaStrings(string csvHexaCodes)
+        {
+            List<int> codeList = new List<int>();
+
+            do {
+
+                string[] items = csvHexaCodes.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (items.Length == 0) {
+                    break;
+                }
+
+                foreach (string item in items) {
+                    int code;
+
+                    if (item.Length != 4) {
+                        continue;
+                    }
+
+                    if (!int.TryParse(item, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out code)) {
+                        continue;
+                    }
+
+                    codeList.Add(code);
+                }
+
+            } while (false);
+
+            return codeList;
+        }
+
+        // コード一覧からカンマ区切りの16進数コードの羅列(XXXX,XXXX,...)を得る
+        public static string GetHexaStringsFromCodes(List<int> codeList)
+        {
+            var hexaList = codeList.Select(code => string.Format("{0:X4}", code));
+            return string.Join(",", hexaList);
         }
     }
 }

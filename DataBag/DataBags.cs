@@ -33,6 +33,15 @@ namespace emojiEdit
             }
         }
 
+        // テンプレート
+        private static TemplateBags templates = new TemplateBags();
+        public static TemplateBags Templates
+        {
+            get {
+                return templates;
+            }
+        }
+
         // 初期化済みフラグ
         private static bool initialize = false; // FIXME: やり方としてどうか…
 
@@ -52,6 +61,7 @@ namespace emojiEdit
             config.Init();
             emojis.Init();
             mailAddresses.Init();
+            templates.Init();
 
             initialize = true;
         }
@@ -61,6 +71,7 @@ namespace emojiEdit
         {
             config.Save();
             mailAddresses.Save();
+            templates.Save();
         }
     }
 }

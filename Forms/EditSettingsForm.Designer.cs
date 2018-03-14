@@ -50,9 +50,9 @@
             this.lableBodyCols.AutoSize = true;
             this.lableBodyCols.Location = new System.Drawing.Point(6, 20);
             this.lableBodyCols.Name = "lableBodyCols";
-            this.lableBodyCols.Size = new System.Drawing.Size(57, 12);
+            this.lableBodyCols.Size = new System.Drawing.Size(59, 12);
             this.lableBodyCols.TabIndex = 0;
-            this.lableBodyCols.Text = "文字数(&N)";
+            this.lableBodyCols.Text = "文字数(&N):";
             // 
             // numericUpDownBodyCols
             // 
@@ -81,9 +81,9 @@
             this.labelBodyRows.AutoSize = true;
             this.labelBodyRows.Location = new System.Drawing.Point(6, 45);
             this.labelBodyRows.Name = "labelBodyRows";
-            this.labelBodyRows.Size = new System.Drawing.Size(45, 12);
+            this.labelBodyRows.Size = new System.Drawing.Size(47, 12);
             this.labelBodyRows.TabIndex = 2;
-            this.labelBodyRows.Text = "行数(&R)";
+            this.labelBodyRows.Text = "行数(&R):";
             // 
             // numericUpDownBodyRows
             // 
@@ -156,9 +156,9 @@
             this.labelEmojiListCols.AutoSize = true;
             this.labelEmojiListCols.Location = new System.Drawing.Point(6, 20);
             this.labelEmojiListCols.Name = "labelEmojiListCols";
-            this.labelEmojiListCols.Size = new System.Drawing.Size(57, 12);
+            this.labelEmojiListCols.Size = new System.Drawing.Size(59, 12);
             this.labelEmojiListCols.TabIndex = 0;
-            this.labelEmojiListCols.Text = "文字数(&N)";
+            this.labelEmojiListCols.Text = "文字数(&B):";
             // 
             // numericUpDownEmojiListCols
             // 
