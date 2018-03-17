@@ -136,9 +136,21 @@ namespace emojiEdit
             if (dr == EditSettingsFormResult.Cancel) {
                 return;
             } else if (dr == EditSettingsFormResult.Ok) {
-                this.editEmojiOperationBody.MaxCols = DataBags.Config.BodyMaxCols;
-                this.editEmojiOperationBody.MaxRows = DataBags.Config.BodyMaxRows;
+                List<int> codeListOrig = this.editEmojiOperationBody.Contents;
+
+                int currentCols = this.editEmojiOperationBody.MaxCols;
+                int currentRows = this.editEmojiOperationBody.MaxRows;
+
+                this.editEmojiOperationBody.MaxCols = dialog.BodyMaxCols;
+                this.editEmojiOperationBody.MaxRows = dialog.BodyMaxRows;
                 this.editEmojiOperationBody.Clear();
+
+                this.editEmojiOperationBody.InsertCodes(codeListOrig, currentCols, currentRows, 0, 0);
+
+                DataBags.Config.BodyMaxCols = dialog.BodyMaxCols;
+                DataBags.Config.BodyMaxRows = dialog.BodyMaxRows;
+
+                DataBags.Config.EmojiListMaxCols = dialog.EmojiListMaxCols;
             }
         }
 

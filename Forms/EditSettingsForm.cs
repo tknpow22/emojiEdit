@@ -48,6 +48,25 @@ namespace emojiEdit
         }
 
         //
+        // プロパティ
+        //
+
+        public int BodyMaxCols
+        {
+            private set; get;
+        }
+
+        public int BodyMaxRows
+        {
+            private set; get;
+        }
+
+        public int EmojiListMaxCols
+        {
+            private set; get;
+        }
+
+        //
         // イベントハンドラ
         //
 
@@ -86,10 +105,10 @@ namespace emojiEdit
 
             // NOTE: NumericUpDown コントロール側で補正されるためチェックしていない
 
-            DataBags.Config.BodyMaxCols = (int)this.numericUpDownBodyCols.Value;
-            DataBags.Config.BodyMaxRows = (int)this.numericUpDownBodyRows.Value;
+            this.BodyMaxCols = (int)this.numericUpDownBodyCols.Value;
+            this.BodyMaxRows = (int)this.numericUpDownBodyRows.Value;
 
-            DataBags.Config.EmojiListMaxCols = (int)this.numericUpDownEmojiListCols.Value;
+            this.EmojiListMaxCols = (int)this.numericUpDownEmojiListCols.Value;
 
             this.Close();
         }

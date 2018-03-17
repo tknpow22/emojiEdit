@@ -30,8 +30,6 @@ namespace emojiEdit
 
         // 絵文字編集操作(テンプレート)
         private EditEmojiOperation editEmojiOperationTemplate;
-        int currentCols;
-        int currentRows;
 
         // コンテキストメニューが表示された時の pictureTemplate 上の座標位置
         private int ctxMenuTemplateX = 0;
@@ -60,9 +58,6 @@ namespace emojiEdit
                     Commons.TEMPLATE_MAX_ROWS_MINIMUM
                 );
             this.editEmojiOperationTemplate.Clear();
-
-            this.currentCols = Commons.TEMPLATE_MAX_COLS_MINIMUM;
-            this.currentRows = Commons.TEMPLATE_MAX_ROWS_MINIMUM;
 
             this.emojiTemplateList = DataBags.Templates.Get();
 
@@ -143,8 +138,6 @@ namespace emojiEdit
             this.editEmojiOperationTemplate.Clear();
 
             this.editEmojiOperationTemplate.LoadFromCodes(codeList, 0, 0);
-            this.currentCols = emojiTemplate.Cols;
-            this.currentRows = emojiTemplate.Rows;
 
             this.numericUpDownCols.Value = emojiTemplate.Cols;
             this.numericUpDownRows.Value = emojiTemplate.Rows;
@@ -164,7 +157,7 @@ namespace emojiEdit
 
             List<int> codeList = new List<int>(this.editEmojiOperationTemplate.Contents);
 
-            EmojiTemplate emojiTemplate = new EmojiTemplate(this.currentCols, this.currentRows, codeList);
+            EmojiTemplate emojiTemplate = new EmojiTemplate(this.editEmojiOperationTemplate.MaxCols, this.editEmojiOperationTemplate.MaxRows, codeList);
             this.emojiTemplateList.Insert(0, emojiTemplate);
 
             this.DrawTemplateList();
@@ -201,14 +194,14 @@ namespace emojiEdit
 
             List<int> codeListOrig = this.editEmojiOperationTemplate.Contents;
 
+            int currentCols = this.editEmojiOperationTemplate.MaxCols;
+            int currentRows = this.editEmojiOperationTemplate.MaxRows;
+
             this.editEmojiOperationTemplate.MaxCols = cols;
             this.editEmojiOperationTemplate.MaxRows = rows;
             this.editEmojiOperationTemplate.Clear();
 
-            this.editEmojiOperationTemplate.InsertCodes(codeListOrig, this.currentCols, this.currentRows, 0, 0);
-
-            this.currentCols = cols;
-            this.currentRows = rows;
+            this.editEmojiOperationTemplate.InsertCodes(codeListOrig, currentCols, currentRows, 0, 0);
         }
 
         // 消去
@@ -220,9 +213,6 @@ namespace emojiEdit
             this.editEmojiOperationTemplate.MaxCols = cols;
             this.editEmojiOperationTemplate.MaxRows = rows;
             this.editEmojiOperationTemplate.Clear();
-
-            this.currentCols = cols;
-            this.currentRows = rows;
         }
 
         // 設定
@@ -524,7 +514,7 @@ namespace emojiEdit
                 this.emojiTemplateList.RemoveAt(index);
                 this.emojiTemplateList.Insert(0, emojiTemplate);
             } else {
-                EmojiTemplate emojiTemplate = new EmojiTemplate(this.currentCols, this.currentRows, codeList);
+                EmojiTemplate emojiTemplate = new EmojiTemplate(this.editEmojiOperationTemplate.MaxCols, this.editEmojiOperationTemplate.MaxRows, codeList);
                 this.emojiTemplateList.Insert(0, emojiTemplate);
             }
 
