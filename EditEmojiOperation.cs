@@ -144,7 +144,7 @@ namespace emojiEdit
 
             List<int> codeListNew = new List<int>(new int[this.MaxCols * srcRows]);
 
-            for (int crow = 0; crow < srcRows; ++crow) {
+            for (int crow = 0; crow < srcRows && crow < this.MaxRows; ++crow) {
                 for (int ccol = 0; ccol < srcCols && ccol < this.MaxCols; ++ccol) {
                     int srcIndex = srcCols * crow + ccol;
                     int destIndex = this.MaxCols * crow + ccol;
