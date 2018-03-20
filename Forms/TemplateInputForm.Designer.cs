@@ -259,66 +259,66 @@
             this.menuRemoveLineTemplate,
             this.menuRemoveCharTemplate});
             this.contextMenuTemplate.Name = "contextMenuBody";
-            this.contextMenuTemplate.Size = new System.Drawing.Size(156, 170);
+            this.contextMenuTemplate.Size = new System.Drawing.Size(155, 170);
             this.contextMenuTemplate.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuTemplate_Opening);
             // 
             // menuInsertTextTemplate
             // 
             this.menuInsertTextTemplate.Name = "menuInsertTextTemplate";
-            this.menuInsertTextTemplate.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertTextTemplate.Size = new System.Drawing.Size(154, 22);
             this.menuInsertTextTemplate.Text = "文字列挿入(&I)";
             this.menuInsertTextTemplate.Click += new System.EventHandler(this.menuInsertTextTemplate_Click);
             // 
             // menuPasteTextTemplate
             // 
             this.menuPasteTextTemplate.Name = "menuPasteTextTemplate";
-            this.menuPasteTextTemplate.Size = new System.Drawing.Size(155, 22);
+            this.menuPasteTextTemplate.Size = new System.Drawing.Size(154, 22);
             this.menuPasteTextTemplate.Text = "貼り付け挿入(&V)";
             this.menuPasteTextTemplate.Click += new System.EventHandler(this.menuPasteTextTemplate_Click);
             // 
             // toolStripSeparatorInsertBody
             // 
             this.toolStripSeparatorInsertBody.Name = "toolStripSeparatorInsertBody";
-            this.toolStripSeparatorInsertBody.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorInsertBody.Size = new System.Drawing.Size(151, 6);
             // 
             // menuNewLineTemplate
             // 
             this.menuNewLineTemplate.Name = "menuNewLineTemplate";
-            this.menuNewLineTemplate.Size = new System.Drawing.Size(155, 22);
+            this.menuNewLineTemplate.Size = new System.Drawing.Size(154, 22);
             this.menuNewLineTemplate.Text = "改行(&N)";
             this.menuNewLineTemplate.Click += new System.EventHandler(this.menuNewLineTemplate_Click);
             // 
             // menuInsertEmptyLineTemplate
             // 
             this.menuInsertEmptyLineTemplate.Name = "menuInsertEmptyLineTemplate";
-            this.menuInsertEmptyLineTemplate.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertEmptyLineTemplate.Size = new System.Drawing.Size(154, 22);
             this.menuInsertEmptyLineTemplate.Text = "空行挿入(&R)";
             this.menuInsertEmptyLineTemplate.Click += new System.EventHandler(this.menuInsertEmptyLineTemplate_Click);
             // 
             // menuInsertCharTemplate
             // 
             this.menuInsertCharTemplate.Name = "menuInsertCharTemplate";
-            this.menuInsertCharTemplate.Size = new System.Drawing.Size(155, 22);
-            this.menuInsertCharTemplate.Text = "空1文字挿入(&C)";
+            this.menuInsertCharTemplate.Size = new System.Drawing.Size(154, 22);
+            this.menuInsertCharTemplate.Text = "空文字挿入(&C)";
             this.menuInsertCharTemplate.Click += new System.EventHandler(this.menuInsertCharTemplate_Click);
             // 
             // toolStripSeparatorRemoveBody
             // 
             this.toolStripSeparatorRemoveBody.Name = "toolStripSeparatorRemoveBody";
-            this.toolStripSeparatorRemoveBody.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorRemoveBody.Size = new System.Drawing.Size(151, 6);
             // 
             // menuRemoveLineTemplate
             // 
             this.menuRemoveLineTemplate.Name = "menuRemoveLineTemplate";
-            this.menuRemoveLineTemplate.Size = new System.Drawing.Size(155, 22);
+            this.menuRemoveLineTemplate.Size = new System.Drawing.Size(154, 22);
             this.menuRemoveLineTemplate.Text = "行削除(&L)";
             this.menuRemoveLineTemplate.Click += new System.EventHandler(this.menuRemoveLineTemplate_Click);
             // 
             // menuRemoveCharTemplate
             // 
             this.menuRemoveCharTemplate.Name = "menuRemoveCharTemplate";
-            this.menuRemoveCharTemplate.Size = new System.Drawing.Size(155, 22);
-            this.menuRemoveCharTemplate.Text = "1文字削除(&D)";
+            this.menuRemoveCharTemplate.Size = new System.Drawing.Size(154, 22);
+            this.menuRemoveCharTemplate.Text = "文字削除(&D)";
             this.menuRemoveCharTemplate.Click += new System.EventHandler(this.menuRemoveCharTemplate_Click);
             // 
             // buttonClearTemplateRegion

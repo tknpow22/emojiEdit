@@ -126,7 +126,7 @@
             this.menuRemoveLineBody,
             this.menuRemoveCharBody});
             this.contextMenuBody.Name = "contextMenuBody";
-            this.contextMenuBody.Size = new System.Drawing.Size(177, 214);
+            this.contextMenuBody.Size = new System.Drawing.Size(177, 192);
             this.contextMenuBody.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuBody_Opening);
             // 
             // menuInsertTextBody
@@ -173,7 +173,7 @@
             // 
             this.menuInsertCharBody.Name = "menuInsertCharBody";
             this.menuInsertCharBody.Size = new System.Drawing.Size(176, 22);
-            this.menuInsertCharBody.Text = "空1文字挿入(&C)";
+            this.menuInsertCharBody.Text = "空文字挿入(&C)";
             this.menuInsertCharBody.Click += new System.EventHandler(this.menuInsertCharBody_Click);
             // 
             // toolStripSeparatorRemoveBody
@@ -192,7 +192,7 @@
             // 
             this.menuRemoveCharBody.Name = "menuRemoveCharBody";
             this.menuRemoveCharBody.Size = new System.Drawing.Size(176, 22);
-            this.menuRemoveCharBody.Text = "1文字削除(&D)";
+            this.menuRemoveCharBody.Text = "文字削除(&D)";
             this.menuRemoveCharBody.Click += new System.EventHandler(this.menuRemoveCharBody_Click);
             // 
             // buttonTest
@@ -363,48 +363,48 @@
             this.toolStripSeparatorClearSubject,
             this.menuClearSubject});
             this.contextMenuSubject.Name = "contextMenu";
-            this.contextMenuSubject.Size = new System.Drawing.Size(156, 110);
+            this.contextMenuSubject.Size = new System.Drawing.Size(150, 110);
             // 
             // menuInsertTextSubject
             // 
             this.menuInsertTextSubject.Name = "menuInsertTextSubject";
-            this.menuInsertTextSubject.Size = new System.Drawing.Size(155, 22);
+            this.menuInsertTextSubject.Size = new System.Drawing.Size(149, 22);
             this.menuInsertTextSubject.Text = "文字列挿入(&I)";
             this.menuInsertTextSubject.Click += new System.EventHandler(this.menuInsertTextSubject_Click);
             // 
             // toolStripSeparatorInsertSubject
             // 
             this.toolStripSeparatorInsertSubject.Name = "toolStripSeparatorInsertSubject";
-            this.toolStripSeparatorInsertSubject.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorInsertSubject.Size = new System.Drawing.Size(146, 6);
             // 
             // menuInsertCharSubject
             // 
             this.menuInsertCharSubject.Name = "menuInsertCharSubject";
-            this.menuInsertCharSubject.Size = new System.Drawing.Size(155, 22);
-            this.menuInsertCharSubject.Text = "空1文字挿入(&C)";
+            this.menuInsertCharSubject.Size = new System.Drawing.Size(149, 22);
+            this.menuInsertCharSubject.Text = "空文字挿入(&C)";
             this.menuInsertCharSubject.Click += new System.EventHandler(this.menuInsertCharSubject_Click);
             // 
             // toolStripSeparatorRemoveSubject
             // 
             this.toolStripSeparatorRemoveSubject.Name = "toolStripSeparatorRemoveSubject";
-            this.toolStripSeparatorRemoveSubject.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorRemoveSubject.Size = new System.Drawing.Size(146, 6);
             // 
             // menuRemoveCharSubject
             // 
             this.menuRemoveCharSubject.Name = "menuRemoveCharSubject";
-            this.menuRemoveCharSubject.Size = new System.Drawing.Size(155, 22);
-            this.menuRemoveCharSubject.Text = "1文字削除(&D)";
+            this.menuRemoveCharSubject.Size = new System.Drawing.Size(149, 22);
+            this.menuRemoveCharSubject.Text = "文字削除(&D)";
             this.menuRemoveCharSubject.Click += new System.EventHandler(this.menuRemoveCharSubject_Click);
             // 
             // toolStripSeparatorClearSubject
             // 
             this.toolStripSeparatorClearSubject.Name = "toolStripSeparatorClearSubject";
-            this.toolStripSeparatorClearSubject.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparatorClearSubject.Size = new System.Drawing.Size(146, 6);
             // 
             // menuClearSubject
             // 
             this.menuClearSubject.Name = "menuClearSubject";
-            this.menuClearSubject.Size = new System.Drawing.Size(155, 22);
+            this.menuClearSubject.Size = new System.Drawing.Size(149, 22);
             this.menuClearSubject.Text = "消去(&L)";
             this.menuClearSubject.Click += new System.EventHandler(this.menuClearSubject_Click);
             // 

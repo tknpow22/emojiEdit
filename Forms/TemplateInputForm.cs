@@ -377,7 +377,7 @@ namespace emojiEdit
             int col = this.ctxMenuTemplateX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuTemplateY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationTemplate.InsertChar(col, row);
+            this.editEmojiOperationTemplate.CallInsertChar(col, row);
         }
 
         // 行削除
@@ -389,13 +389,13 @@ namespace emojiEdit
             this.editEmojiOperationTemplate.RemoveLine(col, row);
         }
 
-        // 1文字削除
+        // 文字削除
         private void menuRemoveCharTemplate_Click(object sender, EventArgs e)
         {
             int col = this.ctxMenuTemplateX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuTemplateY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationTemplate.RemoveChar(col, row);
+            this.editEmojiOperationTemplate.CallRemoveChar(col, row);
         }
 
         //

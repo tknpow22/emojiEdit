@@ -427,7 +427,7 @@ namespace emojiEdit
             int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationBody.InsertChar(col, row);
+            this.editEmojiOperationBody.CallInsertChar(col, row);
         }
 
         // 行削除
@@ -439,13 +439,13 @@ namespace emojiEdit
             this.editEmojiOperationBody.RemoveLine(col, row);
         }
 
-        // 1文字削除
+        // 文字削除
         private void menuRemoveCharBody_Click(object sender, EventArgs e)
         {
             int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationBody.RemoveChar(col, row);
+            this.editEmojiOperationBody.CallRemoveChar(col, row);
         }
 
         //
@@ -467,16 +467,16 @@ namespace emojiEdit
             int col = this.ctxMenuSubjectX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuSubjectY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationSubject.InsertChar(col, row);
+            this.editEmojiOperationSubject.CallInsertChar(col, row);
         }
 
-        // 1文字削除
+        // 文字削除
         private void menuRemoveCharSubject_Click(object sender, EventArgs e)
         {
             int col = this.ctxMenuSubjectX / Commons.FRAME_WIDTH;
             int row = this.ctxMenuSubjectY / Commons.FRAME_HEIGHT;
 
-            this.editEmojiOperationSubject.RemoveChar(col, row);
+            this.editEmojiOperationSubject.CallRemoveChar(col, row);
         }
 
         // 消去

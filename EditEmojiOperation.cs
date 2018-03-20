@@ -203,7 +203,7 @@ namespace emojiEdit
             }
         }
 
-        // 文字列行を挿入する
+        // 文字列を挿入する
         public void CallEditText(int col, int row)
         {
             if (0 <= col && col < this.MaxCols) {
@@ -235,7 +235,7 @@ namespace emojiEdit
             }
         }
 
-        // 文字列を挿入する
+        // 文字列(1行)を挿入する
         public void CallEditOnelineText(int col, int row)
         {
             if (0 <= col && col < this.MaxCols) {
@@ -311,8 +311,8 @@ namespace emojiEdit
             this.DrawContentsToNewPictureImage(contentsNew);
         }
 
-        // 1文字挿入する
-        public void InsertChar(int col, int row)
+        // 空文字を挿入する
+        public void CallInsertChar(int col, int row)
         {
             if (0 <= col && col < this.MaxCols) {
                 // OK
@@ -326,14 +326,28 @@ namespace emojiEdit
                 return;
             }
 
-            List<int> contentsNew = this.CopyContents(this.contents);
-            this.InsertCodesToContents(new int[1], col, row, contentsNew);
+            try {
 
-            this.DrawContentsToNewPictureImage(contentsNew);
+                SelectNumCharForm dialog = new SelectNumCharForm(true);
+                SelectNumCharFormResult dr = dialog.ShowDialog(this.ownerWindow);
+                if (dr == SelectNumCharFormResult.Cancel) {
+                    return;
+                }
+
+                if (dr == SelectNumCharFormResult.SetNumChar) {
+                    int numChar = dialog.NumChar;
+
+                    List<int> contentsNew = this.CopyContents(this.contents);
+                    this.InsertCodesToContents(new int[numChar], col, row, contentsNew);
+                    this.DrawContentsToNewPictureImage(contentsNew);
+                }
+            } catch (Exception ex) {
+                MsgBox.Show(this.ownerWindow, ex.Message, "空文字挿入に失敗しました", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        // 1文字削除する
-        public void RemoveChar(int col, int row)
+        // 文字削除する
+        public void CallRemoveChar(int col, int row)
         {
             if (0 <= col && col < this.MaxCols) {
                 // OK
@@ -347,11 +361,26 @@ namespace emojiEdit
                 return;
             }
 
-            // FIXME: 全部作り直してるので遅いかも
-            List<int> contentsNew = this.CopyContents(this.contents);
-            this.RemoveCodesFromContents(col, row, 1, contentsNew);
+            try {
 
-            this.DrawContentsToNewPictureImage(contentsNew);
+                SelectNumCharForm dialog = new SelectNumCharForm(false);
+                SelectNumCharFormResult dr = dialog.ShowDialog(this.ownerWindow);
+                if (dr == SelectNumCharFormResult.Cancel) {
+                    return;
+                }
+
+                if (dr == SelectNumCharFormResult.SetNumChar) {
+                    int numChar = dialog.NumChar;
+
+                    // FIXME: 全部作り直してるので遅いかも
+                    List<int> contentsNew = this.CopyContents(this.contents);
+                    this.RemoveCodesFromContents(col, row, numChar, contentsNew);
+
+                    this.DrawContentsToNewPictureImage(contentsNew);
+                }
+            } catch (Exception ex) {
+                MsgBox.Show(this.ownerWindow, ex.Message, "文字削除に失敗しました", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // 改行
@@ -561,6 +590,10 @@ namespace emojiEdit
         private void RemoveCodesFromContents(int col, int row, int count, List<int> ccontents)
         {
             int index = this.MaxCols * row + col;
+            if (ccontents.Count < index + count) {
+                count = ccontents.Count - index;
+            }
+
             ccontents.RemoveRange(index, count);
             ccontents.AddRange(new int[count]);
         }
