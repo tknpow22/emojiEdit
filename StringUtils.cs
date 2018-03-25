@@ -33,7 +33,7 @@ namespace emojiEdit
         // 制御文字を削除する(改行は残す)
         public static string RemoveControlChars(String str)
         {
-            str = str.Replace("t", "");
+            str = str.Replace("\t", "");
             str = str.Replace("\r\n", "\n");
             str = str.Replace("\r", "\n");
 
