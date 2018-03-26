@@ -203,7 +203,7 @@
         /// <param name="subjectText">件名</param>
         /// <param name="maxCols">件名を分けるための長さ</param>
         /// <returns>複数の BASE64 文字列の一覧</returns>
-        public static List<string> GetBase64EncodingBlocks(string subjectText, int maxCols)
+        private static List<string> GetBase64EncodingBlocks(string subjectText, int maxCols)
         {
             List<string> base64EncodingBlocks = new List<string>();
 
