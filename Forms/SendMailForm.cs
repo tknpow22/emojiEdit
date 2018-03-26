@@ -1,22 +1,33 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using MailKit;
-using MailKit.Net.Smtp;
-using MimeKit;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // 送信
-    //
+    using System;
+    using System.IO;
+    using System.Text;
+    using System.Windows.Forms;
+    using MailKit;
+    using MailKit.Net.Smtp;
+    using MimeKit;
+
+    /// <summary>
+    /// 送信
+    /// </summary>
     public partial class SendMailForm : Form
     {
-        // 送信メッセージ
-        MimeMessage message;
+        #region 変数
 
-        // コンスラクタ
+        /// <summary>
+        /// 送信メッセージ
+        /// </summary>
+        private MimeMessage message;
+
+        #endregion
+
+        #region 処理
+
+        /// <summary>
+        /// コンスラクタ
+        /// </summary>
+        /// <param name="message"></param>
         public SendMailForm(MimeMessage message)
         {
             InitializeComponent();
@@ -29,11 +40,15 @@ namespace emojiEdit
             this.textBoxSmtpPassword.Text = DataBags.Config.SmtpPassword;
         }
 
-        //
-        // イベントハンドラ
-        //
+        #endregion
 
-        // 送信
+        #region イベントハンドラ
+
+        /// <summary>
+        /// 送信ボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSend_Click(object sender, EventArgs e)
         {
             this.textBoxLog.Clear();
@@ -55,7 +70,7 @@ namespace emojiEdit
                 }
             }
 
-            // チェック(半角)
+            // チェック(ASCII)
             {
                 TextBox[] hankakuTextBoxes = {
                     this.textBoxSmtpServer,
@@ -64,7 +79,7 @@ namespace emojiEdit
                 };
 
                 foreach (TextBox hankakuTextBox in hankakuTextBoxes) {
-                    if (!StringUtils.IsHankaku(hankakuTextBox.Text.Trim())) {
+                    if (!StringUtils.IsAscii(hankakuTextBox.Text.Trim())) {
                         MsgBox.Show(this, string.Format("「{0}」は半角で入力してください。", hankakuTextBox.Tag), "半角入力", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         hankakuTextBox.Focus();
                         return;
@@ -88,7 +103,7 @@ namespace emojiEdit
 
                     bool rc;
                     using (MemoryStream logStream = new MemoryStream())
-                    using (MemoryStream mailStream = new MemoryStream()) {
+                    using (MemoryStream logMailStream = new MemoryStream()) {
                         rc = this.Send(
                             smtpServer,
                             smtpPort,
@@ -96,10 +111,10 @@ namespace emojiEdit
                             smtpPassword,
                             this.message,
                             logStream,
-                            mailStream);
+                            logMailStream);
 
                         this.SetLog(logStream);
-                        this.LogMail(mailStream);
+                        this.LogMail(logMailStream);
                     }
 
                     if (rc) {
@@ -130,24 +145,31 @@ namespace emojiEdit
             }
         }
 
-        // 閉じる
+        /// <summary>
+        /// 閉じるボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        // フォーカスロスト
-        private void textBoxToHankaku_Leave(object sender, EventArgs e)
-        {
-            TextBox control = (TextBox)sender;
-            control.Text = StringUtils.ToHankaku(control.Text);
-        }
+        #endregion
 
-        //
-        // 内部処理
-        //
+        #region 内部処理
 
-        // 送信
+        /// <summary>
+        /// 送信処理
+        /// </summary>
+        /// <param name="smtpServer">SMTP サーバー名</param>
+        /// <param name="smtpPort">SMTP ポート番号</param>
+        /// <param name="smtpUserId">SMTP ユーザーID</param>
+        /// <param name="smtpPassword">SMTP パスワード</param>
+        /// <param name="message">メッセージ</param>
+        /// <param name="logStream">ログ用 Stream</param>
+        /// <param name="logMailStream">メールログ用 Stream</param>
+        /// <returns></returns>
         private bool Send(
             string smtpServer,
             int smtpPort,
@@ -155,7 +177,7 @@ namespace emojiEdit
             string smtpPassword,
             MimeMessage message,
             Stream logStream,
-            Stream mailStream) {
+            Stream logMailStream) {
 
             bool result = false;
 
@@ -172,7 +194,7 @@ namespace emojiEdit
                     smtpClient.Disconnect(true);
                 }
 
-                this.message.WriteTo(mailStream);
+                this.message.WriteTo(logMailStream);
 
                 result = true;
 
@@ -183,7 +205,10 @@ namespace emojiEdit
             return result;
         }
 
-        // ログを表示する
+        /// <summary>
+        /// ログを表示する
+        /// </summary>
+        /// <param name="logStream">ログ用 Stream</param>
         private void SetLog(MemoryStream logStream)
         {
             logStream.Seek(0, SeekOrigin.Begin);
@@ -193,17 +218,21 @@ namespace emojiEdit
             StringBuilder logText = new StringBuilder();
 
             while (0 < (length = logStream.Read(buffer, 0, buffer.Length))) {
+                string logStr = "";
                 try {
-                    string logStr = Encoding.ASCII.GetString(buffer, 0, length);
-                    logText.Append(logStr);
-                } catch (Exception ex) {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    logStr = Encoding.GetEncoding("ISO-2022-JP").GetString(buffer, 0, length);
+                } catch (Exception) {
+                    logStr = Encoding.ASCII.GetString(buffer, 0, length);
                 }
+                logText.Append(logStr);
             }
             this.textBoxLog.Text = logText.ToString();
         }
 
-        // メール内容を保存する
+        /// <summary>
+        /// メール内容を保存する
+        /// </summary>
+        /// <param name="mailStream">メールログ用 Stream</param>
         public void LogMail(MemoryStream mailStream)
         {
             try {
@@ -221,5 +250,7 @@ namespace emojiEdit
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
+
+        #endregion
     }
 }

@@ -1,89 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using MimeKit;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // 絵文字エディット
-    //
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
+    using MimeKit;
+
+    /// <summary>
+    /// メイン画面
+    /// </summary>
     public partial class MainForm : Form
     {
-        // 件名ヘッダ
-        private const string SUBJECT = "Subject:";
+        #region 絵文字一覧
 
-        // 保存時に固定出力するヘッダ
-        private const string HEADERS = "Content-Type: text/plain; charset=ISO-2022-JP\r\nContent-Transfer-Encoding: 7bit\r\n";
+        /// <summary>
+        /// 履歴に表示する絵文字アイコンの最大数
+        /// </summary>
+        private int maxHistoryCount;
 
-        // コンテキストメニューが表示された時の pictureContentsSubject 上の座標位置
-        private int ctxMenuSubjectX = 0;
-        private int ctxMenuSubjectY = 0;
+        /// <summary>
+        /// 絵文字アイコンの文字コード(JIS)をグループ毎に管理する(インデックス 0 は履歴用)
+        /// </summary>
+        private List<List<int>> emojiGroupJiscodeMaps;
 
-        // コンテキストメニューが表示された時の pictureContentsBody 上の座標位置
-        private int ctxMenuBodyX = 0;
-        private int ctxMenuBodyY = 0;
+        /// <summary>
+        /// 絵文字アイコンをグループ毎に管理する(インデックス 0 は履歴用)
+        /// </summary>
+        private List<Image> emojiGroupImages;
 
-        // 絵文字編集操作(件名)
-        private EditEmojiOperation editEmojiOperationSubject;
+        /// <summary>
+        /// 履歴の行数
+        /// </summary>
+        private int historyRows;
 
-        // 絵文字編集操作(ボディ部)
-        private EditEmojiOperation editEmojiOperationBody;
+        /// <summary>
+        /// 履歴一覧イメージのサイズ
+        /// </summary>
+        private int historyMaxWidth;
+        private int historyMaxHeight;
 
-        // コンストラクタ
+        #endregion
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
 
-            DataBags.Init();
+            DataBags.Initialize();
 
-            if (DataBags.Config.MainWindowWidth <= 0 || DataBags.Config.MainWindowHeight <= 0) {
-                DataBags.Config.MainWindowWidth = this.Size.Width;
-                DataBags.Config.MainWindowHeight = this.Size.Height;
-            } else {
-                this.Size = new Size(DataBags.Config.MainWindowWidth, DataBags.Config.MainWindowHeight);
-            }
+            this.MinimumSize = new Size(Commons.MIN_MAIN_WINDOW_WIDTH, Commons.MIN_MAIN_WINDOW_HEIGHT);
+            this.MaximumSize = new Size(Commons.MAX_MAIN_WINDOW_WIDTH, Commons.MAX_MAIN_WINDOW_HEIGHT);
+            this.Size = new Size(DataBags.Config.MainWindowWidth, DataBags.Config.MainWindowHeight);
 
-            this.MinimumSize = new Size(Commons.MinWndWidth, Commons.MinWndHeight);
-            this.MaximumSize = new Size(Commons.MaxWndWidth, Commons.MaxWndHeight);
+            this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
 
             this.textBoxMailFrom.Text = DataBags.Config.MailFrom;
 
-            this.editEmojiOperationSubject = new EditEmojiOperation(
-                    this,
-                    this.panelContentsSubject,
-                    this.pictureContentsSubject,
-                    Commons.MAX_SUBJECT_COLS,
-                    Commons.MAX_SUBJECT_ROWS
-                );
-            this.editEmojiOperationSubject.Clear();
+            this.checkBoxForceInsertLineFeed.Checked = DataBags.Config.ForceInsertLineFeed;
 
-            this.editEmojiOperationBody = new EditEmojiOperation(
-                    this,
-                    this.panelContentsBody,
-                    this.pictureContentsBody,
-                    DataBags.Config.BodyMaxCols,
-                    DataBags.Config.BodyMaxRows
-                );
-            this.editEmojiOperationBody.Clear();
+            #region 絵文字一覧
+
+            // 絵文字一覧を初期設定する
+            this.InitializeEmojiList();
+
+            #endregion
         }
 
-        //
-        // イベントハンドラ
-        //
+        #region イベントハンドラ
 
-        // フォームが閉じられた時
+        /// <summary>
+        /// Load
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            this.ActiveControl = this.textBoxMailSubject;
+        }
+
+        /// <summary>
+        /// FormClosed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            DataBags.Save();
+            DataBags.Terminate();
         }
 
-        // 画面サイズが変更された時
+        /// <summary>
+        /// SizeChanged
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Normal) {
@@ -92,7 +106,11 @@ namespace emojiEdit
             }
         }
 
-        // メニュー - 読込
+        /// <summary>
+        /// メニュー - 読込 - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuLoadFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -100,18 +118,18 @@ namespace emojiEdit
             dialog.Filter = "emlファイル|*.eml|すべてのファイル|*.*";
             if (dialog.ShowDialog(this) == DialogResult.OK) {
                 try {
-
-                    this.editEmojiOperationSubject.Clear();
-                    this.editEmojiOperationBody.Clear();
-
                     this.LoadFromFile(dialog.FileName);
                 } catch (Exception ex) {
-                    MsgBox.Show(this, ex.Message, "読み込みに失敗しました", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MsgBox.Show(this, ex.Message, "読込に失敗しました", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // メニュー - 保存
+        /// <summary>
+        /// メニュー - 保存 - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuSaveFile_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -123,12 +141,16 @@ namespace emojiEdit
                 try {
                     this.SaveToFile(dialog.FileName);
                 } catch (Exception ex) {
-                    MsgBox.Show(this, ex.Message, "内容を保存できません", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MsgBox.Show(this, ex.Message, "保存に失敗しました", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // メニュー - 編集設定
+        /// <summary>
+        /// メニュー - 編集設定 - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuEditSettings_Click(object sender, EventArgs e)
         {
             EditSettingsForm dialog = new EditSettingsForm();
@@ -136,25 +158,28 @@ namespace emojiEdit
             if (dr == EditSettingsFormResult.Cancel) {
                 return;
             } else if (dr == EditSettingsFormResult.Ok) {
-                List<int> codeListOrig = this.editEmojiOperationBody.Contents;
 
-                int currentCols = this.editEmojiOperationBody.MaxCols;
-                int currentRows = this.editEmojiOperationBody.MaxRows;
+                DataBags.Config.MaxBodyCols = dialog.MaxBodyCols;
 
-                this.editEmojiOperationBody.MaxCols = dialog.BodyMaxCols;
-                this.editEmojiOperationBody.MaxRows = dialog.BodyMaxRows;
-                this.editEmojiOperationBody.Clear();
+                this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
+                this.textBoxMailBody.Invalidate();
 
-                this.editEmojiOperationBody.InsertCodes(codeListOrig, currentCols, currentRows, 0, 0);
+                #region 絵文字一覧
 
-                DataBags.Config.BodyMaxCols = dialog.BodyMaxCols;
-                DataBags.Config.BodyMaxRows = dialog.BodyMaxRows;
+                DataBags.Config.MaxEmojiListCols = dialog.MaxEmojiListCols;
 
-                DataBags.Config.EmojiListMaxCols = dialog.EmojiListMaxCols;
+                // 絵文字一覧を初期設定する
+                this.InitializeEmojiList();
+
+                #endregion
             }
         }
 
-        // メニュー バージョン
+        /// <summary>
+        /// メニュー バージョン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuVersion_Click(object sender, EventArgs e)
         {
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath);
@@ -166,14 +191,11 @@ namespace emojiEdit
             MsgBox.Show(this, message.ToString(), "バージョン", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        // フォーカスロスト
-        private void textBoxToHankaku_Leave(object sender, EventArgs e)
-        {
-            TextBox control = (TextBox)sender;
-            control.Text = StringUtils.ToHankaku(control.Text);
-        }
-
-        // 選択 - 宛先
+        /// <summary>
+        /// 選択(宛先)ボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSelectMailTo_Click(object sender, EventArgs e)
         {
             MailAddressForm dialog = new MailAddressForm();
@@ -193,7 +215,11 @@ namespace emojiEdit
             this.textBoxMailTo.Text = string.Format("{0}{1}{2}", mailTo, (0 < mailTo.Length) ? " " : "", mailAddr);
         }
 
-        // 選択 - 送信元
+        /// <summary>
+        /// 選択(送信元)ボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSelectMailFrom_Click(object sender, EventArgs e)
         {
             MailAddressForm dialog = new MailAddressForm();
@@ -205,16 +231,13 @@ namespace emojiEdit
             this.textBoxMailFrom.Text = dialog.MailAddr.Trim();
         }
 
-        // 消去
-        private void buttonClear_Click(object sender, EventArgs e)
-        {
-            this.editEmojiOperationBody.Clear();
-        }
-
-        // 送信
+        /// <summary>
+        /// 送信ボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSend_Click(object sender, EventArgs e)
         {
-
             // チェック(必須)
             {
                 TextBox[] requiredTextBoxes = {
@@ -231,7 +254,7 @@ namespace emojiEdit
                 }
             }
 
-            // チェック(半角)
+            // チェック(ASCII)
             {
                 TextBox[] hankakuTextBoxes = {
                     this.textBoxMailTo,
@@ -239,7 +262,7 @@ namespace emojiEdit
                 };
 
                 foreach (TextBox hankakuTextBox in hankakuTextBoxes) {
-                    if (!StringUtils.IsHankaku(hankakuTextBox.Text.Trim())) {
+                    if (!StringUtils.IsAscii(hankakuTextBox.Text.Trim())) {
                         MsgBox.Show(this, string.Format("「{0}」は半角で入力してください。", hankakuTextBox.Tag), "半角入力", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         hankakuTextBox.Focus();
                         return;
@@ -262,327 +285,378 @@ namespace emojiEdit
                 }
             }
 
-
-            MailboxAddress mailboxAddressFrom;
+            MimeMessage mimeMessage;
             try {
-                string mailFrom = this.textBoxMailFrom.Text.Trim();
-                mailboxAddressFrom = new MailboxAddress(mailFrom);
-            } catch (Exception ex) {
-                MsgBox.Show(this, string.Format("「{0}」を確認してください。\n\n{1}", this.textBoxMailFrom.Tag, ex.Message), "メールアドレス", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            List<MailboxAddress> mailboxAddressToList = new List<MailboxAddress>();
-            try {
-                string mailTo = this.textBoxMailTo.Text.Trim();
-                string[] mailToArr = mailTo.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string mail in mailToArr) {
-                    mailboxAddressToList.Add(new MailboxAddress(mail));
-                }
+                MailMessage mailMessage = new MailMessage(
+                    this.textBoxMailTo.Text.Trim(),
+                    this.textBoxMailFrom.Text.Trim(),
+                    this.textBoxMailSubject.Text.Trim(),
+                    this.textBoxMailBody.Text);
+
+                mimeMessage = mailMessage.GetMimeMessage();
 
             } catch (Exception ex) {
-                MsgBox.Show(this, string.Format("「{0}」を確認してください。\n\n{1}", this.textBoxMailTo.Tag, ex.Message), "メールアドレス", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                string message;
 
-            Header headerSubject = this.GetSubjectHeader();
-            if (headerSubject == null) {
-                MsgBox.Show(this, "件名のエンコードに失敗しました。", "件名", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try {
-                using (MemoryStream body = new MemoryStream()) {
-
-                    this.WriteBody(body);
-
-                    MimePart mimePart = new MimePart("text/plain; charset=ISO-2022-JP");
-                    mimePart.ContentTransferEncoding = ContentEncoding.SevenBit;
-                    mimePart.Content = new MimeContent(body);
-
-                    MimeMessage message = new MimeMessage();
-                    message.From.Add(mailboxAddressFrom);
-                    message.To.AddRange(mailboxAddressToList);
-                    message.Headers.Replace(headerSubject);
-                    message.Body = mimePart;
-
-                    SendMailForm dialog = new SendMailForm(message);
-                    dialog.ShowDialog(this);
-                }
-            } catch (Exception ex) {
-                MsgBox.Show(this, string.Format("以下のエラーが発生しました。\n\n{0}", ex.Message), "送信準備失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // テスト
-        private void buttonTest_Click(object sender, EventArgs e)
-        {
-            this.editEmojiOperationBody.SetTestData();
-        }
-
-        // ピクチャーイメージ(件名部)をクリック
-        private void pictureContentsSubject_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left) {
-                this.ctxMenuSubjectX = e.X;
-                this.ctxMenuSubjectY = e.Y;
-
-                this.contextMenuSubject.Show(Cursor.Position);
-                return;
-            }
-
-            int col = e.X / Commons.FRAME_WIDTH;
-            int row = e.Y / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationSubject.CallSelectEmoji(col, row);
-        }
-
-        // ピクチャーイメージ(ボディ部)をクリック
-        private void pictureContentsBody_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left) {
-                this.ctxMenuBodyX = e.X;
-                this.ctxMenuBodyY = e.Y;
-
-                this.contextMenuBody.Show(Cursor.Position);
-                return;
-            }
-
-            int col = e.X / Commons.FRAME_WIDTH;
-            int row = e.Y / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.CallSelectEmoji(col, row);
-        }
-
-        //
-        // イベントハンドラ - コンテキストメニュー(ボディ部)
-        //
-
-        // コンテキストメニュー制御
-        private void contextMenuBody_Opening(object sender, CancelEventArgs e)
-        {
-            if (Clipboard.ContainsText(TextDataFormat.Text)) {
-                menuPasteTextBody.Enabled = true;
-            } else {
-                menuPasteTextBody.Enabled = false;
-            }
-        }
-
-        // 文字列挿入
-        private void menuInsertTextBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.CallEditText(col, row);
-        }
-
-        // 貼り付け挿入
-        private void menuPasteTextBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            string text = Clipboard.GetText() ?? "";
-            this.editEmojiOperationBody.InsertText(text, col, row);
-        }
-
-        // テンプレート挿入
-        private void menuInsertTemplateBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            TemplateInputForm dialog = new TemplateInputForm();
-            TemplateInputFormResult dr = dialog.ShowDialog(this);
-            if (dr == TemplateInputFormResult.Cancel) {
-                return;
-            }
-            if (dr == TemplateInputFormResult.SetTemplate) {
-                this.editEmojiOperationBody.InsertCodes(dialog.Template, dialog.Cols, dialog.Rows, col, row);
-            }
-        }
-
-        // 改行
-        private void menuNewLineBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.NewLine(col, row);
-        }
-
-        // 空行挿入
-        private void menuInsertEmptyLineBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.InsertEmptyLine(col, row);
-        }
-
-        // 空文字挿入
-        private void menuInsertCharBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.CallInsertChar(col, row);
-        }
-
-        // 行削除
-        private void menuRemoveLineBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.RemoveLine(col, row);
-        }
-
-        // 文字削除
-        private void menuRemoveCharBody_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuBodyX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuBodyY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationBody.CallRemoveChar(col, row);
-        }
-
-        //
-        // イベントハンドラ - コンテキストメニュー(件名)
-        //
-
-        // 文字列挿入
-        private void menuInsertTextSubject_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuSubjectX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuSubjectY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationSubject.CallEditOnelineText(col, row);
-        }
-
-        // 空文字挿入
-        private void menuInsertCharSubject_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuSubjectX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuSubjectY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationSubject.CallInsertChar(col, row);
-        }
-
-        // 文字削除
-        private void menuRemoveCharSubject_Click(object sender, EventArgs e)
-        {
-            int col = this.ctxMenuSubjectX / Commons.FRAME_WIDTH;
-            int row = this.ctxMenuSubjectY / Commons.FRAME_HEIGHT;
-
-            this.editEmojiOperationSubject.CallRemoveChar(col, row);
-        }
-
-        // 消去
-        private void menuClearSubject_Click(object sender, EventArgs e)
-        {
-            this.editEmojiOperationSubject.Clear();
-        }
-
-        //
-        // 内部処理
-        //
-
-        // 件名の有効長を取得する
-        private int GetSubjectLength()
-        {
-            List<int> contents = this.editEmojiOperationSubject.Contents;
-            int useCols = Commons.GetUseCols(Commons.MAX_SUBJECT_COLS, contents, 0);
-
-            return useCols;
-        }
-
-        // 件名から Subject ヘッダを取得する
-        private Header GetSubjectHeader()
-        {
-            Header result = null;
-
-            string subject = this.GetSubjectString();
-
-            Header header;
-            if (Header.TryParse(subject, out header)) {
-                result = header;
-            }
-
-            return result;
-        }
-
-        // 件名から Subject ヘッダ文字列を取得する
-        private string GetSubjectString()
-        {
-            List<int> contents = this.editEmojiOperationSubject.Contents;
-            int useCols = this.GetSubjectLength();
-
-            MemoryStream stream = new MemoryStream();
-            int chCount = 0;
-
-            List<string> base64BlockList = new List<string>();
-
-            for (int col = 0; col < useCols; ++col) {
-                int code = contents[col];
-                if (code == 0) {
-                    JisUtils.WriteWhiteSpace(stream);
+                if (ex is MailMessageAddressToException) {
+                    message = string.Format("「{0}」を確認してください。", this.textBoxMailTo.Tag);
+                } else if (ex is MailMessageAddressFromException) {
+                    message = string.Format("「{0}」を確認してください。", this.textBoxMailFrom.Tag);
+                } else if (ex is MailMessageEncodeSubjectException) {
+                    message = string.Format("「{0}」を確認してください。", this.textBoxMailSubject.Tag);
                 } else {
-                    (byte high, byte low) = JisUtils.SplitHL(code);
-
-                    stream.WriteByte(high);
-                    stream.WriteByte(low);
+                    message = string.Format("以下のエラーが発生しました。\n\n{0}", ex.Message);
                 }
 
-                ++chCount;
-
-                if (5 <= chCount) {
-                    base64BlockList.Add(this.GetBase64Block(stream));
-
-                    stream.Dispose();
-                    stream = new MemoryStream();
-                    chCount = 0;
-                }
-            }
-            if (0 < chCount) {
-                base64BlockList.Add(this.GetBase64Block(stream));
+                MsgBox.Show(this, message, "送信準備失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            stream.Dispose();
-
-            StringBuilder subject = new StringBuilder();
-            subject.Append(SUBJECT);
-            if (base64BlockList.Count == 0) {
-                subject.Append(" \r\n");
-            } else {
-                subject.Append(string.Join("", base64BlockList));
-            }
-
-            return subject.ToString();
+            SendMailForm dialog = new SendMailForm(mimeMessage);
+            dialog.ShowDialog(this);
         }
 
-        // 件名の BASE64 ブロックを取得する
-        private string GetBase64Block(MemoryStream stream)
+        /// <summary>
+        /// 絵文字テストボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonEmojiTest_Click(object sender, EventArgs e)
         {
-            stream.Seek(0, SeekOrigin.Begin);
-            using (MemoryStream buffer = new MemoryStream()) {
-                JisUtils.WriteBeginEscapeSequence(buffer);
-                stream.WriteTo(buffer);
-                JisUtils.WriteEndEscapeSequence(buffer);
+            this.textBoxMailBody.SuspendLayout();
 
-                byte[] data = buffer.ToArray();
-                string base64text = Convert.ToBase64String(data, 0, data.Length);
-                string block = string.Format(" =?iso-2022-jp?b?{0}?=\r\n", base64text);
-                return block;
+            this.textBoxMailBody.Clear();
+
+            // 行数カウンタ
+            int rowsCount = 0;
+
+            // 絵文字グループ番号
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+                int numEmojiInGroup = DataBags.Emojis.NumIconInGroupList[emojiGroupNo - 1];
+
+                // 絵文字ID: グループ内でのID
+                for (int emojiId = 0; emojiId < numEmojiInGroup; ++emojiId) {
+
+                    int col = emojiId % DataBags.Config.MaxEmojiListCols;
+                    int row = rowsCount + (emojiId / DataBags.Config.MaxEmojiListCols);
+                    if (col == 0 && row != 0) {
+                        this.textBoxMailBody.Text += "\r\n";
+                    }
+
+                    Emoji emoji = DataBags.Emojis.Get(emojiGroupNo, emojiId);
+                    if (emoji == null) {
+                        this.textBoxMailBody.Text += "　";
+                    } else {
+                        this.textBoxMailBody.Text += emoji.Unicode;
+                    }
+                }
+
+                int rows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+                rowsCount += rows;
+            }
+
+            this.textBoxMailBody.ResumeLayout();
+        }
+
+        /// <summary>
+        /// メール本文に1行の文字数毎に改行を入れる - CheckedChanged
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxForceInsertLineFeed_CheckedChanged(object sender, EventArgs e)
+        {
+            DataBags.Config.ForceInsertLineFeed = this.checkBoxForceInsertLineFeed.Checked;
+        }
+
+        #region 絵文字一覧
+
+        /// <summary>
+        /// 絵文字アイコン - MouseClick
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureEmojiGroupX_MouseClick(object sender, MouseEventArgs e)
+        {
+            PictureBox pictureEmojiGroupX = (PictureBox)sender;
+
+            string tag = (string)pictureEmojiGroupX.Tag;
+
+            if (tag == null || string.Empty == tag) {
+                return;
+            }
+
+            int emojiGroupNo;
+            if (!int.TryParse(tag, out emojiGroupNo)) {
+                return;
+            }
+
+            int numEmojiInGroup;
+            if (emojiGroupNo == 0) {
+                numEmojiInGroup = maxHistoryCount;
+            } else {
+                numEmojiInGroup = DataBags.Emojis.NumIconInGroupList[emojiGroupNo - 1];
+            }
+
+            int maxRows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+
+            int col = e.X / Commons.FRAME_WIDTH;
+            int row = e.Y / Commons.FRAME_HEIGHT;
+
+            if (0 <= col && col < DataBags.Config.MaxEmojiListCols) {
+                // OK
+            } else {
+                return;
+            }
+
+            if (0 <= row && row < maxRows) {
+                // OK
+            } else {
+                return;
+            }
+
+            List<int> emojiGroupCodeMap = emojiGroupJiscodeMaps[emojiGroupNo];
+
+            int index = DataBags.Config.MaxEmojiListCols * row + col;
+
+            if (index < emojiGroupCodeMap.Count) {
+                // OK
+            } else {
+                return;
+            }
+
+            int code = emojiGroupCodeMap[index];
+            Emoji emoji = DataBags.Emojis.GetFromJiscode(code);
+
+            if (code != 0 && emoji != null) {
+
+                EmojiTextBox textBox = null;
+
+                if (this.ActiveControl != null && this.ActiveControl is EmojiTextBox) {
+                    textBox = this.ActiveControl as EmojiTextBox;
+                } else if (this.splitContainerMain.ActiveControl != null && this.splitContainerMain.ActiveControl is EmojiTextBox) {
+                    textBox = this.splitContainerMain.ActiveControl as EmojiTextBox;
+                }
+                if (textBox == null) {
+                    textBox = this.textBoxMailBody;
+                }
+                textBox.Focus();
+
+                textBox.SelectedText = new string(emoji.Unicode, 1);
+                textBox.SelectionLength = 0;
+
+                // 履歴へ登録する
+                List<int> emojiGroupCodeMapHistory = emojiGroupJiscodeMaps[0];
+                if (!emojiGroupCodeMapHistory.Contains(code)) {
+                    emojiGroupCodeMapHistory.Insert(0, code);
+                    emojiGroupCodeMapHistory.RemoveRange(maxHistoryCount, 1);
+                } else {
+                    emojiGroupCodeMapHistory.Remove(code);
+                    emojiGroupCodeMapHistory.Insert(0, code);
+                }
+                this.RedrawEmojiListHistory();
+
+                DataBags.Config.SetEmojiHistory(emojiGroupCodeMapHistory);
             }
         }
 
-        // メールのボディ部の文字コードデータから絵文字を読み込む
+        #endregion
+
+        #endregion
+
+        #region 内部処理
+
+        #region 絵文字一覧
+
+        /// <summary>
+        /// 絵文字一覧を初期設定する
+        /// </summary>
+        private void InitializeEmojiList()
+        {
+            // 絵文字一覧に関連する変数の初期化
+            this.InitializeEmojiListValues();
+
+            // 絵文字一覧に絵文字アイコンと対応する文字コードをロードする
+            this.LoadEmojiList();
+
+            // 絵文字一覧に関連するコントロールを設定する
+            this.SetupEmojiListControls();
+
+            // 絵文字一覧の履歴を描画する
+            this.RedrawEmojiListHistory();
+        }
+
+        /// <summary>
+        /// 絵文字一覧に関連する変数の初期化
+        /// </summary>
+        private void InitializeEmojiListValues()
+        {
+            // 履歴に表示する絵文字アイコンの最大数
+            this.maxHistoryCount = DataBags.Config.MaxEmojiListCols * 2; // NOTE: MAX_COLS の倍数とすること
+
+            // 絵文字アイコンの文字コード(JIS)をグループ毎に管理する(インデックス 0 は履歴用)
+            this.emojiGroupJiscodeMaps = new List<List<int>>();
+
+            // 絵文字アイコンをグループ毎に管理する(インデックス 0 は履歴用)
+            this.emojiGroupImages = new List<Image>();
+
+            // 履歴の行数
+            this.historyRows = (int)Math.Ceiling((decimal)maxHistoryCount / DataBags.Config.MaxEmojiListCols);
+
+            // 履歴一覧イメージのサイズ
+            this.historyMaxWidth = Commons.FRAME_WIDTH * DataBags.Config.MaxEmojiListCols;
+            this.historyMaxHeight = Commons.FRAME_HEIGHT * historyRows;
+        }
+
+        /// <summary>
+        /// 絵文字一覧に絵文字アイコンと対応する文字コードをロードする
+        /// </summary>
+        private void LoadEmojiList()
+        {
+            //
+            // 絵文字アイコン(履歴)
+            //
+            {
+                List<int> emojiGroupCodeMapHistory = DataBags.Config.GetEmojiHistory();
+                int emojiHistoryCount = emojiGroupCodeMapHistory.Count;
+
+                emojiGroupCodeMapHistory.AddRange(new int[maxHistoryCount]);
+                emojiGroupCodeMapHistory.RemoveRange(maxHistoryCount, emojiHistoryCount);
+
+                emojiGroupJiscodeMaps.Add(emojiGroupCodeMapHistory);
+            }
+            {
+                Image emojiGroupHistoryImage = new Bitmap(historyMaxWidth, historyMaxHeight);
+
+                using (Graphics graphics = Graphics.FromImage(emojiGroupHistoryImage)) {
+                    graphics.FillRectangle(Brushes.White, 0, 0, historyMaxWidth, historyMaxHeight);
+                }
+
+                emojiGroupImages.Add(emojiGroupHistoryImage);
+            }
+
+            //
+            // 絵文字アイコン
+            //
+
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+
+                int numEmojiInGroup = DataBags.Emojis.NumIconInGroupList[emojiGroupNo - 1];
+
+                int rows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+
+                int maxWidth = Commons.FRAME_WIDTH * DataBags.Config.MaxEmojiListCols;
+                int maxHeight = Commons.FRAME_HEIGHT * rows;
+
+                List<int> emojiGroupCodeMap = new List<int>();
+                emojiGroupCodeMap.AddRange(new int[numEmojiInGroup]);
+
+                Image emojiGroupImage = new Bitmap(maxWidth, maxHeight);
+
+                using (Graphics graphics = Graphics.FromImage(emojiGroupImage)) {
+
+                    graphics.FillRectangle(Brushes.White, 0, 0, maxWidth, maxHeight);
+
+                    // 絵文字ID: グループ内でのID
+                    for (int emojiId = 0; emojiId < numEmojiInGroup; ++emojiId) {
+
+                        Emoji emoji = DataBags.Emojis.Get(emojiGroupNo, emojiId);
+                        if (emoji == null) {
+                            continue;
+                        }
+
+                        emojiGroupCodeMap[emojiId] = emoji.Jiscode;
+
+                        int col = emojiId % DataBags.Config.MaxEmojiListCols;
+                        int row = emojiId / DataBags.Config.MaxEmojiListCols;
+
+                        DrawUtils.DrawImage(emoji.Image, col, row, graphics);
+                    }
+                }
+
+                emojiGroupImages.Add(emojiGroupImage);
+                emojiGroupJiscodeMaps.Add(emojiGroupCodeMap);
+            }
+        }
+
+        /// <summary>
+        /// 絵文字一覧に関連するコントロールを設定する
+        /// </summary>
+        private void SetupEmojiListControls()
+        {
+            this.tabControlEmojiList.SuspendLayout();
+
+            this.tabControlEmojiList.Controls.Clear();
+
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+
+                PictureBox pictureEmojiGroup = new PictureBox();
+                pictureEmojiGroup.Location = new Point(0, 0);
+                pictureEmojiGroup.Name = string.Format("pictureEmojiGroup{0}", emojiGroupNo);
+                pictureEmojiGroup.SizeMode = PictureBoxSizeMode.AutoSize;
+                pictureEmojiGroup.TabIndex = emojiGroupNo;
+                pictureEmojiGroup.TabStop = false;
+                pictureEmojiGroup.Tag = string.Format("{0}", emojiGroupNo);
+                pictureEmojiGroup.MouseClick += new MouseEventHandler(this.pictureEmojiGroupX_MouseClick);
+
+                pictureEmojiGroup.Image = emojiGroupImages[emojiGroupNo];
+
+                TabPage tabEmojiGroup = new TabPage();
+                tabEmojiGroup.AutoScroll = true;
+                tabEmojiGroup.Controls.Add(pictureEmojiGroup);
+                tabEmojiGroup.Name = string.Format("tabEmojiGroup{0}", emojiGroupNo);
+                tabEmojiGroup.TabIndex = emojiGroupNo;
+                tabEmojiGroup.Text = DataBags.Emojis.CaptionList[emojiGroupNo - 1];
+                tabEmojiGroup.UseVisualStyleBackColor = true;
+
+                this.tabControlEmojiList.Controls.Add(tabEmojiGroup);
+            }
+
+            this.tabControlEmojiList.ResumeLayout();
+        }
+
+        /// <summary>
+        /// 絵文字一覧の履歴を描画する
+        /// </summary>
+        private void RedrawEmojiListHistory()
+        {
+            List<int> emojiGroupCodeMapHistory = emojiGroupJiscodeMaps[0];
+            Image emojiGroupHistoryImage = emojiGroupImages[0];
+
+            using (Graphics graphics = Graphics.FromImage(emojiGroupHistoryImage)) {
+
+                graphics.FillRectangle(Brushes.White, 0, 0, historyMaxWidth, historyMaxHeight);
+
+                for (int i = 0; i < emojiGroupCodeMapHistory.Count; ++i) {
+
+                    int code = emojiGroupCodeMapHistory[i];
+                    Emoji emoji = DataBags.Emojis.GetFromJiscode(code);
+                    if (emoji == null) {
+                        continue;
+                    }
+
+                    int col = i % DataBags.Config.MaxEmojiListCols;
+                    int row = i / DataBags.Config.MaxEmojiListCols;
+
+                    DrawUtils.DrawImage(emoji.Image, col, row, graphics);
+                }
+            }
+            this.pictureEmojiGroup0.Image = emojiGroupHistoryImage;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// ファイルから読込(宛先、送信元は読み込まない)
+        /// </summary>
+        /// <param name="filename"></param>
         private void LoadFromFile(string filename)
         {
             FileInfo file = new FileInfo(filename);
             byte[] data = new byte[file.Length];
+
+            string subjectText = "";
+            string bodyText = "";
 
             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
 
@@ -594,7 +668,7 @@ namespace emojiEdit
                 // ボディ部の先頭を見つける
                 int indexBeginBody = 0;
                 for (int i = 0; i < data.Length; ++i) {
-                    if (JisUtils.IsCrLf(data, data.Length, i) && JisUtils.IsCrLf(data, data.Length, i + 2)) {
+                    if (CharCodeUtils.IsCrLf(data, data.Length, i) && CharCodeUtils.IsCrLf(data, data.Length, i + 2)) {
                         indexBeginBody = i + 4;
                         break;
                     }
@@ -605,26 +679,30 @@ namespace emojiEdit
 
                 string headers = Encoding.ASCII.GetString(data, 0, indexBeginBody);
                 if (headers != null) {
-                    List<int> codeList = this.GetSubjectCodeList(headers);
-                    if (codeList != null) {
-                        this.editEmojiOperationSubject.LoadFromCodes(codeList, 0, 0);
-                    }
+                    subjectText = this.GetSubjectText(headers);
                 }
 
-                this.editEmojiOperationBody.LoadFromBodyData(data, indexBeginBody, data.Length - indexBeginBody);
+                bodyText = this.GetBodyText(data, indexBeginBody, data.Length - indexBeginBody);
             }
+
+            this.textBoxMailSubject.Text = subjectText;
+            this.textBoxMailBody.Text = bodyText;
         }
 
-        // ヘッダ文字列から件名部の文字コード一覧を取得する
-        // NOTE: 自分で出力した形式にしか対応していない
-        private List<int> GetSubjectCodeList(string headers)
+        /// <summary>
+        /// ヘッダ文字列から件名を取得する
+        /// NOTE: 自分で出力した形式にしか対応していない
+        /// </summary>
+        /// <param name="headers">ヘッダ文字列</param>
+        /// <returns>件名</returns>
+        private string GetSubjectText(string headers)
         {
-            int startIndex = headers.IndexOf(SUBJECT, 0, StringComparison.CurrentCultureIgnoreCase);
+            int startIndex = headers.IndexOf(MailMessage.SUBJECT, 0, StringComparison.CurrentCultureIgnoreCase);
             if (startIndex < 0) {
-                return null;
+                return "";
             }
 
-            startIndex += SUBJECT.Length;
+            startIndex += MailMessage.SUBJECT.Length;
 
             int index = startIndex;
             int endIndex = startIndex;
@@ -643,13 +721,13 @@ namespace emojiEdit
                 index += 2;
             }
             if (endIndex == startIndex) {
-                return null;
+                return "";
             }
 
             string subject = headers.Substring(startIndex, endIndex - startIndex);
             Regex regex = new Regex(@"=\?(?<charset>.*?)\?(?<encoding>.)\?(?<value>.*?)\?=");
 
-            List<int> codeList = new List<int>();
+            StringBuilder result = new StringBuilder();
 
             MatchCollection matchCollection = regex.Matches(subject);
             foreach (Match match in matchCollection) {
@@ -662,108 +740,135 @@ namespace emojiEdit
                         // OK
                     } else {
                         // 未対応
-                        return null;
+                        return "";
                     }
 
-                    byte[] biSubjectPart = Convert.FromBase64String(val);
+                    byte[] dataPart = Convert.FromBase64String(val);
                     bool inJpn = false;
 
-                    int dataLength = biSubjectPart.Length;
+                    int dataPartLength = dataPart.Length;
 
-                    for (int i = 0; i < dataLength; ) {
+                    for (int i = 0; i < dataPartLength;) {
 
-                        if (JisUtils.IsBeginEscapeSequence(biSubjectPart, dataLength, i)) {
+                        if (CharCodeUtils.IsBeginEscapeSequence(dataPart, dataPartLength, i)) {
                             inJpn = true;
                             i += 3;
                             continue;
                         }
-                        if (JisUtils.IsEndEscapeSequence(biSubjectPart, dataLength, i)) {
+                        if (CharCodeUtils.IsEndEscapeSequence(dataPart, dataPartLength, i)) {
                             inJpn = false;
                             i += 3;
                             continue;
                         }
-                        if (inJpn && i <= dataLength - 2) {
+                        if (inJpn) {
+                            if (i <= dataPartLength - 2) {
 
-                            int code = JisUtils.MergeHL(biSubjectPart[i], biSubjectPart[i + 1]);
-                            codeList.Add(code);
+                                int jiscode = CharCodeUtils.MergeHL(dataPart[i], dataPart[i + 1]);
+                                Emoji emoji = DataBags.Emojis.GetFromJiscode(jiscode);
+                                if (emoji != null) {
+                                    result.Append(emoji.Unicode);
+                                } else {
+                                    string sch = CharCodeUtils.GetCharFromJisCode(jiscode);
+                                    if (sch != null) {
+                                        result.Append(sch);
+                                    }
+                                }
 
-                            i += 2;
-                            continue;
+                                i += 2;
+                            } else {
+                                i += 1;
+                            }
+                        } else {
+                            char ascii = (char)dataPart[i];
+                            result.Append(ascii);
+                            i += 1;
                         }
-                        // 未対応
-                        return null;
                     }
                 }
             }
 
-            return codeList;
+            return result.ToString();
         }
 
-        // ファイルに保存する
+        /// <summary>
+        /// ボディ部データから本文を取得する
+        /// NOTE: 自分で出力した形式にしか対応していない
+        /// </summary>
+        /// <param name="data">ボディ部データ</param>
+        /// <param name="offset">オフセット</param>
+        /// <param name="count">バイト数</param>
+        /// <returns>本文</returns>
+        private string GetBodyText(byte[] data, int offset, int count)
+        {
+            bool inJpn = false;
+
+            int dataLength = data.Length;
+
+            StringBuilder result = new StringBuilder();
+
+            for (int i = offset; i < dataLength;) {
+
+                if (CharCodeUtils.IsCrLf(data, dataLength, i)) {
+                    inJpn = false;
+                    i += 2;
+                    result.Append("\r\n");
+                    continue;
+                }
+                if (CharCodeUtils.IsBeginEscapeSequence(data, dataLength, i)) {
+                    inJpn = true;
+                    i += 3;
+                    continue;
+                }
+                if (CharCodeUtils.IsEndEscapeSequence(data, dataLength, i)) {
+                    inJpn = false;
+                    i += 3;
+                    continue;
+                }
+                if (inJpn) {
+                    if (i <= dataLength - 2) {
+                        int jiscode = CharCodeUtils.MergeHL(data[i], data[i + 1]);
+                        Emoji emoji = DataBags.Emojis.GetFromJiscode(jiscode);
+                        if (emoji != null) {
+                            result.Append(emoji.Unicode);
+                        } else {
+                            string sch = CharCodeUtils.GetCharFromJisCode(jiscode);
+                            if (sch != null) {
+                                result.Append(sch);
+                            }
+                        }
+
+                        i += 2;
+                    } else {
+                        i += 1;
+                    }
+                } else {
+                    char ascii = (char)data[i];
+                    result.Append(ascii);
+                    i += 1;
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// ファイルへ保存(宛先、送信元は保存しない)
+        /// </summary>
+        /// <param name="filename">ファイル名</param>
         private void SaveToFile(string filename)
         {
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write)) {
+                MailMessage mailMessage = new MailMessage(
+                    "",
+                    "",
+                    this.textBoxMailSubject.Text.Trim(),
+                    this.textBoxMailBody.Text);
 
-                // ヘッダ部を出力する
-                {
-                    byte[] biHeaders = Encoding.ASCII.GetBytes(HEADERS);
-                    fs.Write(biHeaders, 0, biHeaders.Length);
-
-                    string subject = this.GetSubjectString();
-                    byte[] biSubject = Encoding.ASCII.GetBytes(subject);
-                    fs.Write(biSubject, 0, biSubject.Length);
-                }
-
-                fs.Write(JisUtils.CRLF, 0, JisUtils.CRLF.Length);
-
-                this.WriteBody(fs);
+                MimeMessage mimeMessage = mailMessage.GetMimeMessage();
+                mimeMessage.WriteTo(fs);
             }
         }
 
-        // 文字コードデータをメールのボディ部としてストリームに出力する
-        private void WriteBody(Stream stream)
-        {
-            List<int> contents = this.editEmojiOperationBody.Contents;
-
-            int useRows = DataBags.Config.BodyMaxRows;
-            {
-                int row = DataBags.Config.BodyMaxRows - 1;
-                while (0 <= row) {
-                    int useCols = Commons.GetUseCols(DataBags.Config.BodyMaxCols, contents, row);
-                    if (useCols == 0) {
-                        --row;
-                    } else {
-                        break;
-                    }
-                }
-                useRows = row + 1;
-            }
-
-            for (int row = 0; row < useRows; ++row) {
-
-                // 行ごとに日本語エスケープして内容を出力する
-                int useCols = Commons.GetUseCols(DataBags.Config.BodyMaxCols, contents, row);
-                if (0 < useCols) {
-                    JisUtils.WriteBeginEscapeSequence(stream);
-
-                    for (int col = 0; col < useCols; ++col) {
-                        int index = DataBags.Config.BodyMaxCols * row + col;
-                        int code = contents[index];
-                        if (code == 0) {
-                            JisUtils.WriteWhiteSpace(stream);
-                        } else {
-                            (byte high, byte low) = JisUtils.SplitHL(code);
-
-                            stream.WriteByte(high);
-                            stream.WriteByte(low);
-                        }
-                    }
-
-                    JisUtils.WriteEndEscapeSequence(stream);
-                }
-
-                JisUtils.WriteCrLf(stream);
-            }
-        }
+        #endregion
     }
 }

@@ -1,98 +1,222 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // 共通
-    //
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+
+    /// <summary>
+    /// 共通
+    /// </summary>
     static class Commons
     {
-        // メイン画面の幅と高さ
-        public const int MinWndWidth = 468;
-        public const int MaxWndWidth = 740;
-        public const int MinWndHeight = 530;
-        public const int MaxWndHeight = 1800;
+        #region 定義
 
-        // アイコンの幅と高さ
-        public const int ICON_WIDTH = 32;
-        public const int ICON_HEIGHT = 32;
+        #region Windows API
 
-        // 文字枠の幅と高さ
-        public const int FRAME_WIDTH = Commons.ICON_WIDTH + 2;
-        public const int FRAME_HEIGHT = Commons.ICON_HEIGHT + 2;
-
-        // フォント
-        public const string CONTENTS_FONT_NAME = "ＭＳ ゴシック";
-        public const int CONTENTS_FONT_SIZE = 12;
-
-        // 設定ファイル名
-        public const string CONFIG_FILE_NAME = "config.ini";
-
-        // メールアドレスを保管するファイル名
-        public const string MAIL_ADDRESSES_FILE_NAME = "mailAddresses.txt";
-
-        // 絵文字アイコンイメージファイルを格納したディレクトリ名
-        public const string EMOJI_RESOURCE_DIR = "icons";
-        // 絵文字アイコンのグループおよび数の定義を格納したファイル名(EMOJI_RESOURCE_DIR の配下に配置する)
-        public const string EMOJI_EMOJI_RESOURCE_CONFIG_FILE_NAME = "iconsConfig.txt";
-
-        // 送信したメール内容を保存するディレクトリ
-        public const string MAIL_LOG_DIR = "mails";
-
-        // テンプレートを保管するファイル名
-        public const string TEMPLATE_FILE_NAME = "templates.txt";
-
-        // テンプレートの文字数と行数
-
-        // TEMPLATE_MAX_COLS_MINIMUM <= TEMPLATE_MAX_COLS_DEFALUT <= TEMPLATE_MAX_COLS_MAXIMUM となること
-        public const int TEMPLATE_MAX_COLS_MINIMUM = 9;
-        public const int TEMPLATE_MAX_COLS_DEFALUT = 12;
-        public const int TEMPLATE_MAX_COLS_MAXIMUM = 20;
-
-        // TEMPLATE_MAX_ROWS_MINIMUM <= TEMPLATE_MAX_ROWS_DEFALUT <= TEMPLATE_MAX_ROWS_MAXIMUM となること
-        public const int TEMPLATE_MAX_ROWS_MINIMUM = 1;
-        public const int TEMPLATE_MAX_ROWS_DEFALUT = 5;
-        public const int TEMPLATE_MAX_ROWS_MAXIMUM = 10;
-
-        // 件名に入力できる文字数
-        public const int MAX_SUBJECT_COLS = 256;
-        public const int MAX_SUBJECT_ROWS = 1;
-
-        //
-        // 処理
-        //
-
-        // List<int> を文字数 * 行数に見立てて、特定の行の文字数を返す
-        public static int GetUseCols(int maxCols, List<int> contents, int row)
+        /// <summary>
+        /// RECT 定義
+        /// </summary>
+        public struct RECT
         {
-            int useCols = maxCols;
+            public RECT(int left, int top, int right, int bottom)
             {
-                int col = maxCols - 1;
-                while (0 <= col) {
-                    int index = maxCols * row + col;
-                    int code = contents[index];
-                    if (code == 0) {
-                        --col;
-                    } else {
-                        break;
-                    }
-                }
-                useCols = col + 1;
+                Left = left;
+                Top = top;
+                Right = right;
+                Bottom = bottom;
             }
-            return useCols;
+
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
 
-        // メールアドレスが入力されているかをチェックする
-        // NOTE: ちゃんとしたチェックは難しいので、文字列の中に '@' があれば OK としている
-        // 複数のアドレスを含む場合、スペースで区切ってあるものとする
+        #endregion
+
+        #region メイン画面の幅と高さ
+
+        #region メイン画面の幅
+
+        /// <summary>
+        /// メイン画面の幅(最小値)
+        /// </summary>
+        public const int MIN_MAIN_WINDOW_WIDTH = 480;
+
+        /// <summary>
+        /// メイン画面の幅(最大値)
+        /// </summary>
+        public const int MAX_MAIN_WINDOW_WIDTH = 1400;
+
+        #endregion
+
+        #region メイン画面の高さ
+
+        /// <summary>
+        /// メイン画面の高さ(最小値)
+        /// </summary>
+        public const int MIN_MAIN_WINDOW_HEIGHT = 740;
+
+        /// <summary>
+        /// メイン画面の高さ(最大値)
+        /// </summary>
+        public const int MAX_MAIN_WINDOW_HEIGHT = 1400;
+
+        #endregion
+
+        #region 本文の文字数
+
+        // MAX_BODY_COLS_MINIMUM <= MAX_BODY_COLS_DEFALUT <= MAX_BODY_COLS_MAXIMUM となること
+
+        /// <summary>
+        /// 本文の文字数(最小)
+        /// </summary>
+        public const int MAX_BODY_COLS_MINIMUM = 9;
+
+        /// <summary>
+        /// 本文の文字数(デフォルト)
+        /// </summary>
+        public const int MAX_BODY_COLS_DEFALUT = 12;
+
+        /// <summary>
+        /// 本文の文字数(最大)
+        /// </summary>
+        public const int MAX_BODY_COLS_MAXIMUM = 20;
+
+        #endregion
+
+
+        #region 絵文字一覧の文字数
+
+        // MAX_EMOJI_LIST_COLS_MINIMUM <= MAX_EMOJI_LIST_COLS_DEFAULT <= MAX_EMOJI_LIST_COLS_MAXIMUM となること
+
+        /// <summary>
+        /// 絵文字一覧の文字数(最小)
+        /// </summary>
+        public const int MAX_EMOJI_LIST_COLS_MINIMUM = 6;
+
+        /// <summary>
+        /// 絵文字一覧の文字数(デフォルト)
+        /// </summary>
+        public const int MAX_EMOJI_LIST_COLS_DEFAULT = 9;
+
+        /// <summary>
+        /// 絵文字一覧の文字数(最大)
+        /// </summary>
+        public const int MAX_EMOJI_LIST_COLS_MAXIMUM = 20;
+
+        #endregion
+
+        #endregion
+
+        #region テキストボックスへの描画用のアイコンの幅と高さ
+
+        /// <summary>
+        /// テキストボックスへの描画用のアイコンの幅
+        /// </summary>
+        public const int TEXT_ICON_WIDTH = 32;
+
+        /// <summary>
+        /// テキストボックスへの描画用のアイコンの高さ
+        /// </summary>
+        public const int TEXT_ICON_HEIGHT = 32;
+
+        #endregion
+
+        #region アイコンの幅と高さ
+
+        /// <summary>
+        /// アイコンの幅
+        /// </summary>
+        public const int ICON_WIDTH = 32;
+
+        /// <summary>
+        /// アイコンの高さ
+        /// </summary>
+        public const int ICON_HEIGHT = 32;
+
+        #endregion
+
+        #region 文字枠の幅と高さ
+
+        /// <summary>
+        /// 文字枠の幅
+        /// </summary>
+        public const int FRAME_WIDTH = Commons.ICON_WIDTH + 2;
+
+        /// <summary>
+        /// 文字枠の高さ
+        /// </summary>
+        public const int FRAME_HEIGHT = Commons.ICON_HEIGHT + 2;
+
+        #endregion
+
+        #region フォント
+
+        /// <summary>
+        /// フォントファミリー
+        /// </summary>
+        public const string CONTENTS_FONT_NAME = "MS Gothic";
+
+        /// <summary>
+        /// フォントサイズ
+        /// </summary>
+        public const int CONTENTS_FONT_SIZE = 12;
+
+        #endregion
+
+        /// <summary>
+        /// デフォルトの SMTP ポート番号
+        /// </summary>
+        public const int SMTP_PORT_DEFAULT = 587;
+
+        /// <summary>
+        /// 設定ファイル名
+        /// </summary>
+        public const string CONFIG_FILE_NAME = "config.ini";
+
+        /// <summary>
+        /// メールアドレスを保管するファイル名
+        /// </summary>
+        public const string MAIL_ADDRESSES_FILE_NAME = "mailAddresses.txt";
+
+        #region 絵文字アイコン設定
+
+        /// <summary>
+        /// 絵文字アイコンイメージファイルを格納したディレクトリ名
+        /// </summary>
+        public const string EMOJI_RESOURCE_DIR = "icons";
+
+        /// <summary>
+        /// 絵文字アイコンのグループおよび数の定義を格納したファイル名(EMOJI_RESOURCE_DIR の配下に配置する)
+        /// </summary>
+        public const string EMOJI_EMOJI_RESOURCE_CONFIG_FILE_NAME = "iconsConfig.txt";
+
+        #endregion
+
+        /// <summary>
+        /// 送信したメール内容を保存するディレクトリ
+        /// </summary>
+        public const string MAIL_LOG_DIR = "mails";
+
+        #endregion
+
+        #region 処理
+
+        /// <summary>
+        /// メールアドレスが入力されているかをチェックする
+        /// NOTE: ちゃんとしたチェックは難しいので、文字列の中に '@' があれば OK としている
+        /// 複数のアドレスを含む場合、スペースで区切ってあるものとする
+        /// </summary>
+        /// <param name="str">メールアドレスとおぼしき文字列</param>
+        /// <param name="multi">複数アドレスかの場合は true</param>
+        /// <returns>OK なら true</returns>
         public static bool IsMailAddr(string str, bool multi = false)
         {
             str = str.Trim();
 
-            if (!StringUtils.IsHankaku(str)) {
+            if (!StringUtils.IsAscii(str)) {
                 return false;
             }
 
@@ -119,7 +243,11 @@ namespace emojiEdit
             return true;
         }
 
-        // カンマ区切りの16進数コードの羅列(XXXX,XXXX,...)からコード一覧を得る
+        /// <summary>
+        /// カンマ区切りの16進数コードの羅列(XXXX,XXXX,...)からコード一覧を得る
+        /// </summary>
+        /// <param name="csvHexaCodes">文字列</param>
+        /// <returns>コード一覧</returns>
         public static List<int> GetCodesFromHexaStrings(string csvHexaCodes)
         {
             List<int> codeList = new List<int>();
@@ -150,11 +278,17 @@ namespace emojiEdit
             return codeList;
         }
 
-        // コード一覧からカンマ区切りの16進数コードの羅列(XXXX,XXXX,...)を得る
+        /// <summary>
+        /// コード一覧からカンマ区切りの16進数コードの羅列(XXXX,XXXX,...)を得る
+        /// </summary>
+        /// <param name="codeList">コード一覧</param>
+        /// <returns>文字列</returns>
         public static string GetHexaStringsFromCodes(List<int> codeList)
         {
             var hexaList = codeList.Select(code => string.Format("{0:X4}", code));
             return string.Join(",", hexaList);
         }
+
+        #endregion
     }
 }

@@ -1,45 +1,58 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    // フォームからの返却値
+    using System;
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// フォームからの返却値
+    /// </summary>
     public enum EditSettingsFormResult
     {
         Ok,
         Cancel,
     }
 
-    //
-    // 編集設定
-    //
+    /// <summary>
+    /// 編集設定
+    /// </summary>
     public partial class EditSettingsForm : Form
     {
-        // フォームからの返却値
+        #region 変数
+
+        /// <summary>
+        /// フォームからの返却値
+        /// </summary>
         private EditSettingsFormResult formResult = EditSettingsFormResult.Cancel;
 
-        // コンスラクタ
+        #endregion
+
+        #region 処理
+
+        /// <summary>
+        /// コンスラクタ
+        /// </summary>
         public EditSettingsForm()
         {
             InitializeComponent();
 
             // 本文編集
-            this.numericUpDownBodyCols.Minimum = ConfigBag.BODY_MAX_COLS_MINIMUM;
-            this.numericUpDownBodyCols.Maximum = ConfigBag.BODY_MAX_COLS_MAXIMUM;
-            this.numericUpDownBodyRows.Minimum = ConfigBag.BODY_MAX_ROWS_MINIMUM;
-            this.numericUpDownBodyRows.Maximum = ConfigBag.BODY_MAX_ROWS_MAXIMUM;
+            this.numericUpDownBodyCols.Minimum = Commons.MAX_BODY_COLS_MINIMUM;
+            this.numericUpDownBodyCols.Maximum = Commons.MAX_BODY_COLS_MAXIMUM;
 
-            this.numericUpDownBodyCols.Value = DataBags.Config.BodyMaxCols;
-            this.numericUpDownBodyRows.Value = DataBags.Config.BodyMaxRows;
+            this.numericUpDownBodyCols.Value = DataBags.Config.MaxBodyCols;
 
             // 絵文字選択
-            this.numericUpDownEmojiListCols.Minimum = ConfigBag.EMOJI_LIST_MAX_COLS_MINIMUM;
-            this.numericUpDownEmojiListCols.Maximum = ConfigBag.EMOJI_LIST_MAX_COLS_MAXIMUM;
+            this.numericUpDownEmojiListCols.Minimum = Commons.MAX_EMOJI_LIST_COLS_MINIMUM;
+            this.numericUpDownEmojiListCols.Maximum = Commons.MAX_EMOJI_LIST_COLS_MAXIMUM;
 
-            this.numericUpDownEmojiListCols.Value = DataBags.Config.EmojiListMaxCols;
+            this.numericUpDownEmojiListCols.Value = DataBags.Config.MaxEmojiListCols;
         }
 
-        // このダイアログを表示する
+        /// <summary>
+        /// このダイアログを表示する
+        /// </summary>
+        /// <param name="owner">親ウィンドウ</param>
+        /// <returns>フォームからの返却値</returns>
         public new EditSettingsFormResult ShowDialog(IWin32Window owner)
         {
             base.ShowDialog(owner);
@@ -47,43 +60,35 @@ namespace emojiEdit
             return formResult;
         }
 
-        //
-        // プロパティ
-        //
+        #endregion
 
-        public int BodyMaxCols
+        #region プロパティ
+
+        /// <summary>
+        /// 本文の文字数
+        /// </summary>
+        public int MaxBodyCols
         {
             private set; get;
         }
 
-        public int BodyMaxRows
+        /// <summary>
+        /// 絵文字一覧の文字数
+        /// </summary>
+        public int MaxEmojiListCols
         {
             private set; get;
         }
 
-        public int EmojiListMaxCols
-        {
-            private set; get;
-        }
+        #endregion
 
-        //
-        // イベントハンドラ
-        //
+        #region イベントハンドラ
 
-        // 設定
-        private void buttonSet_Click(object sender, EventArgs e)
-        {
-            this.CloseIfValid();
-        }
-
-        // キャンセル
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            this.formResult = EditSettingsFormResult.Cancel;
-            this.Close();
-        }
-
-        // フォームでキー押下
+        /// <summary>
+        /// Form - KeyPress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditSettingsForm_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Escape) {
@@ -94,23 +99,47 @@ namespace emojiEdit
             }
         }
 
-        //
-        // 内部処理
-        //
+        /// <summary>
+        /// 設定ボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonSet_Click(object sender, EventArgs e)
+        {
+            this.CloseIfValid();
+        }
 
-        // チェックして閉じる
+        /// <summary>
+        /// キャンセルボタン - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            this.formResult = EditSettingsFormResult.Cancel;
+            this.Close();
+        }
+
+        #endregion
+
+        #region 内部処理
+
+        /// <summary>
+        /// チェックして閉じる
+        /// </summary>
         private void CloseIfValid()
         {
             this.formResult = EditSettingsFormResult.Ok;
 
             // NOTE: NumericUpDown コントロール側で補正されるためチェックしていない
 
-            this.BodyMaxCols = (int)this.numericUpDownBodyCols.Value;
-            this.BodyMaxRows = (int)this.numericUpDownBodyRows.Value;
+            this.MaxBodyCols = (int)this.numericUpDownBodyCols.Value;
 
-            this.EmojiListMaxCols = (int)this.numericUpDownEmojiListCols.Value;
+            this.MaxEmojiListCols = (int)this.numericUpDownEmojiListCols.Value;
 
             this.Close();
         }
+
+        #endregion
     }
 }

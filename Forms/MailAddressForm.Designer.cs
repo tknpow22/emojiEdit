@@ -48,7 +48,7 @@
             this.buttonSetAddr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonSetAddr.Location = new System.Drawing.Point(12, 319);
             this.buttonSetAddr.Name = "buttonSetAddr";
-            this.buttonSetAddr.Size = new System.Drawing.Size(118, 33);
+            this.buttonSetAddr.Size = new System.Drawing.Size(90, 33);
             this.buttonSetAddr.TabIndex = 9;
             this.buttonSetAddr.Text = "設定(&S)";
             this.buttonSetAddr.UseVisualStyleBackColor = true;
@@ -57,9 +57,9 @@
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.Location = new System.Drawing.Point(404, 319);
+            this.buttonCancel.Location = new System.Drawing.Point(432, 319);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(118, 33);
+            this.buttonCancel.Size = new System.Drawing.Size(90, 33);
             this.buttonCancel.TabIndex = 10;
             this.buttonCancel.Text = "キャンセル(&C)";
             this.buttonCancel.UseVisualStyleBackColor = true;

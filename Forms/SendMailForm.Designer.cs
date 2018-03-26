@@ -48,7 +48,7 @@
             // 
             this.buttonSend.Location = new System.Drawing.Point(12, 142);
             this.buttonSend.Name = "buttonSend";
-            this.buttonSend.Size = new System.Drawing.Size(118, 33);
+            this.buttonSend.Size = new System.Drawing.Size(90, 33);
             this.buttonSend.TabIndex = 1;
             this.buttonSend.Text = "送信(&S)";
             this.buttonSend.UseVisualStyleBackColor = true;
@@ -56,9 +56,9 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(333, 142);
+            this.buttonCancel.Location = new System.Drawing.Point(361, 142);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(118, 33);
+            this.buttonCancel.Size = new System.Drawing.Size(90, 33);
             this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "閉じる(&C)";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -89,7 +89,6 @@
             this.textBoxSmtpPassword.Size = new System.Drawing.Size(310, 19);
             this.textBoxSmtpPassword.TabIndex = 7;
             this.textBoxSmtpPassword.Tag = "パスワード";
-            this.textBoxSmtpPassword.Leave += new System.EventHandler(this.textBoxToHankaku_Leave);
             // 
             // labelPassword
             // 
@@ -108,7 +107,6 @@
             this.textBoxSmtpUserId.Size = new System.Drawing.Size(310, 19);
             this.textBoxSmtpUserId.TabIndex = 5;
             this.textBoxSmtpUserId.Tag = "ユーザーID";
-            this.textBoxSmtpUserId.Leave += new System.EventHandler(this.textBoxToHankaku_Leave);
             // 
             // labelUserId
             // 
@@ -127,7 +125,6 @@
             this.textBoxSmtpServer.Size = new System.Drawing.Size(313, 19);
             this.textBoxSmtpServer.TabIndex = 1;
             this.textBoxSmtpServer.Tag = "SMTPサーバー";
-            this.textBoxSmtpServer.Leave += new System.EventHandler(this.textBoxToHankaku_Leave);
             // 
             // labelSmtpServer
             // 

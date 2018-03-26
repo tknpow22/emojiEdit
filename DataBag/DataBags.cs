@@ -1,13 +1,57 @@
-﻿
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // データ保持
-    //
+    /// <summary>
+    /// データ保持の実装用の interface 的なもの
+    /// </summary>
+    abstract class CDataBag
+    {
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        public abstract void Initialize();
+
+        /// <summary>
+        /// 終了処理
+        /// </summary>
+        public virtual void Terminate()
+        {
+        }
+    }
+
+    /// <summary>
+    /// データ保持
+    /// </summary>
     static class DataBags
     {
-        // 設定
+        #region 変数
+
+        /// <summary>
+        /// 初期化済みフラグ
+        /// </summary>
+        private static bool initialize = false; // FIXME: やり方としてどうか…
+
+        /// <summary>
+        /// 設定
+        /// </summary>
         private static ConfigBag config = new ConfigBag();
+
+        /// <summary>
+        /// 絵文字
+        /// </summary>
+        private static EmojiBag emojis = new EmojiBag();
+
+        /// <summary>
+        /// メールアドレス
+        /// </summary>
+        private static MailAddressBag mailAddresses = new MailAddressBag();
+
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
+        /// 設定
+        /// </summary>
         public static ConfigBag Config
         {
             get {
@@ -15,8 +59,9 @@ namespace emojiEdit
             }
         }
 
-        // 絵文字
-        private static EmojiBag emojis = new EmojiBag();
+        /// <summary>
+        /// 絵文字
+        /// </summary>
         public static EmojiBag Emojis
         {
             get {
@@ -24,8 +69,9 @@ namespace emojiEdit
             }
         }
 
-        // メールアドレス
-        private static MailAddressBag mailAddresses = new MailAddressBag();
+        /// <summary>
+        /// メールアドレス
+        /// </summary>
         public static MailAddressBag MailAddresses
         {
             get {
@@ -33,45 +79,44 @@ namespace emojiEdit
             }
         }
 
-        // テンプレート
-        private static TemplateBags templates = new TemplateBags();
-        public static TemplateBags Templates
-        {
-            get {
-                return templates;
-            }
-        }
+        #endregion
 
-        // 初期化済みフラグ
-        private static bool initialize = false; // FIXME: やり方としてどうか…
+        #region 処理
 
-        // 静的コンストラクタ
+        /// <summary>
+        /// 静的コンストラクタ
+        /// </summary>
         static DataBags()
         {
-            Init(); // FIXME: 念のため
+            Initialize(); // FIXME: 念のため
         }
 
-        // 初期化
-        public static void Init()
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        public static void Initialize()
         {
             if (initialize) {
                 return;
             }
 
-            config.Init();
-            emojis.Init();
-            mailAddresses.Init();
-            templates.Init();
+            config.Initialize();
+            emojis.Initialize();
+            mailAddresses.Initialize();
 
             initialize = true;
         }
 
-        // 保存する
-        public static void Save()
+        /// <summary>
+        /// 終了処理
+        /// </summary>
+        public static void Terminate()
         {
-            config.Save();
-            mailAddresses.Save();
-            templates.Save();
+            config.Terminate();
+            emojis.Terminate();
+            mailAddresses.Terminate();
         }
+
+        #endregion
     }
 }

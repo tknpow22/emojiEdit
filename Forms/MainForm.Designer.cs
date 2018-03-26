@@ -29,21 +29,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.panelContentsBody = new System.Windows.Forms.Panel();
-            this.pictureContentsBody = new System.Windows.Forms.PictureBox();
-            this.buttonClear = new System.Windows.Forms.Button();
-            this.contextMenuBody = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuInsertTextBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuPasteTextBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuInsertTemplateBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparatorInsertBody = new System.Windows.Forms.ToolStripSeparator();
-            this.menuNewLineBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuInsertEmptyLineBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuInsertCharBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparatorRemoveBody = new System.Windows.Forms.ToolStripSeparator();
-            this.menuRemoveLineBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuRemoveCharBody = new System.Windows.Forms.ToolStripMenuItem();
-            this.buttonTest = new System.Windows.Forms.Button();
+            this.buttonEmojiTest = new System.Windows.Forms.Button();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuLoadFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,158 +39,41 @@
             this.toolStripSeparatorVersion = new System.Windows.Forms.ToolStripSeparator();
             this.menuVersion = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonSend = new System.Windows.Forms.Button();
-            this.panelContentsSubject = new System.Windows.Forms.Panel();
-            this.pictureContentsSubject = new System.Windows.Forms.PictureBox();
+            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.labelBody = new System.Windows.Forms.Label();
+            this.checkBoxForceInsertLineFeed = new System.Windows.Forms.CheckBox();
+            this.textBoxMailBody = new emojiEdit.EmojiTextBox();
+            this.textBoxMailSubject = new emojiEdit.EmojiTextBox();
+            this.buttonSelectMailFrom = new System.Windows.Forms.Button();
+            this.buttonSelectMailTo = new System.Windows.Forms.Button();
             this.labelSubject = new System.Windows.Forms.Label();
             this.textBoxMailTo = new System.Windows.Forms.TextBox();
             this.textBoxMailFrom = new System.Windows.Forms.TextBox();
             this.labelTo = new System.Windows.Forms.Label();
             this.lableFrom = new System.Windows.Forms.Label();
-            this.contextMenuSubject = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuInsertTextSubject = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparatorInsertSubject = new System.Windows.Forms.ToolStripSeparator();
-            this.menuInsertCharSubject = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparatorRemoveSubject = new System.Windows.Forms.ToolStripSeparator();
-            this.menuRemoveCharSubject = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparatorClearSubject = new System.Windows.Forms.ToolStripSeparator();
-            this.menuClearSubject = new System.Windows.Forms.ToolStripMenuItem();
-            this.buttonSelectMailTo = new System.Windows.Forms.Button();
-            this.buttonSelectMailFrom = new System.Windows.Forms.Button();
-            this.panelContentsBody.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureContentsBody)).BeginInit();
-            this.contextMenuBody.SuspendLayout();
+            this.labelHistory = new System.Windows.Forms.Label();
+            this.panelHistory = new System.Windows.Forms.Panel();
+            this.pictureEmojiGroup0 = new System.Windows.Forms.PictureBox();
+            this.tabControlEmojiList = new System.Windows.Forms.TabControl();
             this.mainMenu.SuspendLayout();
-            this.panelContentsSubject.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureContentsSubject)).BeginInit();
-            this.contextMenuSubject.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
+            this.splitContainerMain.Panel1.SuspendLayout();
+            this.splitContainerMain.Panel2.SuspendLayout();
+            this.splitContainerMain.SuspendLayout();
+            this.panelHistory.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureEmojiGroup0)).BeginInit();
             this.SuspendLayout();
             // 
-            // panelContentsBody
+            // buttonEmojiTest
             // 
-            this.panelContentsBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelContentsBody.AutoScroll = true;
-            this.panelContentsBody.Controls.Add(this.pictureContentsBody);
-            this.panelContentsBody.Location = new System.Drawing.Point(12, 138);
-            this.panelContentsBody.Name = "panelContentsBody";
-            this.panelContentsBody.Size = new System.Drawing.Size(430, 304);
-            this.panelContentsBody.TabIndex = 9;
-            // 
-            // pictureContentsBody
-            // 
-            this.pictureContentsBody.Location = new System.Drawing.Point(0, 0);
-            this.pictureContentsBody.Name = "pictureContentsBody";
-            this.pictureContentsBody.Size = new System.Drawing.Size(100, 50);
-            this.pictureContentsBody.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureContentsBody.TabIndex = 0;
-            this.pictureContentsBody.TabStop = false;
-            this.pictureContentsBody.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureContentsBody_MouseClick);
-            // 
-            // buttonClear
-            // 
-            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClear.Location = new System.Drawing.Point(353, 448);
-            this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(89, 35);
-            this.buttonClear.TabIndex = 12;
-            this.buttonClear.Text = "消去(&D)";
-            this.buttonClear.UseVisualStyleBackColor = true;
-            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
-            // 
-            // contextMenuBody
-            // 
-            this.contextMenuBody.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuInsertTextBody,
-            this.menuPasteTextBody,
-            this.menuInsertTemplateBody,
-            this.toolStripSeparatorInsertBody,
-            this.menuNewLineBody,
-            this.menuInsertEmptyLineBody,
-            this.menuInsertCharBody,
-            this.toolStripSeparatorRemoveBody,
-            this.menuRemoveLineBody,
-            this.menuRemoveCharBody});
-            this.contextMenuBody.Name = "contextMenuBody";
-            this.contextMenuBody.Size = new System.Drawing.Size(177, 192);
-            this.contextMenuBody.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuBody_Opening);
-            // 
-            // menuInsertTextBody
-            // 
-            this.menuInsertTextBody.Name = "menuInsertTextBody";
-            this.menuInsertTextBody.Size = new System.Drawing.Size(176, 22);
-            this.menuInsertTextBody.Text = "文字列挿入(&I)";
-            this.menuInsertTextBody.Click += new System.EventHandler(this.menuInsertTextBody_Click);
-            // 
-            // menuPasteTextBody
-            // 
-            this.menuPasteTextBody.Name = "menuPasteTextBody";
-            this.menuPasteTextBody.Size = new System.Drawing.Size(176, 22);
-            this.menuPasteTextBody.Text = "貼り付け挿入(&V)";
-            this.menuPasteTextBody.Click += new System.EventHandler(this.menuPasteTextBody_Click);
-            // 
-            // menuInsertTemplateBody
-            // 
-            this.menuInsertTemplateBody.Name = "menuInsertTemplateBody";
-            this.menuInsertTemplateBody.Size = new System.Drawing.Size(176, 22);
-            this.menuInsertTemplateBody.Text = "テンプレート行挿入(&T)";
-            this.menuInsertTemplateBody.Click += new System.EventHandler(this.menuInsertTemplateBody_Click);
-            // 
-            // toolStripSeparatorInsertBody
-            // 
-            this.toolStripSeparatorInsertBody.Name = "toolStripSeparatorInsertBody";
-            this.toolStripSeparatorInsertBody.Size = new System.Drawing.Size(173, 6);
-            // 
-            // menuNewLineBody
-            // 
-            this.menuNewLineBody.Name = "menuNewLineBody";
-            this.menuNewLineBody.Size = new System.Drawing.Size(176, 22);
-            this.menuNewLineBody.Text = "改行(&N)";
-            this.menuNewLineBody.Click += new System.EventHandler(this.menuNewLineBody_Click);
-            // 
-            // menuInsertEmptyLineBody
-            // 
-            this.menuInsertEmptyLineBody.Name = "menuInsertEmptyLineBody";
-            this.menuInsertEmptyLineBody.Size = new System.Drawing.Size(176, 22);
-            this.menuInsertEmptyLineBody.Text = "空行挿入(&R)";
-            this.menuInsertEmptyLineBody.Click += new System.EventHandler(this.menuInsertEmptyLineBody_Click);
-            // 
-            // menuInsertCharBody
-            // 
-            this.menuInsertCharBody.Name = "menuInsertCharBody";
-            this.menuInsertCharBody.Size = new System.Drawing.Size(176, 22);
-            this.menuInsertCharBody.Text = "空文字挿入(&C)";
-            this.menuInsertCharBody.Click += new System.EventHandler(this.menuInsertCharBody_Click);
-            // 
-            // toolStripSeparatorRemoveBody
-            // 
-            this.toolStripSeparatorRemoveBody.Name = "toolStripSeparatorRemoveBody";
-            this.toolStripSeparatorRemoveBody.Size = new System.Drawing.Size(173, 6);
-            // 
-            // menuRemoveLineBody
-            // 
-            this.menuRemoveLineBody.Name = "menuRemoveLineBody";
-            this.menuRemoveLineBody.Size = new System.Drawing.Size(176, 22);
-            this.menuRemoveLineBody.Text = "行削除(&L)";
-            this.menuRemoveLineBody.Click += new System.EventHandler(this.menuRemoveLineBody_Click);
-            // 
-            // menuRemoveCharBody
-            // 
-            this.menuRemoveCharBody.Name = "menuRemoveCharBody";
-            this.menuRemoveCharBody.Size = new System.Drawing.Size(176, 22);
-            this.menuRemoveCharBody.Text = "文字削除(&D)";
-            this.menuRemoveCharBody.Click += new System.EventHandler(this.menuRemoveCharBody_Click);
-            // 
-            // buttonTest
-            // 
-            this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonTest.Location = new System.Drawing.Point(258, 448);
-            this.buttonTest.Name = "buttonTest";
-            this.buttonTest.Size = new System.Drawing.Size(89, 35);
-            this.buttonTest.TabIndex = 11;
-            this.buttonTest.Text = "テスト(&E)";
-            this.buttonTest.UseVisualStyleBackColor = true;
-            this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
+            this.buttonEmojiTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEmojiTest.Location = new System.Drawing.Point(352, 658);
+            this.buttonEmojiTest.Name = "buttonEmojiTest";
+            this.buttonEmojiTest.Size = new System.Drawing.Size(100, 35);
+            this.buttonEmojiTest.TabIndex = 3;
+            this.buttonEmojiTest.Text = "絵文字テスト(&E)";
+            this.buttonEmojiTest.UseVisualStyleBackColor = true;
+            this.buttonEmojiTest.Click += new System.EventHandler(this.buttonEmojiTest_Click);
             // 
             // mainMenu
             // 
@@ -213,7 +82,7 @@
             this.menuSettings});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(454, 24);
+            this.mainMenu.Size = new System.Drawing.Size(464, 24);
             this.mainMenu.TabIndex = 0;
             // 
             // menuFile
@@ -271,183 +140,225 @@
             // buttonSend
             // 
             this.buttonSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonSend.Location = new System.Drawing.Point(12, 448);
+            this.buttonSend.Location = new System.Drawing.Point(13, 658);
             this.buttonSend.Name = "buttonSend";
-            this.buttonSend.Size = new System.Drawing.Size(89, 35);
-            this.buttonSend.TabIndex = 10;
+            this.buttonSend.Size = new System.Drawing.Size(90, 35);
+            this.buttonSend.TabIndex = 2;
             this.buttonSend.Text = "送信(&S)";
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
-            // panelContentsSubject
+            // splitContainerMain
             // 
-            this.panelContentsSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.splitContainerMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelContentsSubject.AutoScroll = true;
-            this.panelContentsSubject.BackColor = System.Drawing.SystemColors.Control;
-            this.panelContentsSubject.Controls.Add(this.pictureContentsSubject);
-            this.panelContentsSubject.Location = new System.Drawing.Point(76, 80);
-            this.panelContentsSubject.Name = "panelContentsSubject";
-            this.panelContentsSubject.Size = new System.Drawing.Size(366, 52);
-            this.panelContentsSubject.TabIndex = 8;
+            this.splitContainerMain.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.splitContainerMain.Location = new System.Drawing.Point(0, 27);
+            this.splitContainerMain.Name = "splitContainerMain";
+            this.splitContainerMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // pictureContentsSubject
+            // splitContainerMain.Panel1
             // 
-            this.pictureContentsSubject.Location = new System.Drawing.Point(0, 0);
-            this.pictureContentsSubject.Name = "pictureContentsSubject";
-            this.pictureContentsSubject.Size = new System.Drawing.Size(100, 20);
-            this.pictureContentsSubject.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureContentsSubject.TabIndex = 0;
-            this.pictureContentsSubject.TabStop = false;
-            this.pictureContentsSubject.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureContentsSubject_MouseClick);
+            this.splitContainerMain.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.splitContainerMain.Panel1.Controls.Add(this.labelBody);
+            this.splitContainerMain.Panel1.Controls.Add(this.checkBoxForceInsertLineFeed);
+            this.splitContainerMain.Panel1.Controls.Add(this.textBoxMailBody);
+            this.splitContainerMain.Panel1.Controls.Add(this.textBoxMailSubject);
+            this.splitContainerMain.Panel1.Controls.Add(this.buttonSelectMailFrom);
+            this.splitContainerMain.Panel1.Controls.Add(this.buttonSelectMailTo);
+            this.splitContainerMain.Panel1.Controls.Add(this.labelSubject);
+            this.splitContainerMain.Panel1.Controls.Add(this.textBoxMailTo);
+            this.splitContainerMain.Panel1.Controls.Add(this.textBoxMailFrom);
+            this.splitContainerMain.Panel1.Controls.Add(this.labelTo);
+            this.splitContainerMain.Panel1.Controls.Add(this.lableFrom);
+            this.splitContainerMain.Panel1MinSize = 200;
+            // 
+            // splitContainerMain.Panel2
+            // 
+            this.splitContainerMain.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.splitContainerMain.Panel2.Controls.Add(this.labelHistory);
+            this.splitContainerMain.Panel2.Controls.Add(this.panelHistory);
+            this.splitContainerMain.Panel2.Controls.Add(this.tabControlEmojiList);
+            this.splitContainerMain.Panel2MinSize = 200;
+            this.splitContainerMain.Size = new System.Drawing.Size(464, 625);
+            this.splitContainerMain.SplitterDistance = 300;
+            this.splitContainerMain.TabIndex = 1;
+            // 
+            // labelBody
+            // 
+            this.labelBody.AutoSize = true;
+            this.labelBody.Location = new System.Drawing.Point(10, 100);
+            this.labelBody.Name = "labelBody";
+            this.labelBody.Size = new System.Drawing.Size(47, 12);
+            this.labelBody.TabIndex = 8;
+            this.labelBody.Text = "本文(&B):";
+            // 
+            // checkBoxForceInsertLineFeed
+            // 
+            this.checkBoxForceInsertLineFeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxForceInsertLineFeed.AutoSize = true;
+            this.checkBoxForceInsertLineFeed.Location = new System.Drawing.Point(78, 281);
+            this.checkBoxForceInsertLineFeed.Name = "checkBoxForceInsertLineFeed";
+            this.checkBoxForceInsertLineFeed.Size = new System.Drawing.Size(293, 16);
+            this.checkBoxForceInsertLineFeed.TabIndex = 10;
+            this.checkBoxForceInsertLineFeed.Text = "送信時、メール本文に1行の文字数毎に改行を入れる(&L)";
+            this.checkBoxForceInsertLineFeed.UseVisualStyleBackColor = true;
+            this.checkBoxForceInsertLineFeed.Click += new System.EventHandler(this.checkBoxForceInsertLineFeed_CheckedChanged);
+            // 
+            // textBoxMailBody
+            // 
+            this.textBoxMailBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxMailBody.ColumnLine = 0;
+            this.textBoxMailBody.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F);
+            this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.textBoxMailBody.Location = new System.Drawing.Point(78, 98);
+            this.textBoxMailBody.Multiline = true;
+            this.textBoxMailBody.Name = "textBoxMailBody";
+            this.textBoxMailBody.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxMailBody.Size = new System.Drawing.Size(374, 177);
+            this.textBoxMailBody.TabIndex = 9;
+            this.textBoxMailBody.Tag = "本文";
+            // 
+            // textBoxMailSubject
+            // 
+            this.textBoxMailSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxMailSubject.ColumnLine = 0;
+            this.textBoxMailSubject.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.textBoxMailSubject.Location = new System.Drawing.Point(78, 53);
+            this.textBoxMailSubject.Name = "textBoxMailSubject";
+            this.textBoxMailSubject.Size = new System.Drawing.Size(374, 39);
+            this.textBoxMailSubject.TabIndex = 7;
+            this.textBoxMailSubject.Tag = "件名";
+            // 
+            // buttonSelectMailFrom
+            // 
+            this.buttonSelectMailFrom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSelectMailFrom.Location = new System.Drawing.Point(398, 26);
+            this.buttonSelectMailFrom.Name = "buttonSelectMailFrom";
+            this.buttonSelectMailFrom.Size = new System.Drawing.Size(54, 23);
+            this.buttonSelectMailFrom.TabIndex = 5;
+            this.buttonSelectMailFrom.Text = "選択";
+            this.buttonSelectMailFrom.UseVisualStyleBackColor = true;
+            this.buttonSelectMailFrom.Click += new System.EventHandler(this.buttonSelectMailFrom_Click);
+            // 
+            // buttonSelectMailTo
+            // 
+            this.buttonSelectMailTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSelectMailTo.Location = new System.Drawing.Point(398, 1);
+            this.buttonSelectMailTo.Name = "buttonSelectMailTo";
+            this.buttonSelectMailTo.Size = new System.Drawing.Size(54, 23);
+            this.buttonSelectMailTo.TabIndex = 2;
+            this.buttonSelectMailTo.Text = "選択";
+            this.buttonSelectMailTo.UseVisualStyleBackColor = true;
+            this.buttonSelectMailTo.Click += new System.EventHandler(this.buttonSelectMailTo_Click);
             // 
             // labelSubject
             // 
             this.labelSubject.AutoSize = true;
-            this.labelSubject.Location = new System.Drawing.Point(12, 82);
+            this.labelSubject.Location = new System.Drawing.Point(10, 55);
             this.labelSubject.Name = "labelSubject";
-            this.labelSubject.Size = new System.Drawing.Size(47, 12);
-            this.labelSubject.TabIndex = 7;
-            this.labelSubject.Text = "件名(&B):";
+            this.labelSubject.Size = new System.Drawing.Size(46, 12);
+            this.labelSubject.TabIndex = 6;
+            this.labelSubject.Text = "件名(&J):";
             // 
             // textBoxMailTo
             // 
             this.textBoxMailTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxMailTo.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.textBoxMailTo.Location = new System.Drawing.Point(76, 30);
+            this.textBoxMailTo.Location = new System.Drawing.Point(78, 3);
             this.textBoxMailTo.Name = "textBoxMailTo";
-            this.textBoxMailTo.Size = new System.Drawing.Size(309, 19);
-            this.textBoxMailTo.TabIndex = 2;
+            this.textBoxMailTo.Size = new System.Drawing.Size(314, 19);
+            this.textBoxMailTo.TabIndex = 1;
             this.textBoxMailTo.Tag = "宛先";
-            this.textBoxMailTo.Leave += new System.EventHandler(this.textBoxToHankaku_Leave);
             // 
             // textBoxMailFrom
             // 
             this.textBoxMailFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxMailFrom.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.textBoxMailFrom.Location = new System.Drawing.Point(76, 55);
+            this.textBoxMailFrom.Location = new System.Drawing.Point(78, 28);
             this.textBoxMailFrom.Name = "textBoxMailFrom";
-            this.textBoxMailFrom.Size = new System.Drawing.Size(309, 19);
-            this.textBoxMailFrom.TabIndex = 5;
+            this.textBoxMailFrom.Size = new System.Drawing.Size(314, 19);
+            this.textBoxMailFrom.TabIndex = 4;
             this.textBoxMailFrom.Tag = "送信元";
-            this.textBoxMailFrom.Leave += new System.EventHandler(this.textBoxToHankaku_Leave);
             // 
             // labelTo
             // 
             this.labelTo.AutoSize = true;
-            this.labelTo.Location = new System.Drawing.Point(10, 33);
+            this.labelTo.Location = new System.Drawing.Point(11, 6);
             this.labelTo.Name = "labelTo";
             this.labelTo.Size = new System.Drawing.Size(47, 12);
-            this.labelTo.TabIndex = 1;
+            this.labelTo.TabIndex = 0;
             this.labelTo.Text = "宛先(&O):";
             // 
             // lableFrom
             // 
             this.lableFrom.AutoSize = true;
-            this.lableFrom.Location = new System.Drawing.Point(10, 58);
+            this.lableFrom.Location = new System.Drawing.Point(10, 31);
             this.lableFrom.Name = "lableFrom";
             this.lableFrom.Size = new System.Drawing.Size(58, 12);
-            this.lableFrom.TabIndex = 4;
+            this.lableFrom.TabIndex = 3;
             this.lableFrom.Text = "送信元(&T):";
             // 
-            // contextMenuSubject
+            // labelHistory
             // 
-            this.contextMenuSubject.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuInsertTextSubject,
-            this.toolStripSeparatorInsertSubject,
-            this.menuInsertCharSubject,
-            this.toolStripSeparatorRemoveSubject,
-            this.menuRemoveCharSubject,
-            this.toolStripSeparatorClearSubject,
-            this.menuClearSubject});
-            this.contextMenuSubject.Name = "contextMenu";
-            this.contextMenuSubject.Size = new System.Drawing.Size(150, 110);
+            this.labelHistory.AutoSize = true;
+            this.labelHistory.Location = new System.Drawing.Point(10, 5);
+            this.labelHistory.Name = "labelHistory";
+            this.labelHistory.Size = new System.Drawing.Size(31, 12);
+            this.labelHistory.TabIndex = 0;
+            this.labelHistory.Text = "履歴:";
             // 
-            // menuInsertTextSubject
+            // panelHistory
             // 
-            this.menuInsertTextSubject.Name = "menuInsertTextSubject";
-            this.menuInsertTextSubject.Size = new System.Drawing.Size(149, 22);
-            this.menuInsertTextSubject.Text = "文字列挿入(&I)";
-            this.menuInsertTextSubject.Click += new System.EventHandler(this.menuInsertTextSubject_Click);
+            this.panelHistory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelHistory.AutoScroll = true;
+            this.panelHistory.BackColor = System.Drawing.Color.White;
+            this.panelHistory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelHistory.Controls.Add(this.pictureEmojiGroup0);
+            this.panelHistory.Location = new System.Drawing.Point(12, 20);
+            this.panelHistory.Name = "panelHistory";
+            this.panelHistory.Size = new System.Drawing.Size(440, 76);
+            this.panelHistory.TabIndex = 1;
             // 
-            // toolStripSeparatorInsertSubject
+            // pictureEmojiGroup0
             // 
-            this.toolStripSeparatorInsertSubject.Name = "toolStripSeparatorInsertSubject";
-            this.toolStripSeparatorInsertSubject.Size = new System.Drawing.Size(146, 6);
+            this.pictureEmojiGroup0.Location = new System.Drawing.Point(0, 0);
+            this.pictureEmojiGroup0.Name = "pictureEmojiGroup0";
+            this.pictureEmojiGroup0.Size = new System.Drawing.Size(100, 50);
+            this.pictureEmojiGroup0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureEmojiGroup0.TabIndex = 0;
+            this.pictureEmojiGroup0.TabStop = false;
+            this.pictureEmojiGroup0.Tag = "0";
+            this.pictureEmojiGroup0.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureEmojiGroupX_MouseClick);
             // 
-            // menuInsertCharSubject
+            // tabControlEmojiList
             // 
-            this.menuInsertCharSubject.Name = "menuInsertCharSubject";
-            this.menuInsertCharSubject.Size = new System.Drawing.Size(149, 22);
-            this.menuInsertCharSubject.Text = "空文字挿入(&C)";
-            this.menuInsertCharSubject.Click += new System.EventHandler(this.menuInsertCharSubject_Click);
-            // 
-            // toolStripSeparatorRemoveSubject
-            // 
-            this.toolStripSeparatorRemoveSubject.Name = "toolStripSeparatorRemoveSubject";
-            this.toolStripSeparatorRemoveSubject.Size = new System.Drawing.Size(146, 6);
-            // 
-            // menuRemoveCharSubject
-            // 
-            this.menuRemoveCharSubject.Name = "menuRemoveCharSubject";
-            this.menuRemoveCharSubject.Size = new System.Drawing.Size(149, 22);
-            this.menuRemoveCharSubject.Text = "文字削除(&D)";
-            this.menuRemoveCharSubject.Click += new System.EventHandler(this.menuRemoveCharSubject_Click);
-            // 
-            // toolStripSeparatorClearSubject
-            // 
-            this.toolStripSeparatorClearSubject.Name = "toolStripSeparatorClearSubject";
-            this.toolStripSeparatorClearSubject.Size = new System.Drawing.Size(146, 6);
-            // 
-            // menuClearSubject
-            // 
-            this.menuClearSubject.Name = "menuClearSubject";
-            this.menuClearSubject.Size = new System.Drawing.Size(149, 22);
-            this.menuClearSubject.Text = "消去(&L)";
-            this.menuClearSubject.Click += new System.EventHandler(this.menuClearSubject_Click);
-            // 
-            // buttonSelectMailTo
-            // 
-            this.buttonSelectMailTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSelectMailTo.Location = new System.Drawing.Point(386, 28);
-            this.buttonSelectMailTo.Name = "buttonSelectMailTo";
-            this.buttonSelectMailTo.Size = new System.Drawing.Size(56, 23);
-            this.buttonSelectMailTo.TabIndex = 3;
-            this.buttonSelectMailTo.Text = "選択";
-            this.buttonSelectMailTo.UseVisualStyleBackColor = true;
-            this.buttonSelectMailTo.Click += new System.EventHandler(this.buttonSelectMailTo_Click);
-            // 
-            // buttonSelectMailFrom
-            // 
-            this.buttonSelectMailFrom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSelectMailFrom.Location = new System.Drawing.Point(386, 53);
-            this.buttonSelectMailFrom.Name = "buttonSelectMailFrom";
-            this.buttonSelectMailFrom.Size = new System.Drawing.Size(56, 23);
-            this.buttonSelectMailFrom.TabIndex = 6;
-            this.buttonSelectMailFrom.Text = "選択";
-            this.buttonSelectMailFrom.UseVisualStyleBackColor = true;
-            this.buttonSelectMailFrom.Click += new System.EventHandler(this.buttonSelectMailFrom_Click);
+            this.tabControlEmojiList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlEmojiList.Location = new System.Drawing.Point(12, 102);
+            this.tabControlEmojiList.Name = "tabControlEmojiList";
+            this.tabControlEmojiList.SelectedIndex = 0;
+            this.tabControlEmojiList.Size = new System.Drawing.Size(440, 216);
+            this.tabControlEmojiList.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(454, 491);
-            this.Controls.Add(this.buttonSelectMailFrom);
-            this.Controls.Add(this.buttonSelectMailTo);
+            this.ClientSize = new System.Drawing.Size(464, 701);
+            this.Controls.Add(this.splitContainerMain);
             this.Controls.Add(this.buttonSend);
-            this.Controls.Add(this.panelContentsSubject);
-            this.Controls.Add(this.labelSubject);
-            this.Controls.Add(this.textBoxMailTo);
-            this.Controls.Add(this.textBoxMailFrom);
-            this.Controls.Add(this.labelTo);
-            this.Controls.Add(this.lableFrom);
             this.Controls.Add(this.mainMenu);
-            this.Controls.Add(this.buttonTest);
-            this.Controls.Add(this.buttonClear);
-            this.Controls.Add(this.panelContentsBody);
+            this.Controls.Add(this.buttonEmojiTest);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenu;
             this.MaximizeBox = false;
@@ -455,36 +366,26 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "絵文字エディット";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
-            this.panelContentsBody.ResumeLayout(false);
-            this.panelContentsBody.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureContentsBody)).EndInit();
-            this.contextMenuBody.ResumeLayout(false);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
-            this.panelContentsSubject.ResumeLayout(false);
-            this.panelContentsSubject.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureContentsSubject)).EndInit();
-            this.contextMenuSubject.ResumeLayout(false);
+            this.splitContainerMain.Panel1.ResumeLayout(false);
+            this.splitContainerMain.Panel1.PerformLayout();
+            this.splitContainerMain.Panel2.ResumeLayout(false);
+            this.splitContainerMain.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
+            this.splitContainerMain.ResumeLayout(false);
+            this.panelHistory.ResumeLayout(false);
+            this.panelHistory.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureEmojiGroup0)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panelContentsBody;
-        private System.Windows.Forms.PictureBox pictureContentsBody;
-        private System.Windows.Forms.Button buttonClear;
-        private System.Windows.Forms.ContextMenuStrip contextMenuBody;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertEmptyLineBody;
-        private System.Windows.Forms.ToolStripMenuItem menuRemoveLineBody;
-        private System.Windows.Forms.Button buttonTest;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertCharBody;
-        private System.Windows.Forms.ToolStripMenuItem menuRemoveCharBody;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorRemoveBody;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertTextBody;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorInsertBody;
-        private System.Windows.Forms.ToolStripMenuItem menuNewLineBody;
+        private System.Windows.Forms.Button buttonEmojiTest;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem menuSettings;
         private System.Windows.Forms.ToolStripMenuItem menuEditSettings;
@@ -492,27 +393,24 @@
         private System.Windows.Forms.ToolStripMenuItem menuLoadFile;
         private System.Windows.Forms.ToolStripMenuItem menuSaveFile;
         private System.Windows.Forms.Button buttonSend;
-        private System.Windows.Forms.ToolStripMenuItem menuPasteTextBody;
-        private System.Windows.Forms.Panel panelContentsSubject;
-        private System.Windows.Forms.PictureBox pictureContentsSubject;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorVersion;
+        private System.Windows.Forms.ToolStripMenuItem menuVersion;
+        private System.Windows.Forms.SplitContainer splitContainerMain;
+        private System.Windows.Forms.Label labelBody;
+        private System.Windows.Forms.CheckBox checkBoxForceInsertLineFeed;
+        private EmojiTextBox textBoxMailBody;
+        private EmojiTextBox textBoxMailSubject;
+        private System.Windows.Forms.Button buttonSelectMailFrom;
+        private System.Windows.Forms.Button buttonSelectMailTo;
         private System.Windows.Forms.Label labelSubject;
         private System.Windows.Forms.TextBox textBoxMailTo;
         private System.Windows.Forms.TextBox textBoxMailFrom;
         private System.Windows.Forms.Label labelTo;
         private System.Windows.Forms.Label lableFrom;
-        private System.Windows.Forms.ContextMenuStrip contextMenuSubject;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertTextSubject;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorInsertSubject;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertCharSubject;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorRemoveSubject;
-        private System.Windows.Forms.ToolStripMenuItem menuRemoveCharSubject;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorClearSubject;
-        private System.Windows.Forms.ToolStripMenuItem menuClearSubject;
-        private System.Windows.Forms.Button buttonSelectMailTo;
-        private System.Windows.Forms.Button buttonSelectMailFrom;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparatorVersion;
-        private System.Windows.Forms.ToolStripMenuItem menuVersion;
-        private System.Windows.Forms.ToolStripMenuItem menuInsertTemplateBody;
+        private System.Windows.Forms.Label labelHistory;
+        private System.Windows.Forms.Panel panelHistory;
+        private System.Windows.Forms.PictureBox pictureEmojiGroup0;
+        private System.Windows.Forms.TabControl tabControlEmojiList;
     }
 }
 

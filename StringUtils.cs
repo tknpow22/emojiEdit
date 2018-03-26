@@ -1,43 +1,55 @@
-﻿using System;
-using System.Text;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // 文字ユーティリティ
-    //
+    using System;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
+    /// <summary>
+    /// 文字ユーティリティ
+    /// </summary>
     static class StringUtils
     {
-        // エンコーディング
-        private static Encoding encoding = Encoding.GetEncoding("Shift_JIS");
+        #region 変数
 
-        // 文字列をできるだけ全角文字列に変換する
-        public static string ToZenkaku(String str)
+        /// <summary>
+        /// SJIS エンコーディング
+        /// </summary>
+        private static Encoding sjisEncoding = Encoding.GetEncoding("Shift_JIS");
+
+        #endregion
+
+        #region 処理
+
+        /// <summary>
+        /// 文字列が ASCII(制御文字も含む) で構成されているかを返す
+        /// </summary>
+        /// <param name="str">テストする文字列</param>
+        /// <returns>すべて ASCII ならば true</returns>
+        public static bool IsAsciiWithControl(string str)
         {
-            return Microsoft.VisualBasic.Strings.StrConv(str, Microsoft.VisualBasic.VbStrConv.Wide);
+            return Regex.IsMatch(str, "^[\x00-\x7F]+$");
         }
 
-        // 文字列をできるだけ半角文字列に変換する
-        public static string ToHankaku(String str)
+        /// <summary>
+        /// 文字列が ASCII(制御文字を含まない) で構成されているかを返す
+        /// </summary>
+        /// <param name="str">テストする文字列</param>
+        /// <returns>すべて ASCII ならば true</returns>
+        public static bool IsAscii(string str)
         {
-            return Microsoft.VisualBasic.Strings.StrConv(str, Microsoft.VisualBasic.VbStrConv.Narrow);
+            return Regex.IsMatch(str, "^[\x20-\x7E]+$");
         }
 
-        // 文字列が半角文字列で構成されているかを返す
-        public static bool IsHankaku(String str)
+        /// <summary>
+        /// 文字列中の半角カタカナだけを全角に変換する
+        /// </summary>
+        /// <param name="str">元の文字列</param>
+        /// <returns>処理後の文字列</returns>
+        public static string ToZenkakuWithHankakuKanaOnly(string str)
         {
-            int encodedLength = encoding.GetByteCount(str);
-            return encodedLength == str.Length;
+            return Regex.Replace(str, "[\uFF61-\uFF9F]+", match => Microsoft.VisualBasic.Strings.StrConv(match.Value, Microsoft.VisualBasic.VbStrConv.Wide));
         }
 
-        // 制御文字を削除する(改行は残す)
-        public static string RemoveControlChars(String str)
-        {
-            str = str.Replace("\t", "");
-            str = str.Replace("\r\n", "\n");
-            str = str.Replace("\r", "\n");
-
-            return str;
-        }
+        #endregion
     }
 }

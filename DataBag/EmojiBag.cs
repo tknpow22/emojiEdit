@@ -1,69 +1,174 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Text;
-
-namespace emojiEdit
+﻿namespace emojiEdit
 {
-    //
-    // 絵文字データ
-    //
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Globalization;
+    using System.IO;
+    using System.Text;
+
+    /// <summary>
+    /// 絵文字データ
+    /// </summary>
     class Emoji
     {
-        public Emoji(int code, Image image)
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="unicode">ユニコード</param>
+        /// <param name="jiscode">JIS コード</param>
+        /// <param name="image">絵文字アイコン</param>
+        /// <param name="imageForText">絵文字アイコン(テキスト表示用)</param>
+        public Emoji(char unicode, int jiscode, Image image, Image imageForText)
         {
-            this.Code = code;
+            this.Unicode = unicode;
+            this.Jiscode = jiscode;
             this.Image = image;
+            this.ImageForText = imageForText;
         }
 
-        public int Code
+        /// <summary>
+        /// ユニコード
+        /// </summary>
+        public char Unicode
         {
             private set;
             get;
         }
 
+        /// <summary>
+        /// JISコード
+        /// </summary>
+        public int Jiscode
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// 絵文字アイコン
+        /// </summary>
         public Image Image
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// 絵文字アイコン(テキスト表示用)
+        /// </summary>
+        public Image ImageForText
         {
             private set;
             get;
         }
     }
 
-    //
-    // 絵文字を保持する
-    //
-    class EmojiBag
+    /// <summary>
+    /// 絵文字を保持する
+    /// </summary>
+    class EmojiBag : CDataBag
     {
-        // グループ毎の絵文字のキャプション
+        #region 変数
+
+        /// <summary>
+        /// グループ毎の絵文字のキャプション
+        /// </summary>
         private string[] captionList = new string[0];
 
-        // グループ毎の絵文字数
+        /// <summary>
+        /// グループ毎の絵文字数
+        /// </summary>
         private int[] numIconInGroupList = new int[0];
 
-        // 絵文字アイコンイメージファイルを格納したディレクトリパス
+        /// <summary>
+        /// 絵文字アイコンイメージファイルを格納したディレクトリパス
+        /// </summary>
         private string iconsDirname;
-        // 絵文字アイコンのグループおよび数の定義を格納したファイルパス
+
+        /// <summary>
+        /// 絵文字アイコンのグループおよび数の定義を格納したファイルパス
+        /// </summary>
         private string iconsConfigFilename;
 
-        // 絵文字イメージ
-        private List<Emoji> emojiList = new List<Emoji>();
-        // 索引用: キー(絵文字グループ番号とグループ内でのID)から
-        private Dictionary<string, Emoji> emojiListFromKey = new Dictionary<string, Emoji>();
-        // 索引用: 文字コードから
-        private Dictionary<int, Emoji> emojiListFromCode = new Dictionary<int, Emoji>();
+        #region 絵文字イメージと索引
 
-        // 空の絵文字イメージ
+        /// <summary>
+        /// 絵文字イメージ
+        /// </summary>
+        private List<Emoji> emojiList = new List<Emoji>();
+
+        /// <summary>
+        /// 索引用: キー(絵文字グループ番号とグループ内でのID)から
+        /// </summary>
+        private Dictionary<string, Emoji> emojiListFromKey = new Dictionary<string, Emoji>();
+
+        /// <summary>
+        /// 索引用: 文字コード(Unicode)から
+        /// </summary>
+        private Dictionary<char, Emoji> emojiListFromUnicode = new Dictionary<char, Emoji>();
+
+        /// <summary>
+        /// 索引用: 文字コード(JIS)から
+        /// </summary>
+        private Dictionary<int, Emoji> emojiListFromJiscode = new Dictionary<int, Emoji>();
+
+        #endregion
+
+        /// <summary>
+        /// 空の絵文字イメージ
+        /// </summary>
         private Image emptyEmoji = new Bitmap(Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
 
-        // コンストラクタ
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
+        /// グループ毎の絵文字のキャプション
+        /// </summary>
+        public string[] CaptionList
+        {
+            get {
+                return this.captionList;
+            }
+        }
+
+        /// <summary>
+        /// グループ毎の絵文字数
+        /// </summary>
+        public int[] NumIconInGroupList
+        {
+            get {
+                return this.numIconInGroupList;
+            }
+        }
+
+        /// <summary>
+        /// 空の絵文字イメージ
+        /// </summary>
+        public Image EmptyEmoji
+        {
+            get {
+                return this.emptyEmoji;
+            }
+        }
+
+        #endregion
+
+        #region 処理
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public EmojiBag()
         {
         }
 
-        // 初期化処理
-        public void Init()
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        public override void Initialize()
         {
             this.iconsDirname = Path.Combine(DataBags.Config.AppDirectory, Commons.EMOJI_RESOURCE_DIR);
             this.iconsConfigFilename = Path.Combine(this.iconsDirname, Commons.EMOJI_EMOJI_RESOURCE_CONFIG_FILE_NAME);
@@ -75,39 +180,12 @@ namespace emojiEdit
             this.Load();
         }
 
-        //
-        // プロパティ
-        //
-
-        // グループ毎の絵文字のキャプション
-        public string[] CaptionList
-        {
-            get {
-                return this.captionList;
-            }
-        }
-
-        // グループ毎の絵文字数
-        public int[] NumIconInGroupList
-        {
-            get {
-                return this.numIconInGroupList;
-            }
-        }
-
-        // 空の絵文字イメージ
-        public Image EmptyEmoji
-        {
-            get {
-                return this.emptyEmoji;
-            }
-        }
-
-        //
-        // 処理
-        //
-
-        // 絵文字データを取得する
+        /// <summary>
+        /// 絵文字データを取得する
+        /// </summary>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        /// <param name="emojiId">グループ内でのID</param>
+        /// <returns>絵文字データ: 該当なしの場合は null</returns>
         public Emoji Get(int emojiGroupNo, int emojiId)
         {
             string key = string.Format("{0}_{1}", emojiGroupNo, emojiId);
@@ -119,25 +197,45 @@ namespace emojiEdit
             return null;
         }
 
-        // 絵文字データを取得する
-        public Emoji Get(int code)
+        /// <summary>
+        /// 絵文字データを JIS コードから取得する
+        /// </summary>
+        /// <param name="jiscode">JIS コード</param>
+        /// <returns>絵文字データ: 該当なしの場合は null</returns>
+        public Emoji GetFromJiscode(int jiscode)
         {
-            if (this.emojiListFromCode.ContainsKey(code)) {
-                return this.emojiListFromCode[code];
+            if (this.emojiListFromJiscode.ContainsKey(jiscode)) {
+                return this.emojiListFromJiscode[jiscode];
             }
 
             return null;
         }
 
-        //
-        // 内部処理
-        //
+        /// <summary>
+        /// 絵文字データを Unicode から取得する
+        /// </summary>
+        /// <param name="unicode">ユニコード</param>
+        /// <returns>絵文字データ: 該当なしの場合は null</returns>
+        public Emoji GetFromUnicode(char unicode)
+        {
+            if (this.emojiListFromUnicode.ContainsKey(unicode)) {
+                return this.emojiListFromUnicode[unicode];
+            }
 
-        // 絵文字コード・アイコンイメージをロードする
+            return null;
+        }
+
+        #endregion
+
+        #region 内部処理
+
+        /// <summary>
+        /// 絵文字コード・アイコンイメージをロードする
+        /// </summary>
         private void Load()
         {
             this.LoadIconsConfig();
-            
+
             // 絵文字グループ番号
             for (int emojiGroupNo = 1; emojiGroupNo <= this.numIconInGroupList.Length; ++emojiGroupNo) {
                 int emojiCountInGroup = this.numIconInGroupList[emojiGroupNo - 1];
@@ -150,44 +248,21 @@ namespace emojiEdit
                         continue;
                     }
 
-                    // ファイル名から文字コード(4桁)を得る
-                    string fnameWOE = Path.GetFileNameWithoutExtension(filename);
-                    if (fnameWOE.Length < 8) {
-                        continue;   // 念のため
-                    }
-
-                    string scode = fnameWOE.Substring(fnameWOE.Length - 4);
-                    if (scode.Length != 4) {
-                        continue;
-                    }
-
-                    int code;
-                    if (!int.TryParse(scode, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out code)) {
+                    (int unicode, int jiscode) = this.GetCharCodeFromFilename(filename);
+                    if (unicode == 0 || jiscode == 0) {
                         continue;
                     }
 
                     try {
                         Image imgEmojiOrig = new Bitmap(filename);
-                        Image imgEmoji;
-                        if (imgEmojiOrig.Width < Commons.ICON_WIDTH && imgEmojiOrig.Height < Commons.ICON_HEIGHT) {
-                            // サイズが規定より小さい場合はそのまま描画する
-                            int px = (Commons.ICON_WIDTH - imgEmojiOrig.Width) / 2;
-                            int py = (Commons.ICON_HEIGHT - imgEmojiOrig.Height) / 2;
-                            imgEmoji = new Bitmap(Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                            using (Graphics graphics = Graphics.FromImage(imgEmoji)) {
-                                Rectangle srcRect = new Rectangle(0, 0, imgEmojiOrig.Width, imgEmojiOrig.Height);
-                                Rectangle desRect = new Rectangle(px, py, imgEmojiOrig.Width, imgEmojiOrig.Height);
-                                graphics.DrawImage(imgEmojiOrig, desRect, srcRect, GraphicsUnit.Pixel);
-                            }
+                        Image imgEmoji = this.CreateEmojiIconImage(imgEmojiOrig, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
+                        Image imgEmojiForText = this.CreateEmojiIconImage(imgEmojiOrig, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
 
-                        } else {
-                            imgEmoji = new Bitmap(imgEmojiOrig, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
-                        }
-
-                        Emoji emoji = new Emoji(code, imgEmoji);
+                        Emoji emoji = new Emoji((char)unicode, jiscode, imgEmoji, imgEmojiForText);
                         this.emojiList.Add(emoji);
                         this.emojiListFromKey.Add(string.Format("{0}_{1}", emojiGroupNo, emojiId), emoji);
-                        this.emojiListFromCode.Add(code, emoji);
+                        this.emojiListFromJiscode.Add(jiscode, emoji);
+                        this.emojiListFromUnicode.Add((char)unicode, emoji);
 
                     } catch (Exception ex) {
                         System.Diagnostics.Debug.WriteLine(ex.Message);
@@ -196,7 +271,39 @@ namespace emojiEdit
             }
         }
 
-        // 絵文字アイコンのグループおよび数の定義を格納したファイルを読み込む
+        /// <summary>
+        /// サイズに応じた絵文字アイコンイメージを作成する
+        /// </summary>
+        /// <param name="imgEmojiOrig">元の絵文字アイコンイメージ</param>
+        /// <param name="width">サイズ(幅)</param>
+        /// <param name="height">サイズ(高さ)</param>
+        /// <returns>新しい絵文字アイコンイメージ</returns>
+        private Image CreateEmojiIconImage(Image imgEmojiOrig, int width, int height)
+        {
+            Image imgEmoji;
+
+            if (imgEmojiOrig.Width < width && imgEmojiOrig.Height < height) {
+
+                // サイズが指定より小さい場合はそのまま描画する
+                int px = (width - imgEmojiOrig.Width) / 2;
+                int py = (height - imgEmojiOrig.Height) / 2;
+                imgEmoji = new Bitmap(width, height);
+                using (Graphics graphics = Graphics.FromImage(imgEmoji)) {
+                    Rectangle srcRect = new Rectangle(0, 0, imgEmojiOrig.Width, imgEmojiOrig.Height);
+                    Rectangle desRect = new Rectangle(px, py, imgEmojiOrig.Width, imgEmojiOrig.Height);
+                    graphics.DrawImage(imgEmojiOrig, desRect, srcRect, GraphicsUnit.Pixel);
+                }
+
+            } else {
+                imgEmoji = new Bitmap(imgEmojiOrig, width, height);
+            }
+
+            return imgEmoji;
+        }
+
+        /// <summary>
+        /// 絵文字アイコンのグループおよび数の定義を格納したファイルを読み込む
+        /// </summary>
         private void LoadIconsConfig()
         {
             try {
@@ -257,7 +364,12 @@ namespace emojiEdit
             }
         }
 
-        // 定義値を探す
+        /// <summary>
+        /// 定義値を設定値から探す
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="configs">設定値</param>
+        /// <returns>キーに対応する値</returns>
         private string FindConfigValue(string key, string[] configs)
         {
             foreach (string aConfig in configs) {
@@ -269,7 +381,12 @@ namespace emojiEdit
             return null;
         }
 
-        // 定義値を得る
+        /// <summary>
+        /// 定義値を設定値から取得する
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="configs">設定値</param>
+        /// <returns>キーに対応する値</returns>
         private string GetConfigValue(string key, string config)
         {
             string[] vals = config.Split(new char[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -287,18 +404,69 @@ namespace emojiEdit
             return result.Trim();
         }
 
-        // 絵文字アイコンイメージファイル名を返す
-        // ただし、文字コードが無いものは対象としない。
+        /// <summary>
+        /// ファイル名から unicode, jiscode を得る
+        /// </summary>
+        /// <param name="filename">ファイル名</param>
+        /// <returns>(unicode, jiscode): 取得できない場合はともに 0</returns>
+        private (int, int) GetCharCodeFromFilename(string filename)
+        {
+            (int, int) result = (0, 0);
+
+            do {
+                // ファイル名から *_unicode_jiscode.png の unicode, jiscode を取得する
+                // ファイル名から文字コード(4桁)を得る
+                string fnameWOE = Path.GetFileNameWithoutExtension(filename);
+                if (fnameWOE.Length < 10) {
+                    break;
+                }
+
+                // unicode
+                string sUnicode = fnameWOE.Substring(fnameWOE.Length - 9, 4);
+                if (sUnicode.Length != 4) {
+                    break;
+                }
+
+                int unicode;
+                if (!int.TryParse(sUnicode, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out unicode)) {
+                    break;
+                }
+
+                // jiscode
+                string sJiscode = fnameWOE.Substring(fnameWOE.Length - 4, 4);
+                if (sJiscode.Length != 4) {
+                    break;
+                }
+
+                int jiscode;
+                if (!int.TryParse(sJiscode, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out jiscode)) {
+                    break;
+                }
+
+                result = (unicode, jiscode);
+
+            } while (false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 絵文字アイコンイメージファイル名を返す。
+        /// ただし、文字コードが無いものは対象としない。
+        /// </summary>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        /// <param name="emojiId">グループ内でのID</param>
+        /// <returns>ファイル名</returns>
         private string GetEmojiFilename(int emojiGroupNo, int emojiId)
         {
             string result = null;
 
-            // 絵文字アイコンイメージファイル名は、gid_id.png または gid_id_code.png の形式とする。
+            // 絵文字アイコンイメージファイル名は gid_id_unicode_jiscode.png の形式とする。
             //      gid: 絵文字グループ番号
             //      id: 絵文字ID
-            //      code: 文字コード(JIS): 16進表記
-            // ただし、code は無い場合がある。
-            // gid_id_code.png の形式のファイルを対象として探す。
+            //      unicode: 文字コード(Unicode: UTF-16): 4桁16進表記
+            //      jiscode: 文字コード(JIS): 4桁16進表記
+            // gid_id_*.png 形式のファイルを探し最初に見つかったものを返す。
 
             string pattern = string.Format(@"{0}_{1}_*.png", emojiGroupNo, emojiId);
 
@@ -312,5 +480,7 @@ namespace emojiEdit
 
             return result;
         }
+
+        #endregion
     }
 }
