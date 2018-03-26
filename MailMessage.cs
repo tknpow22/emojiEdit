@@ -135,23 +135,19 @@
 
             try {
 
-                using (MemoryStream contentStream = new MemoryStream()) {
+                MemoryStream bodyStream = GetBodyStream(this.body);
 
-                    MemoryStream bodyStream = GetBodyStream(this.body);
-                    bodyStream.WriteTo(contentStream);
+                MimePart mimePart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
+                mimePart.ContentTransferEncoding = ContentEncoding.SevenBit;
+                mimePart.Content = new MimeContent(bodyStream);
 
-                    MimePart mimePart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
-                    mimePart.ContentTransferEncoding = ContentEncoding.SevenBit;
-                    mimePart.Content = new MimeContent(bodyStream);
+                MimeMessage mimeMessage = new MimeMessage();
+                mimeMessage.From.Add(mailboxAddressFrom);
+                mimeMessage.To.AddRange(mailboxAddressToList);
+                mimeMessage.Headers.Replace(subjectHeader);
+                mimeMessage.Body = mimePart;
 
-                    MimeMessage mimeMessage = new MimeMessage();
-                    mimeMessage.From.Add(mailboxAddressFrom);
-                    mimeMessage.To.AddRange(mailboxAddressToList);
-                    mimeMessage.Headers.Replace(subjectHeader);
-                    mimeMessage.Body = mimePart;
-
-                    return mimeMessage;
-                }
+                return mimeMessage;
 
             } catch (Exception ex) {
                 throw ex;
