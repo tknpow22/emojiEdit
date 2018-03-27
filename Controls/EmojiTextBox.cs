@@ -30,6 +30,8 @@
         private const int EM_GETFIRSTVISIBLELINE = 0x00CE;
         private const int EM_GETRECT = 0x00B2;
 
+        ////private const int SRCCOPY = 0x00CC0020;
+
         #endregion
 
         #region 定義
@@ -54,6 +56,9 @@
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, EditWordBreakProcDelegate lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, out Commons.RECT lParam);
+
+        ////[DllImport("gdi32.dll")]
+        ////private static extern int BitBlt(IntPtr hdc, int x, int y, int cx, int cy, IntPtr hdcSrc, int x1, int y1, int rop);
 
         #endregion
 
@@ -289,10 +294,10 @@
                 invalidate = true;
             } else if (m.Msg == WM_LBUTTONDOWN) {
                 this.mouseLButtonDown = true;
-                invalidate = true;
+                ////invalidate = true;  // 少しでも再描画を減らす
             } else if (m.Msg == WM_HSCROLL
                     || m.Msg == WM_VSCROLL
-                    || m.Msg == WM_KEYDOWN
+                    ////|| m.Msg == WM_KEYDOWN  // 少しでも再描画を減らす
                     || m.Msg == WM_KEYUP
                     || m.Msg == WM_MOUSEWHEEL) {
                 invalidate = true;
@@ -302,12 +307,33 @@
 
             if (draw) {
                 try {
+
+                    // バッファ利用することで少しはちらつきが収まればと試したが、効果なし。
+                    // また、SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true); を行い、
+                    // OnPaint を override する方法は、フォント設定などがややこしく、諦めた。
+                    ////
+                    ////BufferedGraphicsContext bufferedGraphicsContext = BufferedGraphicsManager.Current;
+                    ////using (Graphics graphicsNew = this.CreateGraphics())
+                    ////using (Graphics graphicsSrc = Graphics.FromHwnd(this.Handle))
+                    ////using (BufferedGraphics bufferedGraphics = bufferedGraphicsContext.Allocate(graphicsNew, this.ClientRectangle)) {
+                    ////    bufferedGraphics.Graphics.SetClip(this.ClientRectangle);
+                    ////    IntPtr hdcSrc = graphicsSrc.GetHdc();
+                    ////    IntPtr hdcDest = bufferedGraphics.Graphics.GetHdc();
+                    ////    BitBlt(hdcDest, 0, 0, this.Width, this.Height, hdcSrc, 0, 0, SRCCOPY);
+                    ////    bufferedGraphics.Graphics.ReleaseHdc(hdcDest);
+                    ////    graphicsSrc.ReleaseHdc(hdcSrc);
+                    ////    this.Draw(bufferedGraphics.Graphics, false);
+                    ////    bufferedGraphics.Render();
+                    ////}
+
                     using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
                         this.Draw(graphics, false);
                     }
+
                 } catch (Exception ex) {
                     System.Diagnostics.Debug.WriteLine(ex);
                 }
+
             } else if (invalidate) {
                 this.Invalidate();
             }
@@ -421,6 +447,6 @@
             return 0;
         }
 
-#endregion
+        #endregion
     }
 }

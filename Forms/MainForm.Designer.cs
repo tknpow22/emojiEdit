@@ -213,6 +213,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxMailBody.ColumnLine = 0;
             this.textBoxMailBody.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F);
+            this.textBoxMailBody.HideSelection = false;
             this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.On;
             this.textBoxMailBody.Location = new System.Drawing.Point(78, 98);
             this.textBoxMailBody.Multiline = true;
@@ -229,6 +230,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxMailSubject.ColumnLine = 0;
             this.textBoxMailSubject.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textBoxMailSubject.HideSelection = false;
             this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.On;
             this.textBoxMailSubject.Location = new System.Drawing.Point(78, 53);
             this.textBoxMailSubject.Name = "textBoxMailSubject";
