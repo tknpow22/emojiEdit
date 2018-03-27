@@ -221,6 +221,7 @@
             this.textBoxMailBody.Size = new System.Drawing.Size(374, 177);
             this.textBoxMailBody.TabIndex = 9;
             this.textBoxMailBody.Tag = "本文";
+            this.textBoxMailBody.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
             // 
             // textBoxMailSubject
             // 
@@ -234,6 +235,7 @@
             this.textBoxMailSubject.Size = new System.Drawing.Size(374, 39);
             this.textBoxMailSubject.TabIndex = 7;
             this.textBoxMailSubject.Tag = "件名";
+            this.textBoxMailSubject.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
             // 
             // buttonSelectMailFrom
             // 

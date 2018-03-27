@@ -14,6 +14,11 @@
     /// </summary>
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// 直近にフォーカスを持っていた絵文字対応の TextBox を覚えておく
+        /// </summary>
+        private EmojiTextBox lastActiveEmojiTextBox;
+
         #region 絵文字一覧
 
         /// <summary>
@@ -324,6 +329,7 @@
         /// <param name="e"></param>
         private void buttonEmojiTest_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             this.textBoxMailBody.SuspendLayout();
 
             this.textBoxMailBody.Clear();
@@ -357,6 +363,19 @@
             }
 
             this.textBoxMailBody.ResumeLayout();
+            this.textBoxMailBody.Focus();
+            this.textBoxMailBody.SelectionLength = 0;
+            Cursor.Current = Cursors.Default;
+        }
+
+        /// <summary>
+        /// 絵文字対応の TextBox - Enter
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EmojiTextBox_Enter(object sender, EventArgs e)
+        {
+            this.lastActiveEmojiTextBox = sender as EmojiTextBox;
         }
 
         /// <summary>
@@ -430,20 +449,13 @@
 
             if (code != 0 && emoji != null) {
 
-                EmojiTextBox textBox = null;
-
-                if (this.ActiveControl != null && this.ActiveControl is EmojiTextBox) {
-                    textBox = this.ActiveControl as EmojiTextBox;
-                } else if (this.splitContainerMain.ActiveControl != null && this.splitContainerMain.ActiveControl is EmojiTextBox) {
-                    textBox = this.splitContainerMain.ActiveControl as EmojiTextBox;
+                if (this.lastActiveEmojiTextBox == null) {
+                    this.lastActiveEmojiTextBox = this.textBoxMailBody;
                 }
-                if (textBox == null) {
-                    textBox = this.textBoxMailBody;
-                }
-                textBox.Focus();
+                lastActiveEmojiTextBox.Focus();
 
-                textBox.SelectedText = new string(emoji.Unicode, 1);
-                textBox.SelectionLength = 0;
+                lastActiveEmojiTextBox.SelectedText = new string(emoji.Unicode, 1);
+                lastActiveEmojiTextBox.SelectionLength = 0;
 
                 // 履歴へ登録する
                 List<int> emojiGroupCodeMapHistory = emojiGroupJiscodeMaps[0];
