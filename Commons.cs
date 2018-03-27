@@ -162,7 +162,7 @@
         /// <summary>
         /// フォントサイズ
         /// </summary>
-        public const int CONTENTS_FONT_SIZE = 12;
+        public const int CONTENTS_FONT_SIZE = 24;
 
         #endregion
 
@@ -199,6 +199,25 @@
         /// 送信したメール内容を保存するディレクトリ
         /// </summary>
         public const string MAIL_LOG_DIR = "mails";
+
+        #endregion
+
+        #region テンプレート
+
+        /// <summary>
+        /// テンプレートを保管するファイル名
+        /// </summary>
+        public const string TEMPLATE_FILE_NAME = "templates.txt";
+
+        /// <summary>
+        /// テンプレートのサムネイル画像の幅(文字数)
+        /// </summary>
+        public const int TEMPLATE_THUMBNAIL_COLS = 12;
+
+        /// <summary>
+        /// テンプレートのサムネイル画像の高さ(文字数)
+        /// </summary>
+        public const int TEMPLATE_THUMBNAIL_ROWS = 3;
 
         #endregion
 

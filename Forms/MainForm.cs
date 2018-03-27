@@ -58,14 +58,37 @@
 
             DataBags.Initialize();
 
+            // 画面サイズ設定
             this.MinimumSize = new Size(Commons.MIN_MAIN_WINDOW_WIDTH, Commons.MIN_MAIN_WINDOW_HEIGHT);
             this.MaximumSize = new Size(Commons.MAX_MAIN_WINDOW_WIDTH, Commons.MAX_MAIN_WINDOW_HEIGHT);
             this.Size = new Size(DataBags.Config.MainWindowWidth, DataBags.Config.MainWindowHeight);
 
-            this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
+            // 件名設定
+            this.textBoxMailSubject.Font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
 
+            // 本文設定
+            this.textBoxMailBody.Font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
+            this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
+            // コンテキストメニューを追加する
+            {
+                ContextMenuStrip contextMenuStrip = this.textBoxMailBody.ContextMenuStrip;
+                contextMenuStrip.Items.Add(new ToolStripSeparator());
+                {
+                    ToolStripMenuItem toolStripMenuItem = new ToolStripMenuItem("テンプレート選択(&S)", null, this.textBoxMailBodyToolStripMenuItem_Click, "SelectTemplate");
+                    contextMenuStrip.Items.Add(toolStripMenuItem);
+                }
+                {
+                    ToolStripMenuItem toolStripMenuItem = new ToolStripMenuItem("テンプレート追加(&A)", null, this.textBoxMailBodyToolStripMenuItem_Click, "AddTemplate");
+                    contextMenuStrip.Items.Add(toolStripMenuItem);
+                }
+
+                contextMenuStrip.Opening += textBoxMailBodyContextMenuStrip_Opening;
+            }
+
+            // 送信元の設定
             this.textBoxMailFrom.Text = DataBags.Config.MailFrom;
 
+            // 送信時、メール本文に1行の文字数毎に改行を入れる
             this.checkBoxForceInsertLineFeed.Checked = DataBags.Config.ForceInsertLineFeed;
 
             #region 絵文字一覧
@@ -386,6 +409,62 @@
         private void checkBoxForceInsertLineFeed_CheckedChanged(object sender, EventArgs e)
         {
             DataBags.Config.ForceInsertLineFeed = this.checkBoxForceInsertLineFeed.Checked;
+        }
+
+        /// <summary>
+        /// 本文テキストボックス - ContextMenuStrip - Opening
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBoxMailBodyContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.textBoxMailBody.ContextMenuStrip.Items["AddTemplate"].Enabled = this.textBoxMailBody.SelectionLength != 0;
+            this.textBoxMailBody.ContextMenuStrip.Items["SelectTemplate"].Enabled = DataBags.Templates.Count != 0;
+        }
+
+        /// <summary>
+        /// 本文テキストボックス - ToolStripMenuItem - Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBoxMailBodyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem toolStripMenuItem = (ToolStripMenuItem)sender;
+
+            switch (toolStripMenuItem.Name) {
+            case "AddTemplate": {
+                    if (this.textBoxMailBody.SelectionLength == 0) {
+                        return;
+                    }
+
+                    string templateText = this.textBoxMailBody.SelectedText;
+                    if (templateText.Length == 0) {
+                        return;
+                    }
+                    try {
+                        AddTemplateForm dialog = new AddTemplateForm(templateText);
+                        dialog.ShowDialog(this);
+                    } catch (EmojiTemplateException) {
+                        MsgBox.Show(this, "テンプレートには表示できる文字列を指定してください。", "テンプレートを作成できません", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                break;
+            case "SelectTemplate": {
+                    SelectTemplateForm dialog = new SelectTemplateForm();
+                    SelectTemplateFormResult dr = dialog.ShowDialog(this);
+                    if (dr == SelectTemplateFormResult.Cancel) {
+                        this.textBoxMailBody.Focus();
+                        return;
+                    }
+                    if (dr == SelectTemplateFormResult.SelectTemplate) {
+                        this.textBoxMailBody.Focus();
+
+                        this.textBoxMailBody.SelectedText = dialog.Template;
+                        this.textBoxMailBody.SelectionLength = 0;
+                    }
+                }
+                break;
+            }
         }
 
         #region 絵文字一覧

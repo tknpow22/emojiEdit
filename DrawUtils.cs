@@ -7,13 +7,14 @@
     /// </summary>
     static class DrawUtils
     {
-        // フォント
-        private static Font font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
-
-        // 文字列フォーマット
+        /// <summary>
+        /// 文字列フォーマット
+        /// </summary>
         private static StringFormat sf;
 
-        // 静的コンストラクタ
+        /// <summary>
+        /// 静的コンストラクタ
+        /// </summary>
         static DrawUtils()
         {
             sf = new StringFormat();
@@ -21,7 +22,13 @@
             sf.LineAlignment = StringAlignment.Center;
         }
 
-        // 文字イメージをにピクチャーイメージの指定位置描画する
+        /// <summary>
+        /// 文字イメージをピクチャーイメージの指定位置に描画する
+        /// </summary>
+        /// <param name="image">文字イメージ(絵文字アイコン等)</param>
+        /// <param name="col">文字位置</param>
+        /// <param name="row">行位置</param>
+        /// <param name="graphics">ピクチャーイメージの Graphics</param>
         public static void DrawImage(Image image, int col, int row, Graphics graphics)
         {
             Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);

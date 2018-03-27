@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="DataBag\ConfigBag.cs" />
     <Compile Include="DataBag\DataBags.cs" />
+    <Compile Include="DataBag\TemplateBags.cs" />
     <Compile Include="DrawUtils.cs" />
     <Compile Include="Forms\MailAddressForm.cs">
       <SubType>Form</SubType>
@@ -79,6 +80,18 @@
       <DependentUpon>MailAddressForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DataBag\MailAddressBag.cs" />
+    <Compile Include="Forms\AddTemplateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddTemplateForm.Designer.cs">
+      <DependentUpon>AddTemplateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SelectTemplateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SelectTemplateForm.Designer.cs">
+      <DependentUpon>SelectTemplateForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MailMessage.cs" />
     <Compile Include="MsgBox.cs" />
     <Compile Include="Forms\SendMailForm.cs">
@@ -115,6 +128,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AddTemplateForm.resx">
+      <DependentUpon>AddTemplateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectTemplateForm.resx">
+      <DependentUpon>SelectTemplateForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="icons.zip" />
     <None Include="packages.config" />

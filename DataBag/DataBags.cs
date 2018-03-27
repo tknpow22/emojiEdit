@@ -45,6 +45,11 @@
         /// </summary>
         private static MailAddressBag mailAddresses = new MailAddressBag();
 
+        /// <summary>
+        /// テンプレート
+        /// </summary>
+        private static TemplateBags templates = new TemplateBags();
+
         #endregion
 
         #region プロパティ
@@ -79,6 +84,16 @@
             }
         }
 
+        /// <summary>
+        /// テンプレート
+        /// </summary>
+        public static TemplateBags Templates
+        {
+            get {
+                return templates;
+            }
+        }
+
         #endregion
 
         #region 処理
@@ -103,6 +118,7 @@
             config.Initialize();
             emojis.Initialize();
             mailAddresses.Initialize();
+            templates.Initialize();
 
             initialize = true;
         }
@@ -115,6 +131,7 @@
             config.Terminate();
             emojis.Terminate();
             mailAddresses.Terminate();
+            templates.Terminate();
         }
 
         #endregion

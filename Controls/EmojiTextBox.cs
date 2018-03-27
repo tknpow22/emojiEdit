@@ -20,6 +20,7 @@
         private const int WM_HSCROLL = 0x0114;
         private const int WM_VSCROLL = 0x0115;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
         private const int WM_LBUTTONUP = 0x0202;
@@ -225,15 +226,19 @@
             switch (toolStripMenuItem.Name) {
             case "Cut":
                 this.Cut();
+                this.Focus();
                 break;
             case "Copy":
                 this.Copy();
+                this.Focus();
                 break;
             case "Paste":
                 this.Paste();
+                this.Focus();
                 break;
             case "Delete":
                 this.SelectedText = "";
+                this.Focus();
                 break;
             }
         }
@@ -251,6 +256,19 @@
             base.OnHandleCreated(e);
             if (!this.DesignMode && this.Multiline) {
                 SendMessage(this.Handle, EM_SETWORDBREAKPROC, 0, this.editWordBreakProcDelegate);
+            }
+        }
+
+        /// <summary>
+        /// DrawToBitmap の自前実装
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="targetBounds"></param>
+        public new void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
+        {
+            base.DrawToBitmap(bitmap, targetBounds);
+            using (Graphics graphics = Graphics.FromImage(bitmap)) {
+                this.Draw(graphics, true);
             }
         }
 
@@ -275,6 +293,7 @@
             } else if (m.Msg == WM_HSCROLL
                     || m.Msg == WM_VSCROLL
                     || m.Msg == WM_KEYDOWN
+                    || m.Msg == WM_KEYUP
                     || m.Msg == WM_MOUSEWHEEL) {
                 invalidate = true;
             } else if (m.Msg == WM_MOUSEMOVE && this.mouseLButtonDown) {
@@ -282,103 +301,110 @@
             }
 
             if (draw) {
-
                 try {
-
                     using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
-
-                        Commons.RECT textBoxRect;
-                        SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
-
-                        Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
-
-                        // 描画対象の文字列インデックス範囲を得る
-                        int firstCharIndex = 0;
-                        int lastCharIndex = this.TextLength;
-                        if (this.Multiline) {
-                            // 最初の位置を得る
-                            int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
-                            if (0 <= firstVisibleLine) {
-                                int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
-                                if (0 <= firstIndex) {
-                                    firstCharIndex = firstIndex;
-                                }
-                            }
-
-                            // 表示行数を得る
-                            int rows = this.ClientSize.Height / fontSize.Height;
-
-                            // 最後の位置を得る
-                            int lastIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
-                            if (0 <= lastIndex) {
-                                lastCharIndex = lastIndex;
-                            }
-                        }
-
-                        // 範囲内文字列の絵文字等の表示を行う
-                        string targetText = this.Text;
-                        for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
-                            if (chIndex < 0 || targetText.Length <= chIndex) {
-                                break;
-                            }
-
-                            char targetChar = targetText[chIndex];
-
-                            bool drawEmoji = false;
-                            bool drawControlChar = false;
-                            string controlChar = "";
-
-                            Emoji emoji = DataBags.Emojis.GetFromUnicode(targetChar);
-                            if (emoji != null) {
-                                drawEmoji = true;
-                            } else if (targetChar == '\t') {
-                                controlChar = "\u02EA";
-                                drawControlChar = true;
-                            } else if (targetChar == '\n') {
-                                controlChar = "\u21B2";
-                                drawControlChar = true;
-                            } else {
-                                continue;
-                            }
-
-                            Point point = this.GetPositionFromCharIndex(chIndex);
-
-                            int pointX = point.X;
-                            int pointY = point.Y;
-
-                            // 表示座標を微調整する
-                            // FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
-                            if (!this.Multiline) {
-                                pointY += textBoxRect.Top;
-                            }
-
-                            if (drawEmoji) {
-                                Image image = emoji.ImageForText;
-                                Rectangle srcRect = new Rectangle(0, 0, image.Width, image.Height);
-                                Rectangle destRect = new Rectangle(pointX, pointY, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
-
-                                if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                                    // 選択されている場合は、反転して描画する
-                                    graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
-                                } else {
-                                    graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
-                                }
-
-                            } else if (drawControlChar) {
-                                TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
-                            }
-                        }
-
-                        if (0 < this.ColumnLine) {
-                            int colsY = textBoxRect.Left + (fontSize.Width * this.ColumnLine);
-                            graphics.DrawLine(columnLinePen, new Point(colsY, 0), new Point(colsY, this.ClientSize.Height));
-                        }
+                        this.Draw(graphics, false);
                     }
                 } catch (Exception ex) {
                     System.Diagnostics.Debug.WriteLine(ex);
                 }
             } else if (invalidate) {
                 this.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// 絵文字等の描画を行う
+        /// </summary>
+        /// <param name="graphics">Graphics</param>
+        /// <param name="emojiOnly">絵文字のみ描画</param>
+        private void Draw(Graphics graphics, bool emojiOnly)
+        {
+            Commons.RECT textBoxRect;
+            SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
+
+            Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
+
+            // 描画対象の文字列インデックス範囲を得る
+            int firstCharIndex = 0;
+            int lastCharIndex = this.TextLength;
+            if (this.Multiline) {
+                // 最初の位置を得る
+                int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
+                if (0 <= firstVisibleLine) {
+                    int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
+                    if (0 <= firstIndex) {
+                        firstCharIndex = firstIndex;
+                    }
+                }
+
+                // 表示行数を得る
+                int rows = this.ClientSize.Height / fontSize.Height;
+
+                // 最後の位置を得る
+                int lastIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
+                if (0 <= lastIndex) {
+                    lastCharIndex = lastIndex;
+                }
+            }
+
+            // 範囲内文字列の絵文字等の表示を行う
+            string targetText = this.Text;
+            for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
+                if (chIndex < 0 || targetText.Length <= chIndex) {
+                    break;
+                }
+
+                char targetChar = targetText[chIndex];
+
+                bool drawEmoji = false;
+                bool drawControlChar = false;
+                string controlChar = "";
+
+                Emoji emoji = DataBags.Emojis.GetFromUnicode(targetChar);
+                if (emoji != null) {
+                    drawEmoji = true;
+                } else if (targetChar == '\t') {
+                    controlChar = "\u02EA";
+                    drawControlChar = true;
+                } else if (targetChar == '\n') {
+                    controlChar = "\u21B2";
+                    drawControlChar = true;
+                } else {
+                    continue;
+                }
+
+                Point point = this.GetPositionFromCharIndex(chIndex);
+
+                int pointX = point.X;
+                int pointY = point.Y;
+
+                // 表示座標を微調整する
+                // FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
+                if (!this.Multiline) {
+                    pointY += textBoxRect.Top;
+                }
+
+                if (drawEmoji) {
+                    Image image = emoji.ImageForText;
+                    Rectangle srcRect = new Rectangle(0, 0, image.Width, image.Height);
+                    Rectangle destRect = new Rectangle(pointX, pointY, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
+
+                    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                        // 選択されている場合は、反転して描画する
+                        graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
+                    } else {
+                        graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
+                    }
+
+                } else if (!emojiOnly && drawControlChar) {
+                    TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
+                }
+            }
+
+            if (!emojiOnly && 0 < this.ColumnLine) {
+                int x = textBoxRect.Left + (fontSize.Width * this.ColumnLine);
+                graphics.DrawLine(columnLinePen, new Point(x, 0), new Point(x, this.ClientSize.Height));
             }
         }
 
@@ -395,6 +421,6 @@
             return 0;
         }
 
-        #endregion
+#endregion
     }
 }
