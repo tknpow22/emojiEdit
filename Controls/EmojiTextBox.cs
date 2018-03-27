@@ -61,7 +61,7 @@
         #region 変数
 
         /// <summary>
-        /// 制御文字列の表示色
+        /// 制御文字の表示色
         /// </summary>
         private static Color controlCharColor = Color.LightBlue;
 
@@ -161,7 +161,7 @@
         #region プロパティ
 
         /// <summary>
-        /// カラム線
+        /// カラム線の表示位置
         /// </summary>
         [Browsable(true)]
         public int ColumnLine
@@ -220,10 +220,7 @@
         /// <param name="e"></param>
         private void ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem toolStripMenuItem = sender as ToolStripMenuItem;
-            if (toolStripMenuItem == null) {
-                return; // 念のため
-            }
+            ToolStripMenuItem toolStripMenuItem = (ToolStripMenuItem)sender;
 
             switch (toolStripMenuItem.Name) {
             case "Cut":
@@ -287,59 +284,64 @@
             if (draw) {
 
                 try {
+
                     using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
 
+                        Commons.RECT textBoxRect;
+                        SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
+
+                        Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
+
                         // 描画対象の文字列インデックス範囲を得る
-                        int firstIndex = 0;
-                        int lastIndex = this.TextLength;
-                        if (Multiline) {
+                        int firstCharIndex = 0;
+                        int lastCharIndex = this.TextLength;
+                        if (this.Multiline) {
                             // 最初の位置を得る
                             int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
                             if (0 <= firstVisibleLine) {
-                                int firstCharIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
-                                if (0 <= firstCharIndex) {
-                                    firstIndex = firstCharIndex;
+                                int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
+                                if (0 <= firstIndex) {
+                                    firstCharIndex = firstIndex;
                                 }
                             }
 
                             // 表示行数を得る
-                            Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
                             int rows = this.ClientSize.Height / fontSize.Height;
 
                             // 最後の位置を得る
-                            int lastCharIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
-                            if (0 <= lastCharIndex) {
-                                lastIndex = lastCharIndex;
+                            int lastIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
+                            if (0 <= lastIndex) {
+                                lastCharIndex = lastIndex;
                             }
                         }
 
                         // 範囲内文字列の絵文字等の表示を行う
-                        for (int i = firstIndex; i < lastIndex; ++i) {
-                            string sch = Text.Substring(i, 1);
-                            if (sch.Length == 0) {
-                                continue;
+                        string targetText = this.Text;
+                        for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
+                            if (chIndex < 0 || targetText.Length <= chIndex) {
+                                break;
                             }
 
+                            char targetChar = targetText[chIndex];
+
                             bool drawEmoji = false;
-                            bool drawControl = false;
+                            bool drawControlChar = false;
                             string controlChar = "";
 
-                            char ch = sch[0];
-
-                            Emoji emoji = DataBags.Emojis.GetFromUnicode(ch);
+                            Emoji emoji = DataBags.Emojis.GetFromUnicode(targetChar);
                             if (emoji != null) {
                                 drawEmoji = true;
-                            } else if (ch == '\t') {
+                            } else if (targetChar == '\t') {
                                 controlChar = "\u02EA";
-                                drawControl = true;
-                            } else if (ch == '\n') {
+                                drawControlChar = true;
+                            } else if (targetChar == '\n') {
                                 controlChar = "\u21B2";
-                                drawControl = true;
+                                drawControlChar = true;
                             } else {
                                 continue;
                             }
 
-                            Point point = GetPositionFromCharIndex(i);
+                            Point point = this.GetPositionFromCharIndex(chIndex);
 
                             int pointX = point.X;
                             int pointY = point.Y;
@@ -347,16 +349,7 @@
                             // 表示座標を微調整する
                             // FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
                             if (!this.Multiline) {
-                                switch (this.BorderStyle) {
-                                case BorderStyle.FixedSingle:
-                                    pointY += 2;
-                                    break;
-                                case BorderStyle.None:
-                                    break;
-                                default:
-                                    pointY += 1;
-                                    break;
-                                }
+                                pointY += textBoxRect.Top;
                             }
 
                             if (drawEmoji) {
@@ -364,28 +357,22 @@
                                 Rectangle srcRect = new Rectangle(0, 0, image.Width, image.Height);
                                 Rectangle destRect = new Rectangle(pointX, pointY, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
 
-                                if (0 < this.SelectionLength && this.SelectionStart <= i && i < this.SelectionStart + this.SelectionLength) {
+                                if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                                    // 選択されている場合は、反転して描画する
                                     graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
                                 } else {
                                     graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
                                 }
 
-                            } else if (drawControl) {
+                            } else if (drawControlChar) {
                                 TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
                             }
                         }
 
                         if (0 < this.ColumnLine) {
-                            Commons.RECT rect;
-
-                            SendMessage(this.Handle, EM_GETRECT, 0, out rect);
-
-                            Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
-                            int colsY = rect.Left + (fontSize.Width * this.ColumnLine);
-
+                            int colsY = textBoxRect.Left + (fontSize.Width * this.ColumnLine);
                             graphics.DrawLine(columnLinePen, new Point(colsY, 0), new Point(colsY, this.ClientSize.Height));
                         }
-
                     }
                 } catch (Exception ex) {
                     System.Diagnostics.Debug.WriteLine(ex);
