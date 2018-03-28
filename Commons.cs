@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// 共通
@@ -17,6 +18,7 @@
         /// <summary>
         /// RECT 定義
         /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
             public RECT(int left, int top, int right, int bottom)

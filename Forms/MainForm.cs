@@ -69,6 +69,8 @@
             // 本文設定
             this.textBoxMailBody.Font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
             this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
+            // 本文のちらつきを少しだけ抑制する
+            this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
             // コンテキストメニューを追加する
             {
                 ContextMenuStrip contextMenuStrip = this.textBoxMailBody.ContextMenuStrip;
@@ -84,6 +86,7 @@
 
                 contextMenuStrip.Opening += textBoxMailBodyContextMenuStrip_Opening;
             }
+
 
             // 送信元の設定
             this.textBoxMailFrom.Text = DataBags.Config.MailFrom;
@@ -187,14 +190,11 @@
                 return;
             } else if (dr == EditSettingsFormResult.Ok) {
 
-                DataBags.Config.MaxBodyCols = dialog.MaxBodyCols;
-
+                this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
                 this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
                 this.textBoxMailBody.Invalidate();
 
                 #region 絵文字一覧
-
-                DataBags.Config.MaxEmojiListCols = dialog.MaxEmojiListCols;
 
                 // 絵文字一覧を初期設定する
                 this.InitializeEmojiList();
@@ -375,7 +375,7 @@
 
                     Emoji emoji = DataBags.Emojis.Get(emojiGroupNo, emojiId);
                     if (emoji == null) {
-                        this.textBoxMailBody.Text += "　";
+                        this.textBoxMailBody.Text += "\u3000";
                     } else {
                         this.textBoxMailBody.Text += emoji.Unicode;
                     }

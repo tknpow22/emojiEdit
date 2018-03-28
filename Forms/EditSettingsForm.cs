@@ -46,6 +46,9 @@
             this.numericUpDownEmojiListCols.Maximum = Commons.MAX_EMOJI_LIST_COLS_MAXIMUM;
 
             this.numericUpDownEmojiListCols.Value = DataBags.Config.MaxEmojiListCols;
+
+            // 本文のちらつきを少しだけ抑制する
+            this.checkBoxSuppressBodyTextFlicker.Checked = DataBags.Config.SuppressBodyTextFlicker;
         }
 
         /// <summary>
@@ -58,26 +61,6 @@
             base.ShowDialog(owner);
 
             return formResult;
-        }
-
-        #endregion
-
-        #region プロパティ
-
-        /// <summary>
-        /// 本文の文字数
-        /// </summary>
-        public int MaxBodyCols
-        {
-            private set; get;
-        }
-
-        /// <summary>
-        /// 絵文字一覧の文字数
-        /// </summary>
-        public int MaxEmojiListCols
-        {
-            private set; get;
         }
 
         #endregion
@@ -131,11 +114,12 @@
         {
             this.formResult = EditSettingsFormResult.Ok;
 
-            // NOTE: NumericUpDown コントロール側で補正されるためチェックしていない
+            // NOTE: 値の範囲は NumericUpDown コントロール側で補正されるためチェックしていない
+            //       チェックボックスも同じ
 
-            this.MaxBodyCols = (int)this.numericUpDownBodyCols.Value;
-
-            this.MaxEmojiListCols = (int)this.numericUpDownEmojiListCols.Value;
+            DataBags.Config.MaxBodyCols = (int)this.numericUpDownBodyCols.Value;
+            DataBags.Config.MaxEmojiListCols = (int)this.numericUpDownEmojiListCols.Value;
+            DataBags.Config.SuppressBodyTextFlicker = this.checkBoxSuppressBodyTextFlicker.Checked;
 
             this.Close();
         }
