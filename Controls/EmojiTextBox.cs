@@ -30,6 +30,13 @@
         private const int EM_GETFIRSTVISIBLELINE = 0x00CE;
         private const int EM_GETRECT = 0x00B2;
 
+        #region SuppressFlicker が true の時に使用する
+
+        private const int COLOR_HIGHLIGHT = 13;
+        private const int COLOR_HIGHLIGHTTEXT = 14;
+
+        #endregion
+
         #endregion
 
         #region 定義
@@ -84,6 +91,8 @@
         #region SuppressFlicker が true の時に使用する
 
         [DllImport("user32.dll")]
+        private static extern int GetSysColor(int nIndex);
+        [DllImport("user32.dll")]
         private static extern IntPtr BeginPaint(IntPtr hwnd, ref PAINTSTRUCT lpPaint);
         [DllImport("user32.dll")]
         private static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
@@ -98,7 +107,7 @@
 
         #endregion
 
-        #region 変数
+        #region 静的変数
 
         /// <summary>
         /// 制御文字の表示色
@@ -110,14 +119,9 @@
         /// </summary>
         private static Pen columnLinePen = new Pen(Color.LightBlue);
 
-        #region SuppressFlicker が true の時に使用する
-
-        /// <summary>
-        /// 通常文字の選択色
-        /// </summary>
-        private static Color selectionNormalCharBackColor = Color.FromArgb(0x00, 0x78, 0xd7);
-
         #endregion
+
+        #region 変数
 
         /// <summary>
         /// TextRenderer.DrawText() のための format フラグ
@@ -142,9 +146,19 @@
         #region SuppressFlicker が true の時に使用する
 
         /// <summary>
-        /// 背景描画色
+        /// 背景色(ブラシ)
         /// </summary>
         private Brush backgroundBrush;
+
+        /// <summary>
+        /// 通常文字の選択前景色
+        /// </summary>
+        private Color selectionNormalCharForeColor;
+
+        /// <summary>
+        /// 通常文字の選択背景色
+        /// </summary>
+        private Color selectionNormalCharBackColor;
 
         #endregion
 
@@ -214,9 +228,15 @@
             this.editWordBreakProcDelegate = new EditWordBreakProcDelegate(this.EditWordBreakProc);
 
             #region SuppressFlicker が true の時に使用する
-            
-            // 背景描画色
+
+            // 背景色(ブラシ)
             this.backgroundBrush = new SolidBrush(this.BackColor);
+
+            // 通常文字の選択前景色
+            this.selectionNormalCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
+
+            // 通常文字の選択背景色
+            this.selectionNormalCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
 
             #endregion
         }
@@ -651,7 +671,7 @@
                     if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
                         // 選択されている場合は、反転して描画する
                         if (this.SuppressFlicker) {
-                            TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(pointX, pointY), Color.White, selectionNormalCharBackColor, this.textFormatFlags);
+                            TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
                         }
                         graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
                     } else {
@@ -663,7 +683,7 @@
                     }
                 } else if (drawNormalChar) {
                     if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), Color.White, selectionNormalCharBackColor, this.textFormatFlags);
+                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
                     } else {
                         TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
                     }
@@ -688,6 +708,26 @@
         {
             return 0;
         }
+
+        #region SuppressFlicker が true の時に使用する
+
+        /// <summary>
+        /// システムカラーを取得する
+        /// </summary>
+        /// <param name="systemColorId">システムカラーの ID</param>
+        /// <returns>Color</returns>
+        private Color GetSystemColor(int systemColorId)
+        {
+            int sysColor = GetSysColor(systemColorId);
+
+            int red = sysColor & 0xff;
+            int green = (sysColor >> 8) & 0xff;
+            int blue = (sysColor >> 16) & 0xff;
+
+            return Color.FromArgb(red, green, blue);
+        }
+
+        #endregion
 
         #endregion
     }
