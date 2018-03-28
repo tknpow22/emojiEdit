@@ -614,8 +614,8 @@
                     break;
                 }
 
-                char targetChar = targetText[chIndex];
-                string targetStr = targetText.Substring(chIndex, 1);
+                string targetSChar = targetText.Substring(chIndex, 1);
+                char targetChar = targetSChar[0];
 
                 bool drawEmoji = false;
                 bool drawControlChar = false;
@@ -663,9 +663,9 @@
                     }
                 } else if (drawNormalChar) {
                     if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                        TextRenderer.DrawText(graphics, targetStr, this.Font, new Point(pointX, pointY), Color.White, selectionNormalCharBackColor, this.textFormatFlags);
+                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), Color.White, selectionNormalCharBackColor, this.textFormatFlags);
                     } else {
-                        TextRenderer.DrawText(graphics, targetStr, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
+                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
                     }
                 }
             }

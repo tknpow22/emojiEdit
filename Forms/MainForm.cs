@@ -87,7 +87,6 @@
                 contextMenuStrip.Opening += textBoxMailBodyContextMenuStrip_Opening;
             }
 
-
             // 送信元の設定
             this.textBoxMailFrom.Text = DataBags.Config.MailFrom;
 
@@ -200,6 +199,8 @@
                 this.InitializeEmojiList();
 
                 #endregion
+
+                (this.lastActiveEmojiTextBox ?? this.textBoxMailBody).Focus();
             }
         }
 
