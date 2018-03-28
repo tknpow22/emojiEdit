@@ -51,31 +51,31 @@
         /// <returns></returns>
         private delegate int EditWordBreakProcDelegate(IntPtr lpch, int ichCurrent, int cch, int code);
 
-        #region SuppressFlicker が true の時に使用する
+        //#region SuppressFlicker が true の時に使用する
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct PAINTSTRUCT
-        {
-            public IntPtr hdc;
-            public bool fErase;
-            // rcPaint was a by-value RECT structure
-            public int rcPaint_left;
-            public int rcPaint_top;
-            public int rcPaint_right;
-            public int rcPaint_bottom;
-            public bool fRestore;
-            public bool fIncUpdate;
-            public int reserved1;
-            public int reserved2;
-            public int reserved3;
-            public int reserved4;
-            public int reserved5;
-            public int reserved6;
-            public int reserved7;
-            public int reserved8;
-        }
+        //[StructLayout(LayoutKind.Sequential)]
+        //private struct PAINTSTRUCT
+        //{
+        //    public IntPtr hdc;
+        //    public bool fErase;
+        //    // rcPaint was a by-value RECT structure
+        //    public int rcPaint_left;
+        //    public int rcPaint_top;
+        //    public int rcPaint_right;
+        //    public int rcPaint_bottom;
+        //    public bool fRestore;
+        //    public bool fIncUpdate;
+        //    public int reserved1;
+        //    public int reserved2;
+        //    public int reserved3;
+        //    public int reserved4;
+        //    public int reserved5;
+        //    public int reserved6;
+        //    public int reserved7;
+        //    public int reserved8;
+        //}
 
-        #endregion
+        //#endregion
 
         #endregion
 
@@ -88,20 +88,20 @@
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, out Commons.RECT lParam);
 
-        #region SuppressFlicker が true の時に使用する
+        //#region SuppressFlicker が true の時に使用する
 
-        [DllImport("user32.dll")]
-        private static extern int GetSysColor(int nIndex);
-        [DllImport("user32.dll")]
-        private static extern IntPtr BeginPaint(IntPtr hwnd, ref PAINTSTRUCT lpPaint);
-        [DllImport("user32.dll")]
-        private static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
-        [DllImport("gdi32.dll")]
-        private static extern int RealizePalette(IntPtr hDC);
-        [DllImport("gdi32.dll")]
-        private static extern IntPtr SelectPalette(IntPtr hDC, IntPtr hPalette, int bForceBackground);
+        //[DllImport("user32.dll")]
+        //private static extern int GetSysColor(int nIndex);
+        //[DllImport("user32.dll")]
+        //private static extern IntPtr BeginPaint(IntPtr hwnd, ref PAINTSTRUCT lpPaint);
+        //[DllImport("user32.dll")]
+        //private static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
+        //[DllImport("gdi32.dll")]
+        //private static extern int RealizePalette(IntPtr hDC);
+        //[DllImport("gdi32.dll")]
+        //private static extern IntPtr SelectPalette(IntPtr hDC, IntPtr hPalette, int bForceBackground);
 
-        #endregion
+        //#endregion
 
         #endregion
 
@@ -143,24 +143,24 @@
         /// </summary>
         private EditWordBreakProcDelegate editWordBreakProcDelegate;
 
-        #region SuppressFlicker が true の時に使用する
+        //#region SuppressFlicker が true の時に使用する
 
-        /// <summary>
-        /// 背景色(ブラシ)
-        /// </summary>
-        private Brush backgroundBrush;
+        ///// <summary>
+        ///// 背景色(ブラシ)
+        ///// </summary>
+        //private Brush backgroundBrush;
 
-        /// <summary>
-        /// 通常文字の選択前景色
-        /// </summary>
-        private Color selectionNormalCharForeColor;
+        ///// <summary>
+        ///// 通常文字の選択前景色
+        ///// </summary>
+        //private Color selectionNormalCharForeColor;
 
-        /// <summary>
-        /// 通常文字の選択背景色
-        /// </summary>
-        private Color selectionNormalCharBackColor;
+        ///// <summary>
+        ///// 通常文字の選択背景色
+        ///// </summary>
+        //private Color selectionNormalCharBackColor;
 
-        #endregion
+        //#endregion
 
         #endregion
 
@@ -227,18 +227,18 @@
             // EditWordBreakProc を呼び出すためのデリゲート
             this.editWordBreakProcDelegate = new EditWordBreakProcDelegate(this.EditWordBreakProc);
 
-            #region SuppressFlicker が true の時に使用する
+            //#region SuppressFlicker が true の時に使用する
 
-            // 背景色(ブラシ)
-            this.backgroundBrush = new SolidBrush(this.BackColor);
+            //// 背景色(ブラシ)
+            //this.backgroundBrush = new SolidBrush(this.BackColor);
 
-            // 通常文字の選択前景色
-            this.selectionNormalCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
+            //// 通常文字の選択前景色
+            //this.selectionNormalCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
 
-            // 通常文字の選択背景色
-            this.selectionNormalCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
+            //// 通常文字の選択背景色
+            //this.selectionNormalCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
 
-            #endregion
+            //#endregion
         }
 
         #endregion
@@ -254,14 +254,14 @@
             get; set;
         }
 
-        /// <summary>
-        /// ちらつきを抑える
-        /// </summary>
-        [Browsable(false)]
-        public bool SuppressFlicker
-        {
-            get; set;
-        }
+        ///// <summary>
+        ///// ちらつきを抑える
+        ///// </summary>
+        //[Browsable(false)]
+        //public bool SuppressFlicker
+        //{
+        //    get; set;
+        //}
 
         #endregion
 
@@ -361,165 +361,165 @@
         {
             base.DrawToBitmap(bitmap, targetBounds);
             using (Graphics graphics = Graphics.FromImage(bitmap)) {
-                this.Draw(graphics, false, true);
+                this.Draw(graphics/*, false*/, true);
             }
         }
 
-        #region SuppressFlicker が true の時に使用する
+//        #region SuppressFlicker が true の時に使用する
 
-        //
-        // Original Source
-        //      https://referencesource.microsoft.com/
-        //          .NET 4.6.1 for Windows 10 November Update
-        //          System.Windows.Forms.Control
-        //
+//        //
+//        // Original Source
+//        //      https://referencesource.microsoft.com/
+//        //          .NET 4.6.1 for Windows 10 November Update
+//        //          System.Windows.Forms.Control
+//        //
 
-        /// <summary>
-        /// WmPaint
-        /// </summary>
-        /// <param name="m"></param>
-        private void WmPaint(ref Message m)
-        {
-            bool doubleBuffered = true;
+//        /// <summary>
+//        /// WmPaint
+//        /// </summary>
+//        /// <param name="m"></param>
+//        private void WmPaint(ref Message m)
+//        {
+//            bool doubleBuffered = true;
 
-            IntPtr hWnd = IntPtr.Zero;
-            IntPtr dc;
-            Rectangle clip;
-            PAINTSTRUCT ps = new PAINTSTRUCT();
-            bool needDisposeDC = false;
+//            IntPtr hWnd = IntPtr.Zero;
+//            IntPtr dc;
+//            Rectangle clip;
+//            PAINTSTRUCT ps = new PAINTSTRUCT();
+//            bool needDisposeDC = false;
 
-            try {
-                if (m.WParam == IntPtr.Zero) {
-                    // Cache Handle not only for perf but to avoid object disposed exception in case the window
-                    // is destroyed in an event handler (VSW#261657).
-                    hWnd = this.Handle;
-                    dc = BeginPaint(this.Handle, ref ps);
-                    needDisposeDC = true;
-                    clip = new Rectangle(ps.rcPaint_left, ps.rcPaint_top,
-                                         ps.rcPaint_right - ps.rcPaint_left,
-                                         ps.rcPaint_bottom - ps.rcPaint_top);
-                } else {
-                    dc = m.WParam;
-                    clip = ClientRectangle;
-                }
+//            try {
+//                if (m.WParam == IntPtr.Zero) {
+//                    // Cache Handle not only for perf but to avoid object disposed exception in case the window
+//                    // is destroyed in an event handler (VSW#261657).
+//                    hWnd = this.Handle;
+//                    dc = BeginPaint(this.Handle, ref ps);
+//                    needDisposeDC = true;
+//                    clip = new Rectangle(ps.rcPaint_left, ps.rcPaint_top,
+//                                         ps.rcPaint_right - ps.rcPaint_left,
+//                                         ps.rcPaint_bottom - ps.rcPaint_top);
+//                } else {
+//                    dc = m.WParam;
+//                    clip = ClientRectangle;
+//                }
 
-                // Consider: Why don't check the clip condition when non-doubleBuffered?
-                //           we should probably get rid of the !doubleBuffered condition.
-                if (!doubleBuffered || (clip.Width > 0 && clip.Height > 0)) {
-                    IntPtr oldPal = IntPtr.Zero;
-                    BufferedGraphics bufferedGraphics = null;
-                    PaintEventArgs pevent = null;
-                    System.Drawing.Drawing2D.GraphicsState state = null;
+//                // Consider: Why don't check the clip condition when non-doubleBuffered?
+//                //           we should probably get rid of the !doubleBuffered condition.
+//                if (!doubleBuffered || (clip.Width > 0 && clip.Height > 0)) {
+//                    IntPtr oldPal = IntPtr.Zero;
+//                    BufferedGraphics bufferedGraphics = null;
+//                    PaintEventArgs pevent = null;
+//                    System.Drawing.Drawing2D.GraphicsState state = null;
 
-                    try {
-                        if (doubleBuffered || m.WParam == IntPtr.Zero) {
-                            oldPal = SetUpPalette(dc, false, false);
-                        }
+//                    try {
+//                        if (doubleBuffered || m.WParam == IntPtr.Zero) {
+//                            oldPal = SetUpPalette(dc, false, false);
+//                        }
 
-                        if (doubleBuffered) {
-                            try {
-                                bufferedGraphics = BufferedGraphicsManager.Current.Allocate(dc, ClientRectangle);
-                            } catch (Exception ex) {
-                                // BufferContext.Allocate will throw out of memory exceptions
-                                // when it fails to create a device dependent bitmap while trying to 
-                                // get information about the device we are painting on.
-                                // That is not the same as a system running out of memory and there is a 
-                                // very good chance that we can continue to paint successfully. We cannot
-                                // check whether double buffering is supported in this case, and we will disable it.
-                                // We could set a specific string when throwing the exception and check for it here
-                                // to distinguish between that case and real out of memory exceptions but we
-                                // see no reasons justifying the additional complexity.
-                                if (IsCriticalException(ex) && !(ex is OutOfMemoryException)) {
-                                    throw;
-                                }
-                                doubleBuffered = false; // paint directly on the window DC.
-                            }
-                        }
+//                        if (doubleBuffered) {
+//                            try {
+//                                bufferedGraphics = BufferedGraphicsManager.Current.Allocate(dc, ClientRectangle);
+//                            } catch (Exception ex) {
+//                                // BufferContext.Allocate will throw out of memory exceptions
+//                                // when it fails to create a device dependent bitmap while trying to 
+//                                // get information about the device we are painting on.
+//                                // That is not the same as a system running out of memory and there is a 
+//                                // very good chance that we can continue to paint successfully. We cannot
+//                                // check whether double buffering is supported in this case, and we will disable it.
+//                                // We could set a specific string when throwing the exception and check for it here
+//                                // to distinguish between that case and real out of memory exceptions but we
+//                                // see no reasons justifying the additional complexity.
+//                                if (IsCriticalException(ex) && !(ex is OutOfMemoryException)) {
+//                                    throw;
+//                                }
+//                                doubleBuffered = false; // paint directly on the window DC.
+//                            }
+//                        }
 
-                        if (bufferedGraphics != null) {
-                            bufferedGraphics.Graphics.SetClip(clip);
-                            pevent = new PaintEventArgs(bufferedGraphics.Graphics, clip);
-                            state = pevent.Graphics.Save();
-                        }
-                        ////} else {
-                        ////    pevent = new PaintEventArgs(dc, clip);
-                        ////}
+//                        if (bufferedGraphics != null) {
+//                            bufferedGraphics.Graphics.SetClip(clip);
+//                            pevent = new PaintEventArgs(bufferedGraphics.Graphics, clip);
+//                            state = pevent.Graphics.Save();
+//                        }
+//                        ////} else {
+//                        ////    pevent = new PaintEventArgs(dc, clip);
+//                        ////}
 
-                        if (pevent != null) {
-                            using (pevent) {
-                                try {
-                                    if ((m.WParam == IntPtr.Zero) /*&& GetStyle(ControlStyles.AllPaintingInWmPaint)*/ || doubleBuffered) {
-                                        ////PaintWithErrorHandling(pevent, PaintLayerBackground);
-                                        bufferedGraphics.Graphics.FillRectangle(this.backgroundBrush, 0, 0, this.ClientRectangle.Width, this.ClientRectangle.Height);
-                                        // Consider: This condition could be elimiated, 
-                                        //           do we have to save/restore the state of the buffered graphics? 
-                                    }
-                                } finally {
-                                    if (state != null) {
-                                        pevent.Graphics.Restore(state);
-                                    }
-                                    ////} else {
-                                    ////    pevent.ResetGraphics();
-                                    ////}
-                                }
-                                ////PaintWithErrorHandling(pevent, PaintLayerForeground);
-                                this.Draw(bufferedGraphics.Graphics, true, false);
+//                        if (pevent != null) {
+//                            using (pevent) {
+//                                try {
+//                                    if ((m.WParam == IntPtr.Zero) /*&& GetStyle(ControlStyles.AllPaintingInWmPaint)*/ || doubleBuffered) {
+//                                        ////PaintWithErrorHandling(pevent, PaintLayerBackground);
+//                                        bufferedGraphics.Graphics.FillRectangle(this.backgroundBrush, 0, 0, this.ClientRectangle.Width, this.ClientRectangle.Height);
+//                                        // Consider: This condition could be elimiated, 
+//                                        //           do we have to save/restore the state of the buffered graphics? 
+//                                    }
+//                                } finally {
+//                                    if (state != null) {
+//                                        pevent.Graphics.Restore(state);
+//                                    }
+//                                    ////} else {
+//                                    ////    pevent.ResetGraphics();
+//                                    ////}
+//                                }
+//                                ////PaintWithErrorHandling(pevent, PaintLayerForeground);
+//                                this.Draw(bufferedGraphics.Graphics, true, false);
 
-                                if (bufferedGraphics != null) {
-                                    bufferedGraphics.Render();
-                                }
-                            }
-                        }
-                    } finally {
-                        if (oldPal != IntPtr.Zero) {
-                            SelectPalette(dc, oldPal, 0);
-                        }
-                        if (bufferedGraphics != null) {
-                            bufferedGraphics.Dispose();
-                        }
-                    }
-                }
-            } finally {
-                if (needDisposeDC) {
-                    EndPaint(this.Handle, ref ps);
-                }
-            }
-        }
+//                                if (bufferedGraphics != null) {
+//                                    bufferedGraphics.Render();
+//                                }
+//                            }
+//                        }
+//                    } finally {
+//                        if (oldPal != IntPtr.Zero) {
+//                            SelectPalette(dc, oldPal, 0);
+//                        }
+//                        if (bufferedGraphics != null) {
+//                            bufferedGraphics.Dispose();
+//                        }
+//                    }
+//                }
+//            } finally {
+//                if (needDisposeDC) {
+//                    EndPaint(this.Handle, ref ps);
+//                }
+//            }
+//        }
 
-#pragma warning disable 618
-        private static bool IsCriticalException(Exception ex)
-        {
-            return ex is NullReferenceException
-                    || ex is StackOverflowException
-                    || ex is OutOfMemoryException
-                    || ex is System.Threading.ThreadAbortException
-                    || ex is ExecutionEngineException
-                    || ex is IndexOutOfRangeException
-                    || ex is AccessViolationException;
-        }
-#pragma warning restore 618
+//#pragma warning disable 618
+//        private static bool IsCriticalException(Exception ex)
+//        {
+//            return ex is NullReferenceException
+//                    || ex is StackOverflowException
+//                    || ex is OutOfMemoryException
+//                    || ex is System.Threading.ThreadAbortException
+//                    || ex is ExecutionEngineException
+//                    || ex is IndexOutOfRangeException
+//                    || ex is AccessViolationException;
+//        }
+//#pragma warning restore 618
 
-        /// <summary>
-        /// SetUpPalette
-        /// </summary>
-        /// <param name="dc"></param>
-        /// <param name="force"></param>
-        /// <param name="realizePalette"></param>
-        /// <returns></returns>
-        private static IntPtr SetUpPalette(IntPtr dc, bool force, bool realizePalette)
-        {
-            IntPtr halftonePalette = Graphics.GetHalftonePalette();
+//        /// <summary>
+//        /// SetUpPalette
+//        /// </summary>
+//        /// <param name="dc"></param>
+//        /// <param name="force"></param>
+//        /// <param name="realizePalette"></param>
+//        /// <returns></returns>
+//        private static IntPtr SetUpPalette(IntPtr dc, bool force, bool realizePalette)
+//        {
+//            IntPtr halftonePalette = Graphics.GetHalftonePalette();
 
-            IntPtr result = SelectPalette(dc, halftonePalette, (force ? 0 : 1));
+//            IntPtr result = SelectPalette(dc, halftonePalette, (force ? 0 : 1));
 
-            if (result != IntPtr.Zero && realizePalette) {
-                RealizePalette(dc);
-            }
+//            if (result != IntPtr.Zero && realizePalette) {
+//                RealizePalette(dc);
+//            }
 
-            return result;
-        }
+//            return result;
+//        }
 
-        #endregion
+//        #endregion
 
         /// <summary>
         /// WndProc
@@ -527,77 +527,77 @@
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WM_PAINT && this.IsHandleCreated && this.SuppressFlicker && m.HWnd == this.Handle) {
+            //if (m.Msg == WM_PAINT && this.IsHandleCreated && this.SuppressFlicker && m.HWnd == this.Handle) {
+            //    try {
+            //        this.WmPaint(ref m);
+            //    } catch (Exception ex) {
+            //        System.Diagnostics.Debug.WriteLine(ex);
+            //    }
+            //} else {
+            base.WndProc(ref m);
+
+            bool draw = false;
+            bool invalidate = false;
+            if (m.Msg == WM_PAINT) {
+                draw = true;
+            } else if (m.Msg == WM_LBUTTONUP) {
+                this.mouseLButtonDown = false;
+                invalidate = true;
+            } else if (m.Msg == WM_LBUTTONDOWN) {
+                this.mouseLButtonDown = true;
+                ////invalidate = true;  // 少しでも再描画を減らす
+            } else if (m.Msg == WM_HSCROLL
+                    || m.Msg == WM_VSCROLL
+                    ////|| m.Msg == WM_KEYDOWN  // 少しでも再描画を減らす
+                    || m.Msg == WM_KEYUP
+                    || m.Msg == WM_MOUSEWHEEL) {
+                invalidate = true;
+            } else if (m.Msg == WM_MOUSEMOVE && this.mouseLButtonDown) {
+                invalidate = true;
+            }
+
+            if (draw) {
                 try {
-                    this.WmPaint(ref m);
+
+                    // バッファ利用することで少しはちらつきが収まればと試したが、効果なし。
+                    // また、SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true); を行い、
+                    // OnPaint を override する方法は、フォント設定などがややこしく、諦めた。
+                    ////
+                    ////BufferedGraphicsContext bufferedGraphicsContext = BufferedGraphicsManager.Current;
+                    ////using (Graphics graphicsNew = this.CreateGraphics())
+                    ////using (Graphics graphicsSrc = Graphics.FromHwnd(this.Handle))
+                    ////using (BufferedGraphics bufferedGraphics = bufferedGraphicsContext.Allocate(graphicsNew, this.ClientRectangle)) {
+                    ////    bufferedGraphics.Graphics.SetClip(this.ClientRectangle);
+                    ////    IntPtr hdcSrc = graphicsSrc.GetHdc();
+                    ////    IntPtr hdcDest = bufferedGraphics.Graphics.GetHdc();
+                    ////    BitBlt(hdcDest, 0, 0, this.Width, this.Height, hdcSrc, 0, 0, SRCCOPY);
+                    ////    bufferedGraphics.Graphics.ReleaseHdc(hdcDest);
+                    ////    graphicsSrc.ReleaseHdc(hdcSrc);
+                    ////    this.Draw(bufferedGraphics.Graphics, false);
+                    ////    bufferedGraphics.Render();
+                    ////}
+
+                    using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
+                        this.Draw(graphics/*, false*/, false);
+                    }
+
                 } catch (Exception ex) {
                     System.Diagnostics.Debug.WriteLine(ex);
                 }
-            } else {
-                base.WndProc(ref m);
 
-                bool draw = false;
-                bool invalidate = false;
-                if (m.Msg == WM_PAINT) {
-                    draw = true;
-                } else if (m.Msg == WM_LBUTTONUP) {
-                    this.mouseLButtonDown = false;
-                    invalidate = true;
-                } else if (m.Msg == WM_LBUTTONDOWN) {
-                    this.mouseLButtonDown = true;
-                    ////invalidate = true;  // 少しでも再描画を減らす
-                } else if (m.Msg == WM_HSCROLL
-                        || m.Msg == WM_VSCROLL
-                        ////|| m.Msg == WM_KEYDOWN  // 少しでも再描画を減らす
-                        || m.Msg == WM_KEYUP
-                        || m.Msg == WM_MOUSEWHEEL) {
-                    invalidate = true;
-                } else if (m.Msg == WM_MOUSEMOVE && this.mouseLButtonDown) {
-                    invalidate = true;
-                }
-
-                if (draw) {
-                    try {
-
-                        // バッファ利用することで少しはちらつきが収まればと試したが、効果なし。
-                        // また、SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true); を行い、
-                        // OnPaint を override する方法は、フォント設定などがややこしく、諦めた。
-                        ////
-                        ////BufferedGraphicsContext bufferedGraphicsContext = BufferedGraphicsManager.Current;
-                        ////using (Graphics graphicsNew = this.CreateGraphics())
-                        ////using (Graphics graphicsSrc = Graphics.FromHwnd(this.Handle))
-                        ////using (BufferedGraphics bufferedGraphics = bufferedGraphicsContext.Allocate(graphicsNew, this.ClientRectangle)) {
-                        ////    bufferedGraphics.Graphics.SetClip(this.ClientRectangle);
-                        ////    IntPtr hdcSrc = graphicsSrc.GetHdc();
-                        ////    IntPtr hdcDest = bufferedGraphics.Graphics.GetHdc();
-                        ////    BitBlt(hdcDest, 0, 0, this.Width, this.Height, hdcSrc, 0, 0, SRCCOPY);
-                        ////    bufferedGraphics.Graphics.ReleaseHdc(hdcDest);
-                        ////    graphicsSrc.ReleaseHdc(hdcSrc);
-                        ////    this.Draw(bufferedGraphics.Graphics, false);
-                        ////    bufferedGraphics.Render();
-                        ////}
-
-                        using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
-                            this.Draw(graphics, false, false);
-                        }
-
-                    } catch (Exception ex) {
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
-
-                } else if (invalidate) {
-                    this.Invalidate();
-                }
+            } else if (invalidate) {
+                this.Invalidate();
             }
+            //}
         }
 
         /// <summary>
         /// 絵文字等の描画を行う
         /// </summary>
         /// <param name="graphics">Graphics</param>
-        /// <param name="drawNormalChar">通常の文字も描画する場合は true</param>
+        /// <!--param name="drawNormalChar">通常の文字も描画する場合は true</param-->
         /// <param name="emojiOnly">絵文字のみ描画</param>
-        private void Draw(Graphics graphics, bool drawNormalChar, bool emojiOnly)
+        private void Draw(Graphics graphics/*, bool drawNormalChar*/, bool emojiOnly)
         {
             Commons.RECT textBoxRect;
             SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
@@ -670,9 +670,9 @@
 
                     if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
                         // 選択されている場合は、反転して描画する
-                        if (this.SuppressFlicker) {
-                            TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
-                        }
+                        //if (this.SuppressFlicker) {
+                        //    TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
+                        //}
                         graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
                     } else {
                         graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
@@ -681,13 +681,14 @@
                     if (!emojiOnly) {
                         TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
                     }
-                } else if (drawNormalChar) {
-                    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
-                    } else {
-                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
-                    }
                 }
+                //} else if (drawNormalChar) {
+                //    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                //        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
+                //    } else {
+                //        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
+                //    }
+                //}
             }
 
             if (!emojiOnly && 0 < this.ColumnLine) {
@@ -709,25 +710,25 @@
             return 0;
         }
 
-        #region SuppressFlicker が true の時に使用する
+        //#region SuppressFlicker が true の時に使用する
 
-        /// <summary>
-        /// システムカラーを取得する
-        /// </summary>
-        /// <param name="systemColorId">システムカラーの ID</param>
-        /// <returns>Color</returns>
-        private Color GetSystemColor(int systemColorId)
-        {
-            int sysColor = GetSysColor(systemColorId);
+        ///// <summary>
+        ///// システムカラーを取得する
+        ///// </summary>
+        ///// <param name="systemColorId">システムカラーの ID</param>
+        ///// <returns>Color</returns>
+        //private Color GetSystemColor(int systemColorId)
+        //{
+        //    int sysColor = GetSysColor(systemColorId);
 
-            int red = sysColor & 0xff;
-            int green = (sysColor >> 8) & 0xff;
-            int blue = (sysColor >> 16) & 0xff;
+        //    int red = sysColor & 0xff;
+        //    int green = (sysColor >> 8) & 0xff;
+        //    int blue = (sysColor >> 16) & 0xff;
 
-            return Color.FromArgb(red, green, blue);
-        }
+        //    return Color.FromArgb(red, green, blue);
+        //}
 
-        #endregion
+        //#endregion
 
         #endregion
     }

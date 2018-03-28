@@ -36,7 +36,6 @@
             this.groupEmojiList = new System.Windows.Forms.GroupBox();
             this.labelEmojiListCols = new System.Windows.Forms.Label();
             this.numericUpDownEmojiListCols = new System.Windows.Forms.NumericUpDown();
-            this.checkBoxSuppressBodyTextFlicker = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBodyCols)).BeginInit();
             this.groupBoxBodyEdit.SuspendLayout();
             this.groupEmojiList.SuspendLayout();
@@ -76,20 +75,20 @@
             // 
             // buttonSet
             // 
-            this.buttonSet.Location = new System.Drawing.Point(12, 172);
+            this.buttonSet.Location = new System.Drawing.Point(12, 123);
             this.buttonSet.Name = "buttonSet";
             this.buttonSet.Size = new System.Drawing.Size(90, 33);
-            this.buttonSet.TabIndex = 3;
+            this.buttonSet.TabIndex = 2;
             this.buttonSet.Text = "設定(&S)";
             this.buttonSet.UseVisualStyleBackColor = true;
             this.buttonSet.Click += new System.EventHandler(this.buttonSet_Click);
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(200, 172);
+            this.buttonCancel.Location = new System.Drawing.Point(200, 123);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(90, 33);
-            this.buttonCancel.TabIndex = 4;
+            this.buttonCancel.TabIndex = 3;
             this.buttonCancel.Text = "キャンセル(&C)";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -147,24 +146,12 @@
             0,
             0});
             // 
-            // checkBoxSuppressBodyTextFlicker
-            // 
-            this.checkBoxSuppressBodyTextFlicker.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.checkBoxSuppressBodyTextFlicker.Location = new System.Drawing.Point(12, 123);
-            this.checkBoxSuppressBodyTextFlicker.Name = "checkBoxSuppressBodyTextFlicker";
-            this.checkBoxSuppressBodyTextFlicker.Size = new System.Drawing.Size(277, 43);
-            this.checkBoxSuppressBodyTextFlicker.TabIndex = 2;
-            this.checkBoxSuppressBodyTextFlicker.Text = "本文のちらつきを少しだけ抑制する\r\n※正しく動作しない可能性がありますので、その際はチェックを外して下さい";
-            this.checkBoxSuppressBodyTextFlicker.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.checkBoxSuppressBodyTextFlicker.UseVisualStyleBackColor = true;
-            // 
             // EditSettingsForm
             // 
             this.AcceptButton = this.buttonSet;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(301, 215);
-            this.Controls.Add(this.checkBoxSuppressBodyTextFlicker);
+            this.ClientSize = new System.Drawing.Size(301, 166);
             this.Controls.Add(this.groupEmojiList);
             this.Controls.Add(this.groupBoxBodyEdit);
             this.Controls.Add(this.buttonSet);
@@ -198,6 +185,5 @@
         private System.Windows.Forms.GroupBox groupEmojiList;
         private System.Windows.Forms.Label labelEmojiListCols;
         private System.Windows.Forms.NumericUpDown numericUpDownEmojiListCols;
-        private System.Windows.Forms.CheckBox checkBoxSuppressBodyTextFlicker;
     }
 }

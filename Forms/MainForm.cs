@@ -69,8 +69,8 @@
             // 本文設定
             this.textBoxMailBody.Font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
             this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
-            // 本文のちらつきを少しだけ抑制する
-            this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
+            //// 本文のちらつきを少しだけ抑制する
+            //this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
             // コンテキストメニューを追加する
             {
                 ContextMenuStrip contextMenuStrip = this.textBoxMailBody.ContextMenuStrip;
@@ -189,7 +189,7 @@
                 return;
             } else if (dr == EditSettingsFormResult.Ok) {
 
-                this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
+                //this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
                 this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
                 this.textBoxMailBody.Invalidate();
 

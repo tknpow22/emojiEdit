@@ -104,10 +104,10 @@
         /// </summary>
         private const string KEY_FORCE_INSERT_LINE_FEED = "ForceInsertLineFeed";
 
-        /// <summary>
-        /// 本文のちらつきを少しだけ抑制する
-        /// </summary>
-        private const string KEY_SUPPRESS_BODY_TEXT_FLICKER = "SuppressBodyTextFlicker";
+        ///// <summary>
+        ///// 本文のちらつきを少しだけ抑制する
+        ///// </summary>
+        //private const string KEY_SUPPRESS_BODY_TEXT_FLICKER = "SuppressBodyTextFlicker";
 
         #endregion
 
@@ -173,8 +173,8 @@
             // メール本文に1行の文字数毎に改行を入れる
             this.ForceInsertLineFeed = false;
 
-            // 本文のちらつきを少しだけ抑制する
-            this.SuppressBodyTextFlicker = false;
+            //// 本文のちらつきを少しだけ抑制する
+            //this.SuppressBodyTextFlicker = false;
 
             //
             // 読み込み
@@ -314,13 +314,13 @@
             get; set;
         }
 
-        /// <summary>
-        /// 本文のちらつきを少しだけ抑制する
-        /// </summary>
-        public bool SuppressBodyTextFlicker
-        {
-            get; set;
-        }
+        ///// <summary>
+        ///// 本文のちらつきを少しだけ抑制する
+        ///// </summary>
+        //public bool SuppressBodyTextFlicker
+        //{
+        //    get; set;
+        //}
 
         #endregion
 
@@ -413,15 +413,15 @@
                 }
             }
 
-            // 本文のちらつきを少しだけ抑制する
-            {
-                string suppressBodyTextFlickerStr = this.GetString(SECTION_NAME, KEY_SUPPRESS_BODY_TEXT_FLICKER, "False");
-                if (suppressBodyTextFlickerStr.ToLower() == "true") {
-                    this.SuppressBodyTextFlicker = true;
-                } else {
-                    this.SuppressBodyTextFlicker = false;
-                }
-            }
+            //// 本文のちらつきを少しだけ抑制する
+            //{
+            //    string suppressBodyTextFlickerStr = this.GetString(SECTION_NAME, KEY_SUPPRESS_BODY_TEXT_FLICKER, "False");
+            //    if (suppressBodyTextFlickerStr.ToLower() == "true") {
+            //        this.SuppressBodyTextFlicker = true;
+            //    } else {
+            //        this.SuppressBodyTextFlicker = false;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -469,10 +469,10 @@
                 this.WriteString(SECTION_NAME, KEY_FORCE_INSERT_LINE_FEED, this.ForceInsertLineFeed ? "True" : "False");
             }
 
-            // 本文のちらつきを少しだけ抑制する
-            {
-                this.WriteString(SECTION_NAME, KEY_SUPPRESS_BODY_TEXT_FLICKER, this.SuppressBodyTextFlicker ? "True" : "False");
-            }
+            //// 本文のちらつきを少しだけ抑制する
+            //{
+            //    this.WriteString(SECTION_NAME, KEY_SUPPRESS_BODY_TEXT_FLICKER, this.SuppressBodyTextFlicker ? "True" : "False");
+            //}
         }
 
         /// <summary>
