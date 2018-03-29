@@ -83,7 +83,7 @@
             // 
             // textBoxSmtpPassword
             // 
-            this.textBoxSmtpPassword.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.textBoxSmtpPassword.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxSmtpPassword.Location = new System.Drawing.Point(120, 93);
             this.textBoxSmtpPassword.Name = "textBoxSmtpPassword";
             this.textBoxSmtpPassword.Size = new System.Drawing.Size(310, 19);
@@ -101,7 +101,7 @@
             // 
             // textBoxSmtpUserId
             // 
-            this.textBoxSmtpUserId.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.textBoxSmtpUserId.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxSmtpUserId.Location = new System.Drawing.Point(120, 68);
             this.textBoxSmtpUserId.Name = "textBoxSmtpUserId";
             this.textBoxSmtpUserId.Size = new System.Drawing.Size(310, 19);
@@ -119,7 +119,7 @@
             // 
             // textBoxSmtpServer
             // 
-            this.textBoxSmtpServer.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.textBoxSmtpServer.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxSmtpServer.Location = new System.Drawing.Point(120, 18);
             this.textBoxSmtpServer.Name = "textBoxSmtpServer";
             this.textBoxSmtpServer.Size = new System.Drawing.Size(313, 19);

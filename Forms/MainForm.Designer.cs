@@ -207,7 +207,7 @@
             this.textBoxMailBody.ColumnLine = 0;
             this.textBoxMailBody.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F);
             this.textBoxMailBody.HideSelection = false;
-            this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxMailBody.Location = new System.Drawing.Point(78, 98);
             this.textBoxMailBody.Multiline = true;
             this.textBoxMailBody.Name = "textBoxMailBody";
@@ -225,7 +225,7 @@
             this.textBoxMailSubject.ColumnLine = 0;
             this.textBoxMailSubject.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBoxMailSubject.HideSelection = false;
-            this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxMailSubject.Location = new System.Drawing.Point(78, 53);
             this.textBoxMailSubject.Name = "textBoxMailSubject";
             this.textBoxMailSubject.Size = new System.Drawing.Size(374, 39);
@@ -269,7 +269,7 @@
             // 
             this.textBoxMailTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxMailTo.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.textBoxMailTo.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxMailTo.Location = new System.Drawing.Point(78, 3);
             this.textBoxMailTo.Name = "textBoxMailTo";
             this.textBoxMailTo.Size = new System.Drawing.Size(314, 19);
@@ -280,7 +280,7 @@
             // 
             this.textBoxMailFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxMailFrom.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.textBoxMailFrom.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.textBoxMailFrom.Location = new System.Drawing.Point(78, 28);
             this.textBoxMailFrom.Name = "textBoxMailFrom";
             this.textBoxMailFrom.Size = new System.Drawing.Size(314, 19);
