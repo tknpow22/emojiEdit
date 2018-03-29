@@ -99,6 +99,7 @@
       <DependentUpon>SelectTemplateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MailMessage.cs" />
+    <Compile Include="MailMessageUtils.cs" />
     <Compile Include="MsgBox.cs" />
     <Compile Include="Forms\SendMailForm.cs">
       <SubType>Form</SubType>

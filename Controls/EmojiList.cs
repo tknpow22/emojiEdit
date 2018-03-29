@@ -56,6 +56,9 @@
 
         #region 処理
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public EmojiList()
         {
             InitializeComponent();
@@ -248,7 +251,7 @@
         /// <summary>
         /// 処理後にフォーカスを戻す絵文字対応のテキストボックス
         /// </summary>
-        public EmojiTextBox PlaybackFocusTBox
+        public EmojiTextBox PlaybackFocusTextBox
         {
             get; set;
         }
@@ -341,8 +344,8 @@
                 // タブ上の絵文字の選択表示を変更する
                 this.ChangeEmojiSelection(emojiGroupNo, emojiId);
 
-                if (this.PlaybackFocusTBox != null) {
-                    EmojiTextBox emojiTextBox = this.PlaybackFocusTBox;
+                if (this.PlaybackFocusTextBox != null) {
+                    EmojiTextBox emojiTextBox = this.PlaybackFocusTextBox;
                     emojiTextBox.Focus();
                     emojiTextBox.SelectedText = new string(emoji.Unicode, 1);
                     emojiTextBox.SelectionLength = 0;
@@ -643,8 +646,8 @@
         /// </summary>
         private void PlaybackFocus()
         {
-            if (this.PlaybackFocusTBox != null) {
-                this.PlaybackFocusTBox.Focus();
+            if (this.PlaybackFocusTextBox != null) {
+                this.PlaybackFocusTextBox.Focus();
             }
         }
 

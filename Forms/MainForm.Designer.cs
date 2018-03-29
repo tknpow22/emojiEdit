@@ -312,7 +312,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.emojiList.Location = new System.Drawing.Point(4, 4);
             this.emojiList.Name = "emojiList";
-            this.emojiList.PlaybackFocusTBox = null;
+            this.emojiList.PlaybackFocusTextBox = null;
             this.emojiList.Size = new System.Drawing.Size(460, 314);
             this.emojiList.TabIndex = 0;
             // 
