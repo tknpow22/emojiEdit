@@ -33,7 +33,7 @@
 
             text = text.Replace("\r\n", "\n");
             text = text.Replace("\r", "\n");
-            text = text.Replace("\t", " ");
+            text = text.Replace("\t", "\x20");
             string[] textList = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // サムネイル画像作成用の文字列を取得する

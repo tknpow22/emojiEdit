@@ -241,7 +241,7 @@
                 return;
             }
 
-            this.textBoxMailTo.Text = string.Format("{0}{1}{2}", mailTo, (0 < mailTo.Length) ? " " : "", mailAddr);
+            this.textBoxMailTo.Text = string.Format("{0}{1}{2}", mailTo, (0 < mailTo.Length) ? "\x20" : "", mailAddr);
         }
 
         /// <summary>
