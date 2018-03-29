@@ -772,9 +772,12 @@
         /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
         private void ChangeEmojiTab(int direction)
         {
-            if (direction != -1 && direction != 1) {
+            System.Diagnostics.Debug.Assert(direction == -1 || direction == 1);
+
+            if (this.tabControlEmojiList.TabCount == 0) {
                 return;
             }
+
             int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
             tabIndexCurrent += this.tabControlEmojiList.TabCount + direction;
             int tabIndexNew = tabIndexCurrent % this.tabControlEmojiList.TabCount;
