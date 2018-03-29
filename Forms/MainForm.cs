@@ -118,14 +118,7 @@
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
-                int emojiId = this.currentEmojiIds[emojiGroupNo];
-                if (0 <= emojiId) {
-                    this.tabControlEmojiList.SelectedIndex = emojiGroupNo - 1;
-                    this.ScrollToCurrentEmoji(emojiGroupNo, emojiId);
-                    break;
-                }
-            }
+            this.ShowFirstGroupFirstEmoji();
 
             this.ActiveControl = this.textBoxMailSubject;
         }
@@ -213,6 +206,8 @@
 
                 // 絵文字一覧を初期設定する
                 this.InitializeEmojiList();
+
+                this.ShowFirstGroupFirstEmoji();
 
                 #endregion
 
@@ -546,6 +541,26 @@
         #region 絵文字一覧
 
         /// <summary>
+        /// 絵文字一覧タブコントロール - MouseClick
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControlEmojiList_MouseClick(object sender, MouseEventArgs e)
+        {
+            (this.lastActiveEmojiTextBox ?? this.textBoxMailBody).Focus();
+        }
+
+        /// <summary>
+        /// 絵文字一覧タブページコントロール - MouseClick
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabEmojiGroupX_MouseClick(object sender, MouseEventArgs e)
+        {
+            (this.lastActiveEmojiTextBox ?? this.textBoxMailBody).Focus();
+        }
+
+        /// <summary>
         /// 絵文字アイコン - MouseClick
         /// </summary>
         /// <param name="sender"></param>
@@ -609,17 +624,17 @@
                 // タブ上の絵文字の選択表示を変更する
                 this.ChangeEmojiSelection(emojiGroupNo, emojiId);
 
-                if (this.lastActiveEmojiTextBox == null) {
-                    this.lastActiveEmojiTextBox = this.textBoxMailBody;
-                }
-                lastActiveEmojiTextBox.Focus();
+                EmojiTextBox emojiTextBox = this.lastActiveEmojiTextBox ?? this.textBoxMailBody;
+                emojiTextBox.Focus();
+                emojiTextBox.SelectedText = new string(emoji.Unicode, 1);
+                emojiTextBox.SelectionLength = 0;
 
-                lastActiveEmojiTextBox.SelectedText = new string(emoji.Unicode, 1);
-                lastActiveEmojiTextBox.SelectionLength = 0;
+                this.lastActiveEmojiTextBox = emojiTextBox;
 
                 // 履歴へ登録する
                 this.RegistEmojiHistory(jiscode);
             }
+            (this.lastActiveEmojiTextBox ?? this.textBoxMailBody).Focus();
         }
 
         #endregion
@@ -783,6 +798,7 @@
                 tabEmojiGroup.TabIndex = emojiGroupNo;
                 tabEmojiGroup.Text = DataBags.Emojis.CaptionList[emojiGroupNo - 1];
                 tabEmojiGroup.UseVisualStyleBackColor = true;
+                tabEmojiGroup.MouseClick += new MouseEventHandler(this.tabEmojiGroupX_MouseClick);
 
                 this.tabControlEmojiList.Controls.Add(tabEmojiGroup);
                 this.emojiPictureBoxes.Add(pictureEmojiGroup);
@@ -884,6 +900,9 @@
         /// <param name="emojiId">絵文字ID</param>
         private void ChangeEmojiSelection(int emojiGroupNo, int emojiId)
         {
+            if (emojiGroupNo <= 0) {
+                return;
+            }
             this.DrawSelectedEmojiFrame(false, emojiGroupNo);
             this.currentEmojiIds[emojiGroupNo] = emojiId;
             this.DrawSelectedEmojiFrame(true, emojiGroupNo);
@@ -925,6 +944,21 @@
         }
 
         /// <summary>
+        ///  絵文字一覧の最初のページの最初の絵文字にスクロールする
+        /// </summary>
+        private void ShowFirstGroupFirstEmoji()
+        {
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+                int emojiId = this.currentEmojiIds[emojiGroupNo];
+                if (0 <= emojiId) {
+                    this.tabControlEmojiList.SelectedIndex = emojiGroupNo - 1;
+                    this.ScrollToCurrentEmoji(emojiGroupNo, emojiId);
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
         /// 絵文字一覧のタブページの現在の絵文字にスクロールする
         /// </summary>
         /// <param name="emojiGroupNo">絵文字グループ番号</param>
@@ -939,7 +973,6 @@
             TabPage tabPage = this.tabControlEmojiList.TabPages[emojiGroupNo - 1];
             tabPage.AutoScrollPosition = new Point(x, y);
         }
-
 
         /// <summary>
         /// 絵文字グループをタブに表示する際の行数を取得する

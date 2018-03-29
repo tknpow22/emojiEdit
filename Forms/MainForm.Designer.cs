@@ -355,6 +355,7 @@
             this.tabControlEmojiList.SelectedIndex = 0;
             this.tabControlEmojiList.Size = new System.Drawing.Size(440, 216);
             this.tabControlEmojiList.TabIndex = 2;
+            this.tabControlEmojiList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControlEmojiList_MouseClick);
             // 
             // MainForm
             // 

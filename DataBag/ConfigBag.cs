@@ -42,7 +42,7 @@
         #region キー名
 
         /// <summary>
-        /// 絵文字履歴
+        /// 絵文字履歴(JIS コード一覧)
         /// </summary>
         private const string KEY_EMOJI_HISTORY = "EmojiHistory";
 
@@ -126,7 +126,7 @@
         private string filepath;
 
         /// <summary>
-        /// 絵文字履歴
+        /// 絵文字履歴(JIS コード一覧)
         /// </summary>
         private List<int> emojiHistory;
 
@@ -148,7 +148,7 @@
         /// </summary>
         public override void Initialize()
         {
-            // 絵文字履歴
+            // 絵文字履歴(JIS コード一覧)
             this.emojiHistory = new List<int>();
 
             // 画面サイズ
@@ -204,21 +204,21 @@
             }
         }
 
-        #region 絵文字履歴
+        #region 絵文字履歴(JIS コード一覧)
 
         /// <summary>
-        /// 絵文字履歴を取得する
+        /// 絵文字履歴(JIS コード一覧)を取得する
         /// </summary>
-        /// <returns>絵文字履歴</returns>
+        /// <returns>絵文字履歴(JIS コード一覧)</returns>
         public List<int> GetEmojiHistory()
         {
             return new List<int>(this.emojiHistory);
         }
 
         /// <summary>
-        /// 絵文字履歴を設定する
+        /// 絵文字履歴(JIS コード一覧)を設定する
         /// </summary>
-        /// <param name="emojiHistory">絵文字履歴</param>
+        /// <param name="emojiHistory">絵文字履歴(JIS コード一覧)</param>
         public void SetEmojiHistory(List<int> emojiHistory)
         {
             this.emojiHistory = new List<int>(emojiHistory);
@@ -331,7 +331,7 @@
         /// </summary>
         private void Load()
         {
-            // 絵文字履歴
+            // 絵文字履歴(JIS コード一覧)
             {
                 string emojiHistoryText = this.GetString(SECTION_NAME, KEY_EMOJI_HISTORY);
 
@@ -429,7 +429,7 @@
         /// </summary>
         private void Save()
         {
-            // 絵文字履歴
+            // 絵文字履歴(JIS コード一覧)
             {
                 string hexaStr = Commons.GetHexaStringsFromCodes(this.emojiHistory);
                 this.WriteString(SECTION_NAME, KEY_EMOJI_HISTORY, hexaStr);
