@@ -352,6 +352,10 @@
                             numberOfIcon = lnumberOfIcon;
                         }
                     }
+
+                    if (string.IsNullOrEmpty(caption) || numberOfIcon <= 0) {
+                        continue;
+                    }
                     captions.Add(caption);
                     numberOfIcons.Add(numberOfIcon);
                 }

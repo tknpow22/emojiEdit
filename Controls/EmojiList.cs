@@ -10,6 +10,23 @@
     /// </summary>
     partial class EmojiList : UserControl
     {
+        #region 定義
+
+        /// <summary>
+        /// タブ上の絵文字選択の方向定義
+        /// </summary>
+        public enum ChangeCurrentDirection
+        {
+            Up,
+            Down,
+            Left,
+            Right,
+        }
+
+        #endregion
+
+        #region 変数
+
         /// <summary>
         /// 履歴に表示する絵文字アイコンの最大数
         /// </summary>
@@ -51,6 +68,8 @@
         /// 履歴一覧イメージのサイズ(高さ)
         /// </summary>
         private int emojiHistoryMaxHeight;
+
+        #endregion
 
         #endregion
 
@@ -194,11 +213,9 @@
         /// <summary>
         /// 絵文字一覧の現在表示しているタブ上の絵文字選択を変更する
         /// </summary>
-        /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
-        public void ChangeEmojiSelectionOnCurrentGroup(int direction)
+        /// <param name="direction">ChangeCurrentDirection</param>
+        public void ChangeEmojiSelectionOnCurrentGroup(ChangeCurrentDirection direction)
         {
-            System.Diagnostics.Debug.Assert(direction == -1 || direction == 1);
-
             if (this.tabControlEmojiList.TabCount == 0) {
                 return;
             }
@@ -212,17 +229,65 @@
                 return;
             }
 
-            for (int countLimit = 0; countLimit < emojiGroupJiscodeMap.Count; ++countLimit) {
-                emojiIdCurrent += emojiGroupJiscodeMap.Count + direction;
-                int emojiIdNew = emojiIdCurrent % emojiGroupJiscodeMap.Count;
-                int jiscode = emojiGroupJiscodeMap[emojiIdNew];
-                if (jiscode != 0) {
-                    emojiIdCurrent = emojiIdNew;
-                    break;
+            int emojiCount = emojiGroupJiscodeMap.Count;
+            if (emojiCount == 0) {
+                return;
+            }
+
+            int cols = DataBags.Config.MaxEmojiListCols;
+            int rows = this.GetGroupRows(emojiCount);
+            int fullCount = cols * rows;
+
+            int step;
+            switch (direction) {
+            case ChangeCurrentDirection.Up:
+                step = -DataBags.Config.MaxEmojiListCols;
+                break;
+            case ChangeCurrentDirection.Down:
+                step = DataBags.Config.MaxEmojiListCols;
+                break;
+            case ChangeCurrentDirection.Left:
+                step = -1;
+                break;
+            case ChangeCurrentDirection.Right:
+            default:
+                step = 1;
+                break;
+            }
+
+            int limit;
+            if (direction == ChangeCurrentDirection.Left || direction == ChangeCurrentDirection.Right) {
+                limit = emojiCount;
+            } else {
+                limit = rows;
+            }
+
+            int emojiIdNext = emojiIdCurrent;
+            for (int i = 0; i < limit; ++i) {
+                emojiIdNext += step;
+                if (emojiIdNext < 0) {
+                    if (direction == ChangeCurrentDirection.Left) {
+                        emojiIdNext = emojiCount - 1;
+                    } else {
+                        emojiIdNext = emojiIdNext + fullCount;
+                    }
+                } else if (emojiCount <= emojiIdNext) {
+                    if (direction == ChangeCurrentDirection.Right) {
+                        emojiIdNext = 0;
+                    } else {
+                        emojiIdNext = emojiIdNext - fullCount;
+                    }
+                }
+
+                if (0 <= emojiIdNext && emojiIdNext < emojiCount) {
+                    int jiscode = emojiGroupJiscodeMap[emojiIdNext];
+                    if (jiscode != 0) {
+                        break;
+                    }
                 }
             }
 
-            this.ChangeEmojiSelection(emojiGroupNo, emojiIdCurrent);
+            this.ChangeEmojiSelection(emojiGroupNo, emojiIdNext);
         }
 
         /// <summary>

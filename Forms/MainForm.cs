@@ -373,9 +373,23 @@
                 }
                 break;
 
+            case Keys.Up:
+                if (!e.Shift && e.Control) {
+                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Up);
+                    e.Handled = true;
+                }
+                break;
+
+            case Keys.Down:
+                if (!e.Shift && e.Control) {
+                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Down);
+                    e.Handled = true;
+                }
+                break;
+
             case Keys.Left:
                 if (!e.Shift && e.Control) {
-                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(-1);
+                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Left);
                     e.Handled = true;
                 } else if (e.Shift && e.Control) {
                     this.emojiList.ChangeEmojiGroupSelection(-1);
@@ -385,7 +399,7 @@
 
             case Keys.Right:
                 if (!e.Shift && e.Control) {
-                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(1);
+                    this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Right);
                     e.Handled = true;
                 } else if (e.Shift && e.Control) {
                     this.emojiList.ChangeEmojiGroupSelection(1);
