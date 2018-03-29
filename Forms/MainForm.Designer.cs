@@ -223,6 +223,7 @@
             this.textBoxMailBody.TabIndex = 9;
             this.textBoxMailBody.Tag = "本文";
             this.textBoxMailBody.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
+            this.textBoxMailBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
             // 
             // textBoxMailSubject
             // 
@@ -238,6 +239,7 @@
             this.textBoxMailSubject.TabIndex = 7;
             this.textBoxMailSubject.Tag = "件名";
             this.textBoxMailSubject.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
+            this.textBoxMailSubject.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
             // 
             // buttonSelectMailFrom
             // 

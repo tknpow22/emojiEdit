@@ -393,6 +393,16 @@
         }
 
         /// <summary>
+        /// メール本文に1行の文字数毎に改行を入れる - CheckedChanged
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxForceInsertLineFeed_CheckedChanged(object sender, EventArgs e)
+        {
+            DataBags.Config.ForceInsertLineFeed = this.checkBoxForceInsertLineFeed.Checked;
+        }
+
+        /// <summary>
         /// 絵文字対応の TextBox - Enter
         /// </summary>
         /// <param name="sender"></param>
@@ -403,13 +413,33 @@
         }
 
         /// <summary>
-        /// メール本文に1行の文字数毎に改行を入れる - CheckedChanged
+        /// 絵文字対応の TextBox - KeyDown
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void checkBoxForceInsertLineFeed_CheckedChanged(object sender, EventArgs e)
+        private void EmojiTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            DataBags.Config.ForceInsertLineFeed = this.checkBoxForceInsertLineFeed.Checked;
+            EmojiTextBox emojiTextBox = sender as EmojiTextBox;
+
+            switch (e.KeyCode) {
+            case Keys.Left:
+                if (e.Control) {
+                    this.ChangeEmojiTab(-1);
+                    e.Handled = true;
+                }
+                break;
+
+            case Keys.Right:
+                if (e.Control) {
+                    this.ChangeEmojiTab(1);
+                    e.Handled = true;
+                }
+                break;
+            }
+
+            if (e.Handled && emojiTextBox != null) {
+                emojiTextBox.Focus();
+            }
         }
 
         /// <summary>
@@ -734,6 +764,22 @@
                 }
             }
             this.pictureEmojiGroup0.Image = emojiGroupHistoryImage;
+        }
+
+        /// <summary>
+        /// 表示しているタブを変更する
+        /// </summary>
+        /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
+        private void ChangeEmojiTab(int direction)
+        {
+            if (direction != -1 && direction != 1) {
+                return;
+            }
+            int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
+            tabIndexCurrent += this.tabControlEmojiList.TabCount + direction;
+            int tabIndexNew = tabIndexCurrent % this.tabControlEmojiList.TabCount;
+
+            this.tabControlEmojiList.SelectedIndex = tabIndexNew;
         }
 
         #endregion
