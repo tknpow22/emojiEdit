@@ -53,6 +53,16 @@
         /// </summary>
         private EmojiTemplate selectedEmojiTemplate;
 
+        /// <summary>
+        /// 非選択時のテンプレート枠の色
+        /// </summary>
+        private Pen unselectedEmojiTemplateFramePen = Pens.LightGray;
+
+        /// <summary>
+        /// 選択時のテンプレート枠の色
+        /// </summary>
+        private Pen selectedEmojiTemplateFramePen = Pens.LightSkyBlue;
+
         #endregion
 
         #endregion
@@ -264,7 +274,7 @@
 
                         graphics.DrawImage(template.Thumbnail, desRect, srcRect, GraphicsUnit.Pixel);
 
-                        graphics.DrawRectangle(Pens.Black, desRect);
+                        graphics.DrawRectangle(this.unselectedEmojiTemplateFramePen, desRect);
                         ++row;
                     }
                 }
@@ -305,7 +315,7 @@
             if (image != null) {
                 using (Graphics graphics = Graphics.FromImage(image)) {
                     Rectangle desRect = new Rectangle(x, y, this.aTemplateImageWidth, this.aTemplateImageHeight);
-                    graphics.DrawRectangle(Pens.Red, desRect);
+                    graphics.DrawRectangle(this.selectedEmojiTemplateFramePen, desRect);
                 }
                 this.pictureTemplateList.Image = image;
             }
@@ -321,7 +331,7 @@
                 if (image != null) {
                     using (Graphics graphics = Graphics.FromImage(image)) {
                         Rectangle desRect = new Rectangle(0, this.selectedY, this.aTemplateImageWidth, this.aTemplateImageHeight);
-                        graphics.DrawRectangle(Pens.Black, desRect);
+                        graphics.DrawRectangle(this.unselectedEmojiTemplateFramePen, desRect);
                     }
                     this.pictureTemplateList.Image = image;
                 }

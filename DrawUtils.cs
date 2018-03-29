@@ -31,6 +31,9 @@
         /// <param name="graphics">ピクチャーイメージの Graphics</param>
         public static void DrawImage(Image image, int col, int row, Graphics graphics)
         {
+            Rectangle frameRect = new Rectangle(Commons.FRAME_WIDTH * col, Commons.FRAME_HEIGHT * row, Commons.ICON_WIDTH + 1, Commons.ICON_HEIGHT + 1);
+            graphics.DrawRectangle(Pens.White, frameRect);
+
             Rectangle srcRect = new Rectangle(0, 0, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
             Rectangle desRect = new Rectangle(Commons.FRAME_WIDTH * col + 1, Commons.FRAME_HEIGHT * row + 1, Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
 
