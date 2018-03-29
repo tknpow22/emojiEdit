@@ -10,7 +10,7 @@
     /// <summary>
     /// 絵文字対応の TextBox
     /// </summary>
-    public partial class EmojiTextBox : TextBox
+    partial class EmojiTextBox : TextBox
     {
         #region Windows API
 

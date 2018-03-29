@@ -51,17 +51,12 @@
             this.textBoxMailFrom = new System.Windows.Forms.TextBox();
             this.labelTo = new System.Windows.Forms.Label();
             this.lableFrom = new System.Windows.Forms.Label();
-            this.labelHistory = new System.Windows.Forms.Label();
-            this.panelHistory = new System.Windows.Forms.Panel();
-            this.pictureEmojiGroup0 = new System.Windows.Forms.PictureBox();
-            this.tabControlEmojiList = new System.Windows.Forms.TabControl();
+            this.emojiList = new emojiEdit.EmojiList();
             this.mainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
-            this.panelHistory.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureEmojiGroup0)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonEmojiTest
@@ -177,9 +172,7 @@
             // splitContainerMain.Panel2
             // 
             this.splitContainerMain.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.splitContainerMain.Panel2.Controls.Add(this.labelHistory);
-            this.splitContainerMain.Panel2.Controls.Add(this.panelHistory);
-            this.splitContainerMain.Panel2.Controls.Add(this.tabControlEmojiList);
+            this.splitContainerMain.Panel2.Controls.Add(this.emojiList);
             this.splitContainerMain.Panel2MinSize = 200;
             this.splitContainerMain.Size = new System.Drawing.Size(464, 625);
             this.splitContainerMain.SplitterDistance = 300;
@@ -312,50 +305,16 @@
             this.lableFrom.TabIndex = 3;
             this.lableFrom.Text = "送信元(&T):";
             // 
-            // labelHistory
+            // emojiList
             // 
-            this.labelHistory.AutoSize = true;
-            this.labelHistory.Location = new System.Drawing.Point(10, 5);
-            this.labelHistory.Name = "labelHistory";
-            this.labelHistory.Size = new System.Drawing.Size(31, 12);
-            this.labelHistory.TabIndex = 0;
-            this.labelHistory.Text = "履歴:";
-            // 
-            // panelHistory
-            // 
-            this.panelHistory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelHistory.AutoScroll = true;
-            this.panelHistory.BackColor = System.Drawing.Color.White;
-            this.panelHistory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelHistory.Controls.Add(this.pictureEmojiGroup0);
-            this.panelHistory.Location = new System.Drawing.Point(12, 20);
-            this.panelHistory.Name = "panelHistory";
-            this.panelHistory.Size = new System.Drawing.Size(440, 76);
-            this.panelHistory.TabIndex = 1;
-            // 
-            // pictureEmojiGroup0
-            // 
-            this.pictureEmojiGroup0.Location = new System.Drawing.Point(0, 0);
-            this.pictureEmojiGroup0.Name = "pictureEmojiGroup0";
-            this.pictureEmojiGroup0.Size = new System.Drawing.Size(100, 50);
-            this.pictureEmojiGroup0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureEmojiGroup0.TabIndex = 0;
-            this.pictureEmojiGroup0.TabStop = false;
-            this.pictureEmojiGroup0.Tag = "0";
-            this.pictureEmojiGroup0.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureEmojiGroupX_MouseClick);
-            // 
-            // tabControlEmojiList
-            // 
-            this.tabControlEmojiList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.emojiList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlEmojiList.Location = new System.Drawing.Point(12, 102);
-            this.tabControlEmojiList.Name = "tabControlEmojiList";
-            this.tabControlEmojiList.SelectedIndex = 0;
-            this.tabControlEmojiList.Size = new System.Drawing.Size(440, 216);
-            this.tabControlEmojiList.TabIndex = 2;
-            this.tabControlEmojiList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControlEmojiList_MouseClick);
+            this.emojiList.Location = new System.Drawing.Point(4, 4);
+            this.emojiList.Name = "emojiList";
+            this.emojiList.PlaybackFocusTBox = null;
+            this.emojiList.Size = new System.Drawing.Size(460, 314);
+            this.emojiList.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -380,12 +339,8 @@
             this.splitContainerMain.Panel1.ResumeLayout(false);
             this.splitContainerMain.Panel1.PerformLayout();
             this.splitContainerMain.Panel2.ResumeLayout(false);
-            this.splitContainerMain.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
-            this.panelHistory.ResumeLayout(false);
-            this.panelHistory.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureEmojiGroup0)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -414,10 +369,7 @@
         private System.Windows.Forms.TextBox textBoxMailFrom;
         private System.Windows.Forms.Label labelTo;
         private System.Windows.Forms.Label lableFrom;
-        private System.Windows.Forms.Label labelHistory;
-        private System.Windows.Forms.Panel panelHistory;
-        private System.Windows.Forms.PictureBox pictureEmojiGroup0;
-        private System.Windows.Forms.TabControl tabControlEmojiList;
+        private EmojiList emojiList;
     }
 }
 
