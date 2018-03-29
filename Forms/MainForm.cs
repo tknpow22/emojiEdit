@@ -1,5 +1,6 @@
 ﻿namespace emojiEdit
 {
+    using MimeKit;
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -7,7 +8,6 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
-    using MimeKit;
 
     /// <summary>
     /// メイン画面
@@ -24,7 +24,7 @@
         /// <summary>
         /// 履歴に表示する絵文字アイコンの最大数
         /// </summary>
-        private int maxHistoryCount;
+        private int maxEmojiHistoryCount;
 
         /// <summary>
         /// 絵文字アイコンの文字コード(JIS)をグループ毎に管理する(インデックス 0 は履歴用)
@@ -37,15 +37,25 @@
         private List<Image> emojiGroupImages;
 
         /// <summary>
+        /// 絵文字アイコンイメージを保持するピクチャーボックスを保持する(インデックス 0 は履歴用で未使用)
+        /// </summary>
+        private List<PictureBox> emojiPictureBoxes;
+
+        /// <summary>
+        /// 絵文字アイコンの現在の選択インデックス位置を保持する(インデックス 0 は履歴用で未使用)
+        /// </summary>
+        private List<int> currentEmojiIds;
+
+        /// <summary>
         /// 履歴の行数
         /// </summary>
-        private int historyRows;
+        private int emojiHistoryRows;
 
         /// <summary>
         /// 履歴一覧イメージのサイズ
         /// </summary>
-        private int historyMaxWidth;
-        private int historyMaxHeight;
+        private int emojiHistoryMaxWidth;
+        private int emojiHistoryMaxHeight;
 
         #endregion
 
@@ -69,8 +79,6 @@
             // 本文設定
             this.textBoxMailBody.Font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
             this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
-            //// 本文のちらつきを少しだけ抑制する
-            //this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
             // コンテキストメニューを追加する
             {
                 ContextMenuStrip contextMenuStrip = this.textBoxMailBody.ContextMenuStrip;
@@ -110,6 +118,15 @@
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+                int emojiId = this.currentEmojiIds[emojiGroupNo];
+                if (0 <= emojiId) {
+                    this.tabControlEmojiList.SelectedIndex = emojiGroupNo - 1;
+                    this.ScrollToCurrentEmoji(emojiGroupNo, emojiId);
+                    break;
+                }
+            }
+
             this.ActiveControl = this.textBoxMailSubject;
         }
 
@@ -189,7 +206,6 @@
                 return;
             } else if (dr == EditSettingsFormResult.Ok) {
 
-                //this.textBoxMailBody.SuppressFlicker = DataBags.Config.SuppressBodyTextFlicker;
                 this.textBoxMailBody.ColumnLine = DataBags.Config.MaxBodyCols;
                 this.textBoxMailBody.Invalidate();
 
@@ -368,8 +384,8 @@
                 // 絵文字ID: グループ内でのID
                 for (int emojiId = 0; emojiId < numEmojiInGroup; ++emojiId) {
 
-                    int col = emojiId % DataBags.Config.MaxEmojiListCols;
-                    int row = rowsCount + (emojiId / DataBags.Config.MaxEmojiListCols);
+                    (int col, int row) = this.GetColAndRowFromEmojiId(emojiId);
+                    row = rowsCount + row;
                     if (col == 0 && row != 0) {
                         this.textBoxMailBody.Text += "\r\n";
                     }
@@ -382,7 +398,7 @@
                     }
                 }
 
-                int rows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+                int rows = this.GetGroupRows(numEmojiInGroup);
                 rowsCount += rows;
             }
 
@@ -419,25 +435,54 @@
         /// <param name="e"></param>
         private void EmojiTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            EmojiTextBox emojiTextBox = sender as EmojiTextBox;
+            EmojiTextBox emojiTextBox = (EmojiTextBox)sender;
 
             switch (e.KeyCode) {
+            case Keys.Enter:
+                if (e.Control) {
+                    Emoji emoji = this.GetCurrentEmoji();
+                    if (emoji != null) {
+                        emojiTextBox.SelectedText = new string(emoji.Unicode, 1);
+                        emojiTextBox.SelectionLength = 0;
+
+                        // 履歴へ登録する
+                        this.RegistEmojiHistory(emoji.Jiscode);
+                    }
+                    e.SuppressKeyPress = true;
+                    e.Handled = true;
+                }
+                break;
+
+            case Keys.Up:
+                if (e.Control) {
+                    this.ChangeEmojiSelectionOnCurrentGroup(-1);
+                    e.Handled = true;
+                }
+                break;
+
+            case Keys.Down:
+                if (e.Control) {
+                    this.ChangeEmojiSelectionOnCurrentGroup(1);
+                    e.Handled = true;
+                }
+                break;
+
             case Keys.Left:
                 if (e.Control) {
-                    this.ChangeEmojiTab(-1);
+                    this.ChangeEmojiGroupSelection(-1);
                     e.Handled = true;
                 }
                 break;
 
             case Keys.Right:
                 if (e.Control) {
-                    this.ChangeEmojiTab(1);
+                    this.ChangeEmojiGroupSelection(1);
                     e.Handled = true;
                 }
                 break;
             }
 
-            if (e.Handled && emojiTextBox != null) {
+            if (e.Handled) {
                 emojiTextBox.Focus();
             }
         }
@@ -522,12 +567,12 @@
 
             int numEmojiInGroup;
             if (emojiGroupNo == 0) {
-                numEmojiInGroup = maxHistoryCount;
+                numEmojiInGroup = this.maxEmojiHistoryCount;
             } else {
                 numEmojiInGroup = DataBags.Emojis.NumIconInGroupList[emojiGroupNo - 1];
             }
 
-            int maxRows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+            int rows = this.GetGroupRows(numEmojiInGroup);
 
             int col = e.X / Commons.FRAME_WIDTH;
             int row = e.Y / Commons.FRAME_HEIGHT;
@@ -538,26 +583,31 @@
                 return;
             }
 
-            if (0 <= row && row < maxRows) {
+            if (0 <= row && row < rows) {
                 // OK
             } else {
                 return;
             }
 
-            List<int> emojiGroupCodeMap = emojiGroupJiscodeMaps[emojiGroupNo];
+            List<int> emojiGroupJiscodeMap = this.emojiGroupJiscodeMaps[emojiGroupNo];
 
-            int index = DataBags.Config.MaxEmojiListCols * row + col;
+            int emojiId = this.GetEmojiIdFromColAndRow(col, row);
 
-            if (index < emojiGroupCodeMap.Count) {
+            if (emojiId < emojiGroupJiscodeMap.Count) {
                 // OK
             } else {
                 return;
             }
 
-            int code = emojiGroupCodeMap[index];
-            Emoji emoji = DataBags.Emojis.GetFromJiscode(code);
+            int jiscode = emojiGroupJiscodeMap[emojiId];
+            Emoji emoji = null;
+            if (jiscode != 0) {
+                emoji = DataBags.Emojis.GetFromJiscode(jiscode);
+            }
+            if (emoji != null) {
 
-            if (code != 0 && emoji != null) {
+                // タブ上の絵文字の選択表示を変更する
+                this.ChangeEmojiSelection(emojiGroupNo, emojiId);
 
                 if (this.lastActiveEmojiTextBox == null) {
                     this.lastActiveEmojiTextBox = this.textBoxMailBody;
@@ -568,17 +618,7 @@
                 lastActiveEmojiTextBox.SelectionLength = 0;
 
                 // 履歴へ登録する
-                List<int> emojiGroupCodeMapHistory = emojiGroupJiscodeMaps[0];
-                if (!emojiGroupCodeMapHistory.Contains(code)) {
-                    emojiGroupCodeMapHistory.Insert(0, code);
-                    emojiGroupCodeMapHistory.RemoveRange(maxHistoryCount, 1);
-                } else {
-                    emojiGroupCodeMapHistory.Remove(code);
-                    emojiGroupCodeMapHistory.Insert(0, code);
-                }
-                this.RedrawEmojiListHistory();
-
-                DataBags.Config.SetEmojiHistory(emojiGroupCodeMapHistory);
+                this.RegistEmojiHistory(jiscode);
             }
         }
 
@@ -614,7 +654,7 @@
         private void InitializeEmojiListValues()
         {
             // 履歴に表示する絵文字アイコンの最大数
-            this.maxHistoryCount = DataBags.Config.MaxEmojiListCols * 2; // NOTE: MAX_COLS の倍数とすること
+            this.maxEmojiHistoryCount = DataBags.Config.MaxEmojiListCols * 2; // NOTE: MAX_COLS の倍数とすること
 
             // 絵文字アイコンの文字コード(JIS)をグループ毎に管理する(インデックス 0 は履歴用)
             this.emojiGroupJiscodeMaps = new List<List<int>>();
@@ -622,12 +662,18 @@
             // 絵文字アイコンをグループ毎に管理する(インデックス 0 は履歴用)
             this.emojiGroupImages = new List<Image>();
 
+            // 絵文字アイコンイメージを保持するピクチャーボックスを保持する(インデックス 0 は履歴用で未使用)
+            this.emojiPictureBoxes = new List<PictureBox>();
+
+            // 現在選択されている絵文字IDをグループごとに管理する(インデックス 0 は履歴用で未使用: ただし実装の都合上、履歴用にも値が設定されるが使っていない)
+            this.currentEmojiIds = new List<int>();
+
             // 履歴の行数
-            this.historyRows = (int)Math.Ceiling((decimal)maxHistoryCount / DataBags.Config.MaxEmojiListCols);
+            this.emojiHistoryRows = (int)Math.Ceiling((decimal)this.maxEmojiHistoryCount / DataBags.Config.MaxEmojiListCols);
 
             // 履歴一覧イメージのサイズ
-            this.historyMaxWidth = Commons.FRAME_WIDTH * DataBags.Config.MaxEmojiListCols;
-            this.historyMaxHeight = Commons.FRAME_HEIGHT * historyRows;
+            this.emojiHistoryMaxWidth = Commons.FRAME_WIDTH * DataBags.Config.MaxEmojiListCols;
+            this.emojiHistoryMaxHeight = Commons.FRAME_HEIGHT * this.emojiHistoryRows;
         }
 
         /// <summary>
@@ -639,23 +685,24 @@
             // 絵文字アイコン(履歴)
             //
             {
-                List<int> emojiGroupCodeMapHistory = DataBags.Config.GetEmojiHistory();
-                int emojiHistoryCount = emojiGroupCodeMapHistory.Count;
+                List<int> emojiGroupJiscodeMapHistory = DataBags.Config.GetEmojiHistory();
+                int emojiHistoryCount = emojiGroupJiscodeMapHistory.Count;
 
-                emojiGroupCodeMapHistory.AddRange(new int[maxHistoryCount]);
-                emojiGroupCodeMapHistory.RemoveRange(maxHistoryCount, emojiHistoryCount);
+                emojiGroupJiscodeMapHistory.AddRange(new int[this.maxEmojiHistoryCount]);
+                emojiGroupJiscodeMapHistory.RemoveRange(this.maxEmojiHistoryCount, emojiHistoryCount);
 
-                emojiGroupJiscodeMaps.Add(emojiGroupCodeMapHistory);
+                this.emojiGroupJiscodeMaps.Add(emojiGroupJiscodeMapHistory);
             }
             {
-                Image emojiGroupHistoryImage = new Bitmap(historyMaxWidth, historyMaxHeight);
+                Image emojiGroupHistoryImage = new Bitmap(this.emojiHistoryMaxWidth, this.emojiHistoryMaxHeight);
 
                 using (Graphics graphics = Graphics.FromImage(emojiGroupHistoryImage)) {
-                    graphics.FillRectangle(Brushes.White, 0, 0, historyMaxWidth, historyMaxHeight);
+                    graphics.FillRectangle(Brushes.White, 0, 0, this.emojiHistoryMaxWidth, this.emojiHistoryMaxHeight);
                 }
 
-                emojiGroupImages.Add(emojiGroupHistoryImage);
+                this.emojiGroupImages.Add(emojiGroupHistoryImage);
             }
+            this.currentEmojiIds.Add(-1);   // インデックス 0 は履歴用で未使用
 
             //
             // 絵文字アイコン
@@ -665,13 +712,13 @@
 
                 int numEmojiInGroup = DataBags.Emojis.NumIconInGroupList[emojiGroupNo - 1];
 
-                int rows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+                int rows = this.GetGroupRows(numEmojiInGroup);
 
                 int maxWidth = Commons.FRAME_WIDTH * DataBags.Config.MaxEmojiListCols;
                 int maxHeight = Commons.FRAME_HEIGHT * rows;
 
-                List<int> emojiGroupCodeMap = new List<int>();
-                emojiGroupCodeMap.AddRange(new int[numEmojiInGroup]);
+                List<int> emojiGroupJiscodeMap = new List<int>();
+                emojiGroupJiscodeMap.AddRange(new int[numEmojiInGroup]);   // 個数分作成する。初期値は 0
 
                 Image emojiGroupImage = new Bitmap(maxWidth, maxHeight);
 
@@ -680,24 +727,28 @@
                     graphics.FillRectangle(Brushes.White, 0, 0, maxWidth, maxHeight);
 
                     // 絵文字ID: グループ内でのID
+                    int firstEmojiId = -1;  // 有効な最初の絵文字ID
                     for (int emojiId = 0; emojiId < numEmojiInGroup; ++emojiId) {
 
                         Emoji emoji = DataBags.Emojis.Get(emojiGroupNo, emojiId);
                         if (emoji == null) {
                             continue;
                         }
+                        emojiGroupJiscodeMap[emojiId] = emoji.Jiscode;
 
-                        emojiGroupCodeMap[emojiId] = emoji.Jiscode;
-
-                        int col = emojiId % DataBags.Config.MaxEmojiListCols;
-                        int row = emojiId / DataBags.Config.MaxEmojiListCols;
+                        (int col, int row) = this.GetColAndRowFromEmojiId(emojiId);
 
                         DrawUtils.DrawImage(emoji.Image, col, row, graphics);
+
+                        if (firstEmojiId == -1) {
+                            firstEmojiId = emojiId;
+                        }
                     }
+                    this.currentEmojiIds.Add(firstEmojiId);
                 }
 
-                emojiGroupImages.Add(emojiGroupImage);
-                emojiGroupJiscodeMaps.Add(emojiGroupCodeMap);
+                this.emojiGroupImages.Add(emojiGroupImage);
+                this.emojiGroupJiscodeMaps.Add(emojiGroupJiscodeMap);
             }
         }
 
@@ -710,6 +761,8 @@
 
             this.tabControlEmojiList.Controls.Clear();
 
+            this.emojiPictureBoxes.Add(null);   // インデックス 0 は履歴用で未使用
+
             for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
 
                 PictureBox pictureEmojiGroup = new PictureBox();
@@ -721,7 +774,7 @@
                 pictureEmojiGroup.Tag = string.Format("{0}", emojiGroupNo);
                 pictureEmojiGroup.MouseClick += new MouseEventHandler(this.pictureEmojiGroupX_MouseClick);
 
-                pictureEmojiGroup.Image = emojiGroupImages[emojiGroupNo];
+                pictureEmojiGroup.Image = this.emojiGroupImages[emojiGroupNo];
 
                 TabPage tabEmojiGroup = new TabPage();
                 tabEmojiGroup.AutoScroll = true;
@@ -732,9 +785,15 @@
                 tabEmojiGroup.UseVisualStyleBackColor = true;
 
                 this.tabControlEmojiList.Controls.Add(tabEmojiGroup);
+                this.emojiPictureBoxes.Add(pictureEmojiGroup);
             }
 
             this.tabControlEmojiList.ResumeLayout();
+
+            // 絵文字一覧のタブ用のイメージに現在の選択マークを表示する
+            for (int emojiGroupNo = 1; emojiGroupNo <= DataBags.Emojis.NumIconInGroupList.Length; ++emojiGroupNo) {
+                this.DrawSelectedEmojiFrame(true, emojiGroupNo);
+            }
         }
 
         /// <summary>
@@ -742,23 +801,22 @@
         /// </summary>
         private void RedrawEmojiListHistory()
         {
-            List<int> emojiGroupCodeMapHistory = emojiGroupJiscodeMaps[0];
-            Image emojiGroupHistoryImage = emojiGroupImages[0];
+            List<int> emojiGroupJiscodeMapHistory = this.emojiGroupJiscodeMaps[0];
+            Image emojiGroupHistoryImage = this.emojiGroupImages[0];
 
             using (Graphics graphics = Graphics.FromImage(emojiGroupHistoryImage)) {
 
-                graphics.FillRectangle(Brushes.White, 0, 0, historyMaxWidth, historyMaxHeight);
+                graphics.FillRectangle(Brushes.White, 0, 0, this.emojiHistoryMaxWidth, this.emojiHistoryMaxHeight);
 
-                for (int i = 0; i < emojiGroupCodeMapHistory.Count; ++i) {
+                for (int emojiId = 0; emojiId < emojiGroupJiscodeMapHistory.Count; ++emojiId) {
 
-                    int code = emojiGroupCodeMapHistory[i];
-                    Emoji emoji = DataBags.Emojis.GetFromJiscode(code);
+                    int jiscode = emojiGroupJiscodeMapHistory[emojiId];
+                    Emoji emoji = DataBags.Emojis.GetFromJiscode(jiscode);
                     if (emoji == null) {
                         continue;
                     }
 
-                    int col = i % DataBags.Config.MaxEmojiListCols;
-                    int row = i / DataBags.Config.MaxEmojiListCols;
+                    (int col, int row) = this.GetColAndRowFromEmojiId(emojiId);
 
                     DrawUtils.DrawImage(emoji.Image, col, row, graphics);
                 }
@@ -767,10 +825,10 @@
         }
 
         /// <summary>
-        /// 表示しているタブを変更する
+        /// 絵文字一覧の表示しているタブを変更する
         /// </summary>
         /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
-        private void ChangeEmojiTab(int direction)
+        private void ChangeEmojiGroupSelection(int direction)
         {
             System.Diagnostics.Debug.Assert(direction == -1 || direction == 1);
 
@@ -783,6 +841,188 @@
             int tabIndexNew = tabIndexCurrent % this.tabControlEmojiList.TabCount;
 
             this.tabControlEmojiList.SelectedIndex = tabIndexNew;
+        }
+
+        /// <summary>
+        /// 絵文字一覧の現在表示しているタブ上の絵文字選択を変更する
+        /// </summary>
+        /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
+        private void ChangeEmojiSelectionOnCurrentGroup(int direction)
+        {
+            System.Diagnostics.Debug.Assert(direction == -1 || direction == 1);
+
+            if (this.tabControlEmojiList.TabCount == 0) {
+                return;
+            }
+
+            int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
+            int emojiGroupNo = tabIndexCurrent + 1;
+
+            List<int> emojiGroupJiscodeMap = this.emojiGroupJiscodeMaps[emojiGroupNo];
+            int emojiIdCurrent = this.currentEmojiIds[emojiGroupNo];
+            if (emojiIdCurrent < 0) {
+                return;
+            }
+
+            for (int countLimit = 0; countLimit < emojiGroupJiscodeMap.Count; ++countLimit) {
+                emojiIdCurrent += emojiGroupJiscodeMap.Count + direction;
+                int emojiIdNew = emojiIdCurrent % emojiGroupJiscodeMap.Count;
+                int jiscode = emojiGroupJiscodeMap[emojiIdNew];
+                if (jiscode != 0) {
+                    emojiIdCurrent = emojiIdNew;
+                    break;
+                }
+            }
+
+            this.ChangeEmojiSelection(emojiGroupNo, emojiIdCurrent);
+        }
+
+        /// <summary>
+        /// タブ上の絵文字の選択表示を変更する
+        /// </summary>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        /// <param name="emojiId">絵文字ID</param>
+        private void ChangeEmojiSelection(int emojiGroupNo, int emojiId)
+        {
+            this.DrawSelectedEmojiFrame(false, emojiGroupNo);
+            this.currentEmojiIds[emojiGroupNo] = emojiId;
+            this.DrawSelectedEmojiFrame(true, emojiGroupNo);
+            this.RerawEmojiGroup(emojiGroupNo);
+            this.ScrollToCurrentEmoji(emojiGroupNo, emojiId);
+        }
+
+        /// <summary>
+        /// 絵文字一覧のタブ用のイメージに現在の選択マークを表示/非表示する
+        /// </summary>
+        /// <param name="selected">選択する場合 true、解除の場合 false</param>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        private void DrawSelectedEmojiFrame(bool selected, int emojiGroupNo)
+        {
+            int emojiIdCurrent = this.currentEmojiIds[emojiGroupNo];
+            if (emojiIdCurrent < 0) {
+                return;
+            }
+
+            (int col, int row) = this.GetColAndRowFromEmojiId(emojiIdCurrent);
+
+            Image image = this.emojiGroupImages[emojiGroupNo];
+
+            using (Graphics graphics = Graphics.FromImage(image)) {
+                DrawUtils.DrawFrame(selected, col, row, graphics);
+            }
+        }
+
+        /// <summary>
+        /// 絵文字一覧のタブページを再描画する
+        /// </summary>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        private void RerawEmojiGroup(int emojiGroupNo)
+        {
+            PictureBox pictureBox = this.emojiPictureBoxes[emojiGroupNo];
+            if (pictureBox != null) {
+                pictureBox.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// 絵文字一覧のタブページの現在の絵文字にスクロールする
+        /// </summary>
+        /// <param name="emojiGroupNo">絵文字グループ番号</param>
+        /// <param name="emojiId">絵文字ID</param>
+        private void ScrollToCurrentEmoji(int emojiGroupNo, int emojiId)
+        {
+            (int col, int row) = this.GetColAndRowFromEmojiId(emojiId);
+
+            int x = Commons.FRAME_WIDTH * col;
+            int y = Commons.FRAME_HEIGHT * row;
+
+            TabPage tabPage = this.tabControlEmojiList.TabPages[emojiGroupNo - 1];
+            tabPage.AutoScrollPosition = new Point(x, y);
+        }
+
+
+        /// <summary>
+        /// 絵文字グループをタブに表示する際の行数を取得する
+        /// </summary>
+        /// <param name="numEmojiInGroup">グループ内の絵文字の数</param>
+        /// <returns>行数</returns>
+        private int GetGroupRows(int numEmojiInGroup)
+        {
+            int rows = (int)Math.Ceiling((decimal)numEmojiInGroup / DataBags.Config.MaxEmojiListCols);
+            return rows;
+        }
+
+        /// <summary>
+        /// 絵文字ID から表示する列と行を得る
+        /// </summary>
+        /// <param name="emojiId">絵文字ID</param>
+        /// <returns>(列,行)</returns>
+        private (int, int) GetColAndRowFromEmojiId(int emojiId)
+        {
+            int col = emojiId % DataBags.Config.MaxEmojiListCols;
+            int row = emojiId / DataBags.Config.MaxEmojiListCols;
+
+            return (col, row);
+        }
+
+        /// <summary>
+        /// 列と行から絵文字IDを得る
+        /// </summary>
+        /// <param name="col">列</param>
+        /// <param name="row">行</param>
+        /// <returns>絵文字ID</returns>
+        private int GetEmojiIdFromColAndRow(int col, int row)
+        {
+            int emojiId = DataBags.Config.MaxEmojiListCols * row + col;
+            return emojiId;
+        }
+
+        /// <summary>
+        /// 現在表示されているタブの選択されている絵文字を得る
+        /// </summary>
+        /// <returns>Emoji、選択がない場合は null</returns>
+        private Emoji GetCurrentEmoji()
+        {
+            if (this.tabControlEmojiList.TabCount == 0) {
+                return null;
+            }
+
+            int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
+            int emojiGroupNo = tabIndexCurrent + 1;
+
+            int emojiIdCurrent = this.currentEmojiIds[emojiGroupNo];
+            if (emojiIdCurrent < 0) {
+                return null;
+            }
+
+            List<int> emojiGroupJiscodeMap = this.emojiGroupJiscodeMaps[emojiGroupNo];
+
+            int jiscode = emojiGroupJiscodeMap[emojiIdCurrent];
+            if (jiscode == 0) {
+                return null;
+            }
+
+            Emoji emoji = DataBags.Emojis.GetFromJiscode(jiscode);
+            return emoji;
+        }
+
+        /// <summary>
+        ///  絵文字履歴を登録する
+        /// </summary>
+        /// <param name="jiscode">登録する JIS コード</param>
+        private void RegistEmojiHistory(int jiscode)
+        {
+            List<int> emojiGroupJiscodeMapHistory = this.emojiGroupJiscodeMaps[0];
+            if (!emojiGroupJiscodeMapHistory.Contains(jiscode)) {
+                emojiGroupJiscodeMapHistory.Insert(0, jiscode);
+                emojiGroupJiscodeMapHistory.RemoveRange(this.maxEmojiHistoryCount, 1);
+            } else {
+                emojiGroupJiscodeMapHistory.Remove(jiscode);
+                emojiGroupJiscodeMapHistory.Insert(0, jiscode);
+            }
+            this.RedrawEmojiListHistory();
+
+            DataBags.Config.SetEmojiHistory(emojiGroupJiscodeMapHistory);
         }
 
         #endregion
