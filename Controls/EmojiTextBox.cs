@@ -101,14 +101,14 @@
         private EditWordBreakProcDelegate editWordBreakProcDelegate;
 
         /// <summary>
-        /// 通常文字の選択前景色
+        /// 選択された文字の前景色
         /// </summary>
-        private Color selectionNormalCharForeColor;
+        private Color selectionCharForeColor;
 
         /// <summary>
-        /// 通常文字の選択背景色
+        /// 選択された文字の背景色
         /// </summary>
-        private Color selectionNormalCharBackColor;
+        private Color selectionCharBackColor;
 
         #endregion
 
@@ -175,11 +175,11 @@
             // EditWordBreakProc を呼び出すためのデリゲート
             this.editWordBreakProcDelegate = new EditWordBreakProcDelegate(this.EditWordBreakProc);
 
-            // 通常文字の選択前景色
-            this.selectionNormalCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
+            // 選択された文字の前景色
+            this.selectionCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
 
-            // 通常文字の選択背景色
-            this.selectionNormalCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
+            // 選択された文字の背景色
+            this.selectionCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
         }
 
         #endregion
@@ -293,7 +293,7 @@
         {
             base.DrawToBitmap(bitmap, targetBounds);
             using (Graphics graphics = Graphics.FromImage(bitmap)) {
-                this.Draw(graphics/*, false*/, true);
+                this.Draw(graphics, true);
             }
         }
 
@@ -329,7 +329,7 @@
                 try {
 
                     using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
-                        this.Draw(graphics/*, false*/, false);
+                        this.Draw(graphics, false);
                     }
 
                 } catch (Exception ex) {
@@ -345,9 +345,8 @@
         /// 絵文字等の描画を行う
         /// </summary>
         /// <param name="graphics">Graphics</param>
-        /// <!--param name="drawNormalChar">通常の文字も描画する場合は true</param-->
         /// <param name="emojiOnly">絵文字のみ描画</param>
-        private void Draw(Graphics graphics/*, bool drawNormalChar*/, bool emojiOnly)
+        private void Draw(Graphics graphics, bool emojiOnly)
         {
             Commons.RECT textBoxRect;
             SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
@@ -426,8 +425,8 @@
                 } else if (drawControlChar) {
                     if (!emojiOnly) {
                         if (targetChar == '\n' && this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                            // 選択されている場合は、反転して描画する
-                            TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionNormalCharForeColor, this.selectionNormalCharBackColor, this.textFormatFlags);
+                            // 改行が選択されている場合は、反転して描画する
+                            TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                         }
                         TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
                     }
