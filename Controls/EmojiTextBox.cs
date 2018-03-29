@@ -17,10 +17,10 @@
         #region 定数
 
         private const int WM_PAINT = 0x000F;
-        private const int WM_HSCROLL = 0x0114;
-        private const int WM_VSCROLL = 0x0115;
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_KEYUP = 0x0101;
+        private const int WM_HSCROLL = 0x0114;
+        private const int WM_VSCROLL = 0x0115;
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
         private const int WM_LBUTTONUP = 0x0202;
@@ -314,10 +314,8 @@
                 invalidate = true;
             } else if (m.Msg == WM_LBUTTONDOWN) {
                 this.mouseLButtonDown = true;
-                ////invalidate = true;  // 少しでも再描画を減らす
             } else if (m.Msg == WM_HSCROLL
                     || m.Msg == WM_VSCROLL
-                    ////|| m.Msg == WM_KEYDOWN  // 少しでも再描画を減らす
                     || m.Msg == WM_KEYUP
                     || m.Msg == WM_MOUSEWHEEL) {
                 invalidate = true;
