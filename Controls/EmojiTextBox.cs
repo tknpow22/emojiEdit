@@ -384,6 +384,8 @@
                 } else if (targetChar == '\n') {
                     controlChar = "\u21B2";
                     drawControlChar = true;
+                } else {
+                    continue;
                 }
 
                 Point point = this.GetPositionFromCharIndex(chIndex);
