@@ -91,11 +91,6 @@
         private ImageAttributes negativeImageAttributes;
 
         /// <summary>
-        /// マウスの左ボタンを押している間 true にするフラグ
-        /// </summary>
-        private bool mouseLButtonDown = false;
-
-        /// <summary>
         /// EditWordBreakProc を呼び出すためのデリゲート
         /// </summary>
         private EditWordBreakProcDelegate editWordBreakProcDelegate;
@@ -309,17 +304,9 @@
             bool invalidate = false;
             if (m.Msg == WM_PAINT) {
                 draw = true;
+            } else if (m.Msg == WM_KEYUP) {
+                invalidate = true;
             } else if (m.Msg == WM_LBUTTONUP) {
-                this.mouseLButtonDown = false;
-                invalidate = true;
-            } else if (m.Msg == WM_LBUTTONDOWN) {
-                this.mouseLButtonDown = true;
-            } else if (m.Msg == WM_HSCROLL
-                    || m.Msg == WM_VSCROLL
-                    || m.Msg == WM_KEYUP
-                    || m.Msg == WM_MOUSEWHEEL) {
-                invalidate = true;
-            } else if (m.Msg == WM_MOUSEMOVE && this.mouseLButtonDown) {
                 invalidate = true;
             }
 

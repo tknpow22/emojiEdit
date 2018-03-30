@@ -330,9 +330,9 @@
         /// <param name="e"></param>
         private void buttonEmojiTest_Click(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
-            this.emojiList.SetTestEmoji(this.textBoxMailBody);
-            Cursor.Current = Cursors.Default;
+            this.textBoxMailBody.Text = this.emojiList.GetTestEmoji();
+            this.textBoxMailBody.Focus();
+            this.textBoxMailBody.SelectionLength = 0;
         }
 
         /// <summary>

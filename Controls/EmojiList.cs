@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Text;
     using System.Windows.Forms;
 
     /// <summary>
@@ -120,14 +121,12 @@
         }
 
         /// <summary>
-        /// テストデータを設定する
+        /// テストデータを取得する
         /// </summary>
-        /// <param name="emojiTextBox">設定先の絵文字対応のテキストボックス</param>
-        public void SetTestEmoji(EmojiTextBox emojiTextBox)
+        /// <returns>テストデータ文字列</returns>
+        public string GetTestEmoji()
         {
-            emojiTextBox.SuspendLayout();
-
-            emojiTextBox.Clear();
+            StringBuilder result = new StringBuilder();
 
             // 行数カウンタ
             int rowsCount = 0;
@@ -142,14 +141,14 @@
                     (int col, int row) = this.GetColAndRowFromEmojiId(emojiId);
                     row = rowsCount + row;
                     if (col == 0 && row != 0) {
-                        emojiTextBox.Text += "\r\n";
+                        result.Append("\r\n");
                     }
 
                     Emoji emoji = DataBags.Emojis.Get(emojiGroupNo, emojiId);
                     if (emoji == null) {
-                        emojiTextBox.Text += "\u3000";
+                        result.Append("\u3000");
                     } else {
-                        emojiTextBox.Text += emoji.Unicode;
+                        result.Append(emoji.Unicode);
                     }
                 }
 
@@ -157,9 +156,7 @@
                 rowsCount += rows;
             }
 
-            emojiTextBox.ResumeLayout();
-            emojiTextBox.Focus();
-            emojiTextBox.SelectionLength = 0;
+            return result.ToString();
         }
 
         /// <summary>
