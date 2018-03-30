@@ -46,9 +46,6 @@
             this.numericUpDownEmojiListCols.Maximum = Commons.MAX_EMOJI_LIST_COLS_MAXIMUM;
 
             this.numericUpDownEmojiListCols.Value = DataBags.Config.MaxEmojiListCols;
-
-            //// 本文のちらつきを少しだけ抑制する
-            //this.checkBoxSuppressBodyTextFlicker.Checked = DataBags.Config.SuppressBodyTextFlicker;
         }
 
         /// <summary>
@@ -119,7 +116,6 @@
 
             DataBags.Config.MaxBodyCols = (int)this.numericUpDownBodyCols.Value;
             DataBags.Config.MaxEmojiListCols = (int)this.numericUpDownEmojiListCols.Value;
-            //DataBags.Config.SuppressBodyTextFlicker = this.checkBoxSuppressBodyTextFlicker.Checked;
 
             this.Close();
         }

@@ -91,6 +91,11 @@
         /// </summary>
         private string iconsConfigFilename;
 
+        /// <summary>
+        /// 空の絵文字イメージ
+        /// </summary>
+        private Image emptyEmoji = new Bitmap(Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
+
         #region 絵文字イメージと索引
 
         /// <summary>
@@ -114,11 +119,6 @@
         private Dictionary<int, Emoji> emojiListFromJiscode = new Dictionary<int, Emoji>();
 
         #endregion
-
-        /// <summary>
-        /// 空の絵文字イメージ
-        /// </summary>
-        private Image emptyEmoji = new Bitmap(Commons.ICON_WIDTH, Commons.ICON_HEIGHT);
 
         #endregion
 

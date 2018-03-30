@@ -77,7 +77,7 @@
     </Compile>
     <Compile Include="DataBag\ConfigBag.cs" />
     <Compile Include="DataBag\DataBags.cs" />
-    <Compile Include="DataBag\TemplateBags.cs" />
+    <Compile Include="DataBag\TemplateBag.cs" />
     <Compile Include="DrawUtils.cs" />
     <Compile Include="Forms\MailAddressForm.cs">
       <SubType>Form</SubType>

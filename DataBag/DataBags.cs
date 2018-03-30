@@ -48,7 +48,7 @@
         /// <summary>
         /// テンプレート
         /// </summary>
-        private static TemplateBags templates = new TemplateBags();
+        private static TemplateBag templates = new TemplateBag();
 
         #endregion
 
@@ -87,7 +87,7 @@
         /// <summary>
         /// テンプレート
         /// </summary>
-        public static TemplateBags Templates
+        public static TemplateBag Templates
         {
             get {
                 return templates;

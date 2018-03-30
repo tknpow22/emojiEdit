@@ -4,9 +4,10 @@
     using System.Text;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using System.Windows.Forms;
     using System.IO;
+
+    #region 例外定義
 
     /// <summary>
     /// テンプレートとして不適切な場合の例外
@@ -14,6 +15,8 @@
     class EmojiTemplateException : Exception
     {
     }
+
+    #endregion
 
     /// <summary>
     /// テンプレート
@@ -111,7 +114,7 @@
     /// <summary>
     /// テンプレートを保持する
     /// </summary>
-    class TemplateBags : CDataBag
+    class TemplateBag : CDataBag
     {
         #region 変数
 
@@ -137,7 +140,7 @@
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public TemplateBags()
+        public TemplateBag()
         {
             this.filepath = Path.Combine(DataBags.Config.AppDirectory, Commons.TEMPLATE_FILE_NAME);
         }
@@ -182,7 +185,8 @@
         /// <param name="emojiTemplate">テンプレート</param>
         public void Add(EmojiTemplate emojiTemplate)
         {
-            this.templateList.Add(emojiTemplate);
+            // 先頭へ追加する
+            this.templateList.Insert(0, emojiTemplate);
         }
 
         #endregion

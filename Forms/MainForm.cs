@@ -12,10 +12,16 @@
     /// </summary>
     public partial class MainForm : Form
     {
+        #region 変数
+
         /// <summary>
         /// 直近にフォーカスを持っていた絵文字対応の TextBox を覚えておく
         /// </summary>
         private EmojiTextBox lastActiveEmojiTextBox;
+
+        #endregion
+
+        #region 処理
 
         /// <summary>
         /// コンストラクタ
@@ -62,6 +68,8 @@
             // 絵文字一覧を初期設定する
             this.emojiList.InitializeEmojiList();
         }
+
+        #endregion
 
         #region イベントハンドラ
 
@@ -289,7 +297,7 @@
                 MailMessage mailMessage = new MailMessage(
                     this.textBoxMailTo.Text.Trim(),
                     this.textBoxMailFrom.Text.Trim(),
-                    this.textBoxMailSubject.Text.Trim(),
+                    this.textBoxMailSubject.Text,
                     this.textBoxMailBody.Text);
 
                 mimeMessage = mailMessage.GetMimeMessage();
@@ -392,7 +400,7 @@
                     this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Left);
                     e.Handled = true;
                 } else if (e.Shift && e.Control) {
-                    this.emojiList.ChangeEmojiGroupSelection(-1);
+                    this.emojiList.ChangeEmojiGroupSelection(EmojiList.ChangeCurrentDirection.Left);
                     e.Handled = true;
                 }
                 break;
@@ -402,7 +410,7 @@
                     this.emojiList.ChangeEmojiSelectionOnCurrentGroup(EmojiList.ChangeCurrentDirection.Right);
                     e.Handled = true;
                 } else if (e.Shift && e.Control) {
-                    this.emojiList.ChangeEmojiGroupSelection(1);
+                    this.emojiList.ChangeEmojiGroupSelection(EmojiList.ChangeCurrentDirection.Right);
                     e.Handled = true;
                 }
                 break;
@@ -435,14 +443,11 @@
 
             switch (toolStripMenuItem.Name) {
             case "AddTemplate": {
-                    if (this.textBoxMailBody.SelectionLength == 0) {
-                        return;
-                    }
-
                     string templateText = this.textBoxMailBody.SelectedText;
                     if (templateText.Length == 0) {
                         return;
                     }
+
                     try {
                         AddTemplateForm dialog = new AddTemplateForm(templateText);
                         dialog.ShowDialog(this);
@@ -451,11 +456,11 @@
                     }
                 }
                 break;
+
             case "SelectTemplate": {
                     SelectTemplateForm dialog = new SelectTemplateForm();
                     SelectTemplateFormResult dr = dialog.ShowDialog(this);
                     if (dr == SelectTemplateFormResult.Cancel) {
-                        this.textBoxMailBody.Focus();
                         return;
                     }
                     if (dr == SelectTemplateFormResult.SelectTemplate) {

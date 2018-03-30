@@ -16,6 +16,8 @@
         /// </summary>
         private static Encoding jisEncoding = Encoding.GetEncoding("ISO-2022-JP");
 
+        #endregion
+
         #region コードの定義
 
         /// <summary>
@@ -45,8 +47,6 @@
 
         #endregion
 
-        #endregion
-
         #region 処理
 
         /// <summary>
@@ -61,8 +61,12 @@
                 byte[] codes = jisEncoding.GetBytes(sch);
 
                 if (8 == codes.Length
-                 && codes[0] == 0x1b && codes[1] == 0x24 && codes[2] == 0x42
-                 && codes[5] == 0x1b && codes[6] == 0x28 && codes[7] == 0x42) {
+                 && codes[0] == JIS_BEGIN_ESCAPE_SEQUENCE[0]
+                 && codes[1] == JIS_BEGIN_ESCAPE_SEQUENCE[1]
+                 && codes[2] == JIS_BEGIN_ESCAPE_SEQUENCE[2]
+                 && codes[5] == JIS_END_ESCAPE_SEQUENCE[0]
+                 && codes[6] == JIS_END_ESCAPE_SEQUENCE[1]
+                 && codes[7] == JIS_END_ESCAPE_SEQUENCE[2]) {
                     result = codes[3] << 8 | codes[4];
                 }
             } catch (Exception ex) {
@@ -93,7 +97,15 @@
                 return null;
             }
 
-            byte[] bistr = new byte[] { 0x1b, 0x24, 0x42, high, low, 0x1b, 0x28, 0x42 };
+            byte[] bistr = new byte[] {
+                JIS_BEGIN_ESCAPE_SEQUENCE[0],
+                JIS_BEGIN_ESCAPE_SEQUENCE[1],
+                JIS_BEGIN_ESCAPE_SEQUENCE[2],
+                high, low,
+                JIS_END_ESCAPE_SEQUENCE[0],
+                JIS_END_ESCAPE_SEQUENCE[1],
+                JIS_END_ESCAPE_SEQUENCE[2]
+            };
 
             string result = null;
             try {
@@ -109,12 +121,13 @@
         /// データが改行かどうかを返す
         /// </summary>
         /// <param name="data">データ</param>
-        /// <param name="dataLength">データ長</param>
-        /// <param name="index">指定のインデックス</param>
+        /// <param name="startIndex">開始インデックス</param>
         /// <returns>改行の場合 true</returns>
-        public static bool IsCrLf(byte[] data, int dataLength, int index)
+        public static bool IsCrLf(byte[] data, int startIndex)
         {
-            if (index <= dataLength - 2 && data[index] == 0x0d && data[index + 1] == 0x0a) {
+            if (startIndex + 2 <= data.Length
+             && data[startIndex] == CRLF[0]
+             && data[startIndex + 1] == CRLF[1]) {
                 return true;
             }
 
@@ -125,12 +138,14 @@
         /// データが JIS 開始シーケンスかを返す
         /// </summary>
         /// <param name="data">データ</param>
-        /// <param name="dataLength">データ長</param>
-        /// <param name="index">指定のインデックス</param>
+        /// <param name="startIndex">開始インデックス</param>
         /// <returns>JIS 開始シーケンスの場合 true</returns>
-        public static bool IsBeginEscapeSequence(byte[] data, int dataLength, int index)
+        public static bool IsBeginEscapeSequence(byte[] data, int startIndex)
         {
-            if (index <= dataLength - 3 && data[index] == 0x1b && data[index + 1] == 0x24 && data[index + 2] == 0x42) {
+            if (startIndex + 3 <= data.Length
+             && data[startIndex] == JIS_BEGIN_ESCAPE_SEQUENCE[0]
+             && data[startIndex + 1] == JIS_BEGIN_ESCAPE_SEQUENCE[1]
+             && data[startIndex + 2] == JIS_BEGIN_ESCAPE_SEQUENCE[2]) {
                 return true;
             }
 
@@ -141,12 +156,14 @@
         /// データが JIS 終了シーケンスかを返す
         /// </summary>
         /// <param name="data">データ</param>
-        /// <param name="dataLength">データ長</param>
-        /// <param name="index">指定のインデックス</param>
+        /// <param name="startIndex">開始インデックス</param>
         /// <returns>JIS 終了シーケンスの場合 true</returns>
-        public static bool IsEndEscapeSequence(byte[] data, int dataLength, int index)
+        public static bool IsEndEscapeSequence(byte[] data, int startIndex)
         {
-            if (index <= dataLength - 3 && data[index] == 0x1b && data[index + 1] == 0x28 && data[index + 2] == 0x42) {
+            if (startIndex + 3 <= data.Length
+             && data[startIndex] == JIS_END_ESCAPE_SEQUENCE[0]
+             && data[startIndex + 1] == JIS_END_ESCAPE_SEQUENCE[1]
+             && data[startIndex + 2] == JIS_END_ESCAPE_SEQUENCE[2]) {
                 return true;
             }
 

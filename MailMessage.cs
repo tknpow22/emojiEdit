@@ -45,7 +45,7 @@
 
         #endregion
 
-        #region 内部変数
+        #region 変数
 
         /// <summary>
         /// 宛先

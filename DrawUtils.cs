@@ -7,10 +7,16 @@
     /// </summary>
     static class DrawUtils
     {
+        #region 変数
+
         /// <summary>
         /// 文字列フォーマット
         /// </summary>
         private static StringFormat sf;
+
+        #endregion
+
+        #region 処理
 
         /// <summary>
         /// 静的コンストラクタ
@@ -55,5 +61,7 @@
 
             graphics.DrawImage(image, desRect, srcRect, GraphicsUnit.Pixel);
         }
+
+        #endregion
     }
 }

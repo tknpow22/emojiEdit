@@ -6,6 +6,9 @@
     using System.Text.RegularExpressions;
     using MimeKit;
 
+    /// <summary>
+    /// メールメッセージ用のユーティリティ
+    /// </summary>
     static class MailMessageUtils
     {
         #region 処理
@@ -17,38 +20,27 @@
         /// <returns>(件名, 本文)</returns>
         public static (string, string) LoadFromFile(string filename)
         {
-            FileInfo file = new FileInfo(filename);
-            byte[] data = new byte[file.Length];
+            byte[] data = File.ReadAllBytes(filename);
 
             string subjectText = "";
             string bodyText = "";
 
-            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
-
-                int length = fs.Read(data, 0, data.Length);
-                if (length != data.Length) {
-                    throw new Exception("形式が違います: ボディ部の長さが足りません。");
+            // ボディ部の先頭を見つける
+            int indexBody = 0;
+            for (int i = 0; i < data.Length; ++i) {
+                if (CharCodeUtils.IsCrLf(data, i) && CharCodeUtils.IsCrLf(data, i + 2)) {
+                    indexBody = i + 4;
+                    break;
                 }
-
-                // ボディ部の先頭を見つける
-                int indexBeginBody = 0;
-                for (int i = 0; i < data.Length; ++i) {
-                    if (CharCodeUtils.IsCrLf(data, data.Length, i) && CharCodeUtils.IsCrLf(data, data.Length, i + 2)) {
-                        indexBeginBody = i + 4;
-                        break;
-                    }
-                }
-                if (indexBeginBody == 0) {
-                    throw new Exception("形式が違います: ボディ部が存在しません。");
-                }
-
-                string headers = Encoding.ASCII.GetString(data, 0, indexBeginBody);
-                if (headers != null) {
-                    subjectText = GetSubjectText(headers);
-                }
-
-                bodyText = GetBodyText(data, indexBeginBody, data.Length - indexBeginBody);
             }
+            if (indexBody == 0) {
+                throw new Exception("形式が違います: ボディ部が存在しません。");
+            }
+
+            string headers = Encoding.ASCII.GetString(data, 0, indexBody);
+            subjectText = GetSubjectText(headers);
+
+            bodyText = GetBodyText(data, indexBody);
 
             return (subjectText, bodyText);
         }
@@ -65,8 +57,8 @@
                 MailMessage mailMessage = new MailMessage(
                     "",
                     "",
-                    subjectText.Trim(),
-                    bodyText.Trim());
+                    subjectText,
+                    bodyText);
 
                 MimeMessage mimeMessage = mailMessage.GetMimeMessage();
                 mimeMessage.WriteTo(fs);
@@ -138,12 +130,12 @@
 
                     for (int i = 0; i < dataPartLength;) {
 
-                        if (CharCodeUtils.IsBeginEscapeSequence(dataPart, dataPartLength, i)) {
+                        if (CharCodeUtils.IsBeginEscapeSequence(dataPart, i)) {
                             inJpn = true;
                             i += 3;
                             continue;
                         }
-                        if (CharCodeUtils.IsEndEscapeSequence(dataPart, dataPartLength, i)) {
+                        if (CharCodeUtils.IsEndEscapeSequence(dataPart, i)) {
                             inJpn = false;
                             i += 3;
                             continue;
@@ -184,9 +176,8 @@
         /// </summary>
         /// <param name="data">ボディ部データ</param>
         /// <param name="offset">オフセット</param>
-        /// <param name="count">バイト数</param>
         /// <returns>本文</returns>
-        private static string GetBodyText(byte[] data, int offset, int count)
+        private static string GetBodyText(byte[] data, int offset)
         {
             bool inJpn = false;
 
@@ -196,18 +187,18 @@
 
             for (int i = offset; i < dataLength;) {
 
-                if (CharCodeUtils.IsCrLf(data, dataLength, i)) {
+                if (CharCodeUtils.IsCrLf(data, i)) {
                     inJpn = false;
                     i += 2;
                     result.Append("\r\n");
                     continue;
                 }
-                if (CharCodeUtils.IsBeginEscapeSequence(data, dataLength, i)) {
+                if (CharCodeUtils.IsBeginEscapeSequence(data, i)) {
                     inJpn = true;
                     i += 3;
                     continue;
                 }
-                if (CharCodeUtils.IsEndEscapeSequence(data, dataLength, i)) {
+                if (CharCodeUtils.IsEndEscapeSequence(data, i)) {
                     inJpn = false;
                     i += 3;
                     continue;

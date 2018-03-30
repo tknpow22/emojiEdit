@@ -293,20 +293,37 @@
         /// <summary>
         /// 絵文字一覧の表示しているタブを変更する
         /// </summary>
-        /// <param name="direction">-1の場合は左, +1の場合は右へ移動する</param>
-        public void ChangeEmojiGroupSelection(int direction)
+        /// <param name="direction">ChangeCurrentDirection</param>
+        public void ChangeEmojiGroupSelection(ChangeCurrentDirection direction)
         {
-            System.Diagnostics.Debug.Assert(direction == -1 || direction == 1);
+            System.Diagnostics.Debug.Assert(direction == ChangeCurrentDirection.Left || direction == ChangeCurrentDirection.Right);
 
             if (this.tabControlEmojiList.TabCount == 0) {
                 return;
             }
 
-            int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
-            tabIndexCurrent += this.tabControlEmojiList.TabCount + direction;
-            int tabIndexNew = tabIndexCurrent % this.tabControlEmojiList.TabCount;
+            int step;
+            switch (direction) {
+            case ChangeCurrentDirection.Left:
+                step = -1;
+                break;
+            case ChangeCurrentDirection.Right:
+            default:
+                step = 1;
+                break;
+            }
 
-            this.tabControlEmojiList.SelectedIndex = tabIndexNew;
+            int tabCount = this.tabControlEmojiList.TabCount;
+
+            int tabIndexCurrent = this.tabControlEmojiList.SelectedIndex;
+            int tabIndexNext = tabIndexCurrent + step;
+            if (tabIndexNext < 0) {
+                tabIndexNext = tabCount - 1;
+            } else if (tabCount <= tabIndexNext) {
+                tabIndexNext = 0;
+            }
+
+            this.tabControlEmojiList.SelectedIndex = tabIndexNext;
         }
 
         #endregion
