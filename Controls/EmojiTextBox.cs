@@ -109,6 +109,12 @@
         private Color selectionCharBackColor;
 
         /// <summary>
+        /// 選択された文字の背景色(ブラシ)
+        /// </summary>
+        private Brush selectionCharBackBrush;
+
+
+        /// <summary>
         /// 描画に使用するフォント
         /// </summary>
         private Font font;
@@ -193,6 +199,9 @@
 
             // 選択された文字の背景色
             this.selectionCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
+
+            // 選択された文字の背景色(ブラシ)
+            this.selectionCharBackBrush = new SolidBrush(this.selectionCharBackColor);
 
             // 描画に使用するフォント
             this.font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
@@ -370,7 +379,9 @@
             Commons.RECT textBoxRect;
             SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
 
-            Size fontSize = TextRenderer.MeasureText(graphics, "■", this.Font, new Size(), this.textFormatFlags);
+            Size fontSize = TextRenderer.MeasureText(graphics, "□", this.Font, new Size(), this.textFormatFlags);
+            // TODO
+            Size fontSize2 = TextRenderer.MeasureText(graphics, "A", this.Font, new Size(), this.textFormatFlags);
 
             // 描画対象の文字列インデックス範囲を得る
             int firstCharIndex = 0;
@@ -394,6 +405,10 @@
                     lastCharIndex = lastIndex;
                 }
             }
+
+
+
+
 
             // 範囲内文字列の絵文字等の表示を行う
             string targetText = this.Text;
@@ -445,9 +460,32 @@
                     }
                 } else if (drawControlChar) {
                     if (!emojiOnly) {
-                        if (targetChar == '\n' && this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                            // 改行が選択されている場合は、反転して描画する
-                            TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                        // TODO:
+
+                        if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                            if (targetChar == '\t') {
+
+                                if (chIndex + 1 < targetText.Length) {
+                                    Point pointNext = this.GetPositionFromCharIndex(chIndex + 1);
+                                    // TODO:
+                                    if (!this.Multiline) {
+                                        pointNext.Y += textBoxRect.Top;
+                                    }
+                                    //this.Get
+                                    //
+                                    graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(pointX, pointY, pointNext.X - pointX, fontSize.Height));
+                                    //int width = fontSize2.Width * 8;
+                                    //graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(pointX, pointY, width, fontSize.Height));
+                                } else {
+                                    int width = fontSize2.Width * 8;
+                                    graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(pointX, pointY, width, fontSize.Height));
+                                    //TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                                }
+
+                            } else if (targetChar == '\n') {
+                                // 改行が選択されている場合は、反転して描画する
+                                TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                            }
                         }
                         TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
                     }

@@ -87,7 +87,7 @@
             {
                 subject = UnifyLinefeedCodes(subject);
                 subject = subject.Replace("\n", "");    // 改行を除く
-                subject = StringUtils.ToZenkakuWithHankakuKanaOnly(subject);
+                subject = StringUtils.ConvertOnlyHankakuToZenkaku(subject);
             }
             this.subject = subject;
 
@@ -95,7 +95,7 @@
             {
                 body = UnifyLinefeedCodes(body);
                 ////body = body.Replace("\n.\n", "\n..\n"); // ドット対応: MailKit が対応するため処理しない
-                body = StringUtils.ToZenkakuWithHankakuKanaOnly(body);
+                body = StringUtils.ConvertOnlyHankakuToZenkaku(body);
             }
             this.body = body;
         }

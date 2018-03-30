@@ -44,7 +44,7 @@
         /// </summary>
         /// <param name="str">元の文字列</param>
         /// <returns>処理後の文字列</returns>
-        public static string ToZenkakuWithHankakuKanaOnly(string str)
+        public static string ConvertOnlyHankakuToZenkaku(string str)
         {
             return Regex.Replace(str, "[\uFF61-\uFF9F]+", match => Microsoft.VisualBasic.Strings.StrConv(match.Value, Microsoft.VisualBasic.VbStrConv.Wide));
         }
