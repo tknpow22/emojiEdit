@@ -17,6 +17,7 @@
         #region 定数
 
         private const int WM_PAINT = 0x000F;
+        private const int WM_SETFONT = 0x0030;
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_KEYUP = 0x0101;
         private const int WM_HSCROLL = 0x0114;
@@ -53,6 +54,8 @@
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, int lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, EditWordBreakProcDelegate lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -105,6 +108,16 @@
         /// </summary>
         private Color selectionCharBackColor;
 
+        /// <summary>
+        /// 描画に使用するフォント
+        /// </summary>
+        private Font font;
+
+        /// <summary>
+        /// マウスの左ボタンを押している間 true にするフラグ
+        /// </summary>
+        private bool mouseLButtonDown = false;
+
         #endregion
 
         #region 処理
@@ -115,6 +128,11 @@
         public EmojiTextBox()
         {
             this.InitializeComponent();
+
+            this.SetStyle(
+                ControlStyles.DoubleBuffer
+                | ControlStyles.UserPaint
+                | ControlStyles.AllPaintingInWmPaint, true);
 
             //
             // イベントハンドラを設定する
@@ -175,6 +193,9 @@
 
             // 選択された文字の背景色
             this.selectionCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
+
+            // 描画に使用するフォント
+            this.font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
         }
 
         #endregion
@@ -274,6 +295,7 @@
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+            SendMessage(this.Handle, WM_SETFONT, this.font.ToHfont(), 1);
             if (!this.DesignMode && this.Multiline) {
                 SendMessage(this.Handle, EM_SETWORDBREAKPROC, 0, this.editWordBreakProcDelegate);
             }
@@ -288,8 +310,19 @@
         {
             base.DrawToBitmap(bitmap, targetBounds);
             using (Graphics graphics = Graphics.FromImage(bitmap)) {
-                this.Draw(graphics, true);
+                this.Draw(graphics, false, true);
             }
+        }
+
+        /// <summary>
+        /// OnPaint
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            this.Draw(e.Graphics, true, false);
         }
 
         /// <summary>
@@ -300,28 +333,28 @@
         {
             base.WndProc(ref m);
 
-            bool draw = false;
             bool invalidate = false;
-            if (m.Msg == WM_PAINT) {
-                draw = true;
-            } else if (m.Msg == WM_KEYUP) {
+            switch (m.Msg) {
+            case WM_KEYUP:
+            case WM_KEYDOWN:
                 invalidate = true;
-            } else if (m.Msg == WM_LBUTTONUP) {
+                break;
+            case WM_LBUTTONDOWN:
+                this.mouseLButtonDown = true;
                 invalidate = true;
+                break;
+            case WM_MOUSEMOVE:
+                if (this.mouseLButtonDown) {
+                    invalidate = true;
+                }
+                break;
+            case WM_LBUTTONUP:
+                this.mouseLButtonDown = false;
+                invalidate = true;
+                break;
             }
 
-            if (draw) {
-                try {
-
-                    using (Graphics graphics = Graphics.FromHwnd(this.Handle)) {
-                        this.Draw(graphics, false);
-                    }
-
-                } catch (Exception ex) {
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
-
-            } else if (invalidate) {
+            if (invalidate) {
                 this.Invalidate();
             }
         }
@@ -330,8 +363,9 @@
         /// 絵文字等の描画を行う
         /// </summary>
         /// <param name="graphics">Graphics</param>
+        /// <param name="drawNormalChar">通常の文字も描画する場合は true</param>
         /// <param name="emojiOnly">絵文字のみ描画</param>
-        private void Draw(Graphics graphics, bool emojiOnly)
+        private void Draw(Graphics graphics, bool drawNormalChar, bool emojiOnly)
         {
             Commons.RECT textBoxRect;
             SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
@@ -384,8 +418,6 @@
                 } else if (targetChar == '\n') {
                     controlChar = "\u21B2";
                     drawControlChar = true;
-                } else {
-                    continue;
                 }
 
                 Point point = this.GetPositionFromCharIndex(chIndex);
@@ -405,6 +437,8 @@
                     Rectangle destRect = new Rectangle(pointX, pointY, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
 
                     if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                        // 選択されている場合は、反転して描画する
+                        TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                         graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
                     } else {
                         graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
@@ -416,6 +450,12 @@
                             TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                         }
                         TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(pointX, pointY), controlCharColor, this.textFormatFlags);
+                    }
+                } else if (drawNormalChar) {
+                    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                    } else {
+                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(pointX, pointY), this.ForeColor, this.BackColor, this.textFormatFlags);
                     }
                 }
             }
