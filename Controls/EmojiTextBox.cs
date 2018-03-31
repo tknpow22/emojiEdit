@@ -177,9 +177,9 @@
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, EditWordBreakProcDelegate lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, out Commons.RECT lParam);
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int[] lParam);
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int GetSysColor(int nIndex);
 
         #endregion
@@ -430,6 +430,7 @@
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+
             SendMessage(this.Handle, WM_SETFONT, this.displayFont.ToHfont(), 1);
             SendMessage(this.Handle, EM_SETTABSTOPS, 1, new int[] { 32 });  // TABSTOPS: 8 カラムに相当する
             if (!this.DesignMode && this.Multiline) {

@@ -14,7 +14,7 @@
     {
         #region Windows API
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern int GetPrivateProfileString(
                string lpApplicationName,
                string lpKeyName,
@@ -23,7 +23,7 @@
                int nSize,
                string lpFileName);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern int WritePrivateProfileString(
             string lpApplicationName,
             string lpKeyName,
