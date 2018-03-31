@@ -129,6 +129,8 @@
 
         #region 定数
 
+        private const int WM_ERASEBKGND = 0x0014;
+        private const int WM_SETREDRAW = 0x000B;
         private const int WM_PAINT = 0x000F;
         private const int WM_SETFONT = 0x0030;
         private const int WM_KEYDOWN = 0x0100;
@@ -140,6 +142,7 @@
         private const int WM_LBUTTONUP = 0x0202;
         private const int WM_MOUSEWHEEL = 0x020A;
 
+        private const int EM_SETSEL = 0x00B1;
         private const int EM_GETRECT = 0x00B2;
         private const int EM_SETTABSTOPS = 0x00CB;
         private const int EM_GETFIRSTVISIBLELINE = 0x00CE;
@@ -213,6 +216,11 @@
         /// EditWordBreakProc を呼び出すためのデリゲート
         /// </summary>
         private EditWordBreakProcDelegate editWordBreakProcDelegate;
+
+        /// <summary>
+        /// 背景色(ブラシ)
+        /// </summary>
+        private Brush backColorBrush;
 
         /// <summary>
         /// 選択された文字の前景色
@@ -308,6 +316,9 @@
 
             // EditWordBreakProc を呼び出すためのデリゲート
             this.editWordBreakProcDelegate = new EditWordBreakProcDelegate(this.EditWordBreakProc);
+
+            // 背景色(ブラシ)
+            this.backColorBrush = new SolidBrush(this.BackColor);
 
             // 選択された文字の前景色
             this.selectionCharForeColor = GetSystemColor(COLOR_HIGHLIGHTTEXT);
@@ -447,6 +458,9 @@
 
             bool invalidate = false;
             switch (m.Msg) {
+            case EM_SETSEL:
+                invalidate = true;
+                break;
             case WM_KEYUP:
             case WM_KEYDOWN:
                 invalidate = true;
@@ -553,7 +567,6 @@
             if (this.Multiline) {
                 // 最初の位置を得る
                 int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
-                System.Diagnostics.Debug.WriteLine(firstVisibleLine);
                 if (0 <= firstVisibleLine) {
                     int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
                     if (0 <= firstIndex) {
