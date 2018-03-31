@@ -476,6 +476,7 @@
                                 //@SELTABSTOP:    int width = fontSizeHalf.Width * numColumn;
                                 //@SELTABSTOP:    graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(point.X, point.Y, width, fontSize.Height));
                                 //@SELTABSTOP:}
+                                TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                             } else if (targetChar == '\n') {
                                 TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                             }
