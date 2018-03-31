@@ -427,19 +427,6 @@
         }
 
         /// <summary>
-        /// DrawToBitmap
-        /// </summary>
-        /// <param name="bitmap"></param>
-        /// <param name="targetBounds"></param>
-        public new void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
-        {
-            base.DrawToBitmap(bitmap, targetBounds);
-            using (Graphics graphics = Graphics.FromImage(bitmap)) {
-                this.Draw(graphics, false, true);
-            }
-        }
-
-        /// <summary>
         /// OnPaint
         /// </summary>
         /// <param name="e"></param>
@@ -485,7 +472,7 @@
         }
 
         /// <summary>
-        /// 絵文字等の描画を行う
+        /// 絵文字等の描画を行う(固定長のみ対応)
         /// </summary>
         /// <param name="graphics">Graphics</param>
         /// <param name="drawNormalChar">通常の文字も描画する場合は true</param>
@@ -526,7 +513,7 @@
                         TextRenderer.DrawText(graphics, drawDimension.ControlChar, this.displayFont, drawPoint, controlCharColor, this.textFormatFlags);
                     }
 
-                } else if (drawNormalChar) {
+                } else if (drawNormalChar && drawDimension.Type == DrawType.NormalChar) {
 
                     Point drawPoint = new Point(drawDimension.Area.X, drawDimension.Area.Y);
 
@@ -538,7 +525,6 @@
                 }
 
                 if (drawDimension.Selection && !drawDimension.PaddingArea.IsEmpty) {
-                    graphics.FillRectangle(Brushes.Black, drawDimension.PaddingArea);
                     graphics.FillRectangle(this.selectionCharBackBrush, drawDimension.PaddingArea);
                 }
             }
@@ -547,25 +533,6 @@
                 int x = textBoxRect.Left + (baseFontSize.Width * this.ColumnLine);
                 graphics.DrawLine(columnLinePen, new Point(x, 0), new Point(x, this.ClientSize.Height));
             }
-
-        }
-
-        /// <summary>
-        /// 表示座標を微調整する
-        /// FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
-        /// </summary>
-        /// <param name="textBoxRect">EM_GETRECT で取得した RECT 構造体</param>
-        /// <param name="point">調整対象の表示座標</param>
-        /// <returns>調整後の表示座標</returns>
-        private Point FixCharPosition(Commons.RECT textBoxRect, Point point)
-        {
-            Point result = new Point(point.X, point.Y);
-
-            if (!this.Multiline) {
-                result.Y += textBoxRect.Top;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -619,8 +586,7 @@
                 string targetSChar = targetText.Substring(chIndex, 1);
 
                 DrawDimension drawDimension = new DrawDimension(targetSChar);
-                Point pointOrig = this.GetPositionFromCharIndex(chIndex);
-                Point point = this.FixCharPosition(textBoxRect, pointOrig);
+                Point point = this.GetFixedPositionFromCharIndex(textBoxRect, chIndex);
 
                 if (drawDimension.Type == DrawType.Emoji) {
                     drawDimension.Area = new Rectangle(point.X, point.Y, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
@@ -632,8 +598,7 @@
                         int tabColumns = 8 - (columns % 8);
 
                         if (chIndex + 1 < targetText.Length) {
-                            Point pointNextOrig = this.GetPositionFromCharIndex(chIndex + 1);
-                            Point pointNext = this.FixCharPosition(textBoxRect, pointNextOrig);
+                            Point pointNext = this.GetFixedPositionFromCharIndex(textBoxRect, chIndex + 1);
                             drawDimension.PaddingArea = new Rectangle(point.X + baseFontSizeHalf.Width, point.Y, pointNext.X - point.X - baseFontSizeHalf.Width, baseFontSizeHalf.Height);
                         } else {
                             int width = baseFontSizeHalf.Width * tabColumns - baseFontSizeHalf.Width;
@@ -644,7 +609,7 @@
                     } else if (drawDimension.OriginalChar == '\n') {
                         columns = 0;
                     } else if (drawDimension.OriginalChar == '\r') {
-                        // 表示されないので数えない
+                        // 表示されないので columns には何もしない
                     }
 
                 } else if (drawDimension.Type == DrawType.NormalChar) {
@@ -663,7 +628,7 @@
                     // 前行の文字末尾がタブの場合の処理
                     if (prevLine != currentLine && this.SelectionStart <= chIndex - 1 && 0 < drawDimensionList.Count) {
                         DrawDimension prevDrawDimension = drawDimensionList[drawDimensionList.Count - 1];
-                        if (prevDrawDimension.OriginalSChar == "\t") {
+                        if (prevDrawDimension.OriginalChar == '\t') {
                             Rectangle area = prevDrawDimension.Area;
                             prevDrawDimension.PaddingArea = new Rectangle(area.X + area.Width, area.Y, textBoxRect.Right - (area.X + area.Width), area.Height);
                         }
@@ -676,6 +641,25 @@
             }
 
             return drawDimensionList;
+        }
+
+        /// <summary>
+        /// 文字列のインデックスに対応する表示座標を取得する(調整済み)
+        /// FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
+        /// </summary>
+        /// <param name="textBoxRect">EM_GETRECT で取得した RECT 構造体</param>
+        /// <param name="index">インデックス</param>
+        /// <returns>調整済みの表示座標</returns>
+        public Point GetFixedPositionFromCharIndex(Commons.RECT textBoxRect, int index)
+        {
+            Point pointOrig = this.GetPositionFromCharIndex(index);
+            Point result = new Point(pointOrig.X, pointOrig.Y);
+
+            if (!this.Multiline) {
+                result.Y += textBoxRect.Top;
+            }
+
+            return result;
         }
 
         /// <summary>
