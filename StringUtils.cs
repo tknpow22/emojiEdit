@@ -49,16 +49,16 @@
             return Regex.Replace(str, "[\uFF61-\uFF9F]+", match => Microsoft.VisualBasic.Strings.StrConv(match.Value, Microsoft.VisualBasic.VbStrConv.Wide));
         }
 
-        //@SELTABSTOP:/// <summary>
-        //@SELTABSTOP:/// 表示が半分になる文字列で構成されているかを返す(いわゆる半角チェック)
-        //@SELTABSTOP:/// </summary>
-        //@SELTABSTOP:/// <param name="str">テストする文字列</param>
-        //@SELTABSTOP:/// <returns>すべて表示が半分になる文字ならば true</returns>
-        //@SELTABSTOP:public static bool IsHalfSizeDisplay(string str)
-        //@SELTABSTOP:{
-        //@SELTABSTOP:    int encodedLength = sjisEncoding.GetByteCount(str);
-        //@SELTABSTOP:    return encodedLength == str.Length;
-        //@SELTABSTOP:}
+        /// <summary>
+        /// 表示が半分になる文字列で構成されているかを返す(いわゆる半角チェック)
+        /// </summary>
+        /// <param name="str">テストする文字列</param>
+        /// <returns>すべて表示が半分になる文字ならば true</returns>
+        public static bool IsHalfSizeDisplay(string str)
+        {
+            int encodedLength = sjisEncoding.GetByteCount(str);
+            return encodedLength == str.Length;
+        }
 
         #endregion
     }

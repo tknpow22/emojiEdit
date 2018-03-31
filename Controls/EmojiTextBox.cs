@@ -1,6 +1,7 @@
 ﻿namespace emojiEdit
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Drawing;
     using System.Drawing.Imaging;
@@ -12,13 +13,117 @@
     /// </summary>
     partial class EmojiTextBox : TextBox
     {
-        // NOTE: @SELTABSTOP: 選択時、タブストップを反転表示する => 実装しない。
-        //         - タブは原則入力しない(コピペは可能)
-        //         - 実装方法がイマイチなので処理時間がかかりそう(描画がちらつくのはイヤ)
-        //         - 実装方法がイマイチなため、正しく描画されない可能性がある
-        //           ちなみにタブの次のカラム位置の計算はテキストボックスの一番最後の文字がタブコードだったときのためのみ行っている
-        //           (一番最後以外は次の文字の位置で計算できるため)
-        //       いずれ、良い方法が見つかれば実装するかも。。。
+        #region 定義
+
+        /// <summary>
+        /// 表示タイプ(表示領域等の計算で使用する)
+        /// </summary>
+        private enum DrawType
+        {
+            None,
+            Emoji,
+            ControlChar,
+            NormalChar
+        }
+
+        /// <summary>
+        /// 表示情報(表示領域等の計算で使用する)
+        /// </summary>
+        private class DrawDimension
+        {
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="sch"></param>
+            public DrawDimension(string sch)
+            {
+                this.OriginalSChar = sch;
+                this.OriginalChar = sch[0];
+
+                Emoji emoji = DataBags.Emojis.GetFromUnicode(this.OriginalChar);
+                if (emoji != null) {
+                    this.Type = DrawType.Emoji;
+                    this.Emoji = emoji;
+                } else if (this.OriginalChar == '\t') {
+                    this.ControlChar = "\u02EA";
+                    this.Type = DrawType.ControlChar;
+                } else if (this.OriginalChar == '\n') {
+                    this.ControlChar = "\u21B2";
+                    this.Type = DrawType.ControlChar;
+                } else if (this.OriginalChar == '\r') {
+                    this.Type = DrawType.ControlChar;
+                    this.ControlChar = "\r";
+                } else {
+                    this.Type = DrawType.NormalChar;
+                }
+            }
+
+            /// <summary>
+            /// 元の文字(string)
+            /// </summary>
+            public string OriginalSChar
+            {
+                get; private set;
+            }
+
+            /// <summary>
+            /// 元の文字(char)
+            /// </summary>
+            public char OriginalChar
+            {
+                get; private set;
+            }
+
+            /// <summary>
+            /// 表示タイプ
+            /// </summary>
+            public DrawType Type
+            {
+                get; private set;
+            }
+
+            /// <summary>
+            /// 表示エリア
+            /// </summary>
+            public Rectangle Area
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// 表示エリア(パディング用)
+            /// </summary>
+            public Rectangle PaddingArea
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// 選択されているか
+            /// </summary>
+            public bool Selection
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// 絵文字
+            /// </summary>
+            public Emoji Emoji
+            {
+                get; private set;
+            }
+
+            /// <summary>
+            /// 制御文字
+            /// </summary>
+            public string ControlChar
+            {
+                get; private set;
+            }
+        }
+
+        #endregion
 
         #region Windows API
 
@@ -36,7 +141,7 @@
         private const int WM_MOUSEWHEEL = 0x020A;
 
         private const int EM_GETRECT = 0x00B2;
-        //@SELTABSTOP:private const int EM_SETTABSTOPS = 0x00CB;
+        private const int EM_SETTABSTOPS = 0x00CB;
         private const int EM_GETFIRSTVISIBLELINE = 0x00CE;
         private const int EM_SETWORDBREAKPROC = 0x00D0;
 
@@ -69,8 +174,8 @@
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, EditWordBreakProcDelegate lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, out Commons.RECT lParam);
-        //@SELTABSTOP:[DllImport("user32.dll")]
-        //@SELTABSTOP:private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int[] lParam);
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int[] lParam);
         [DllImport("user32.dll")]
         private static extern int GetSysColor(int nIndex);
 
@@ -119,15 +224,15 @@
         /// </summary>
         private Color selectionCharBackColor;
 
-        //@SELTABSTOP:/// <summary>
-        //@SELTABSTOP:/// 選択された文字の背景色(ブラシ)
-        //@SELTABSTOP:/// </summary>
-        //@SELTABSTOP:private Brush selectionCharBackBrush;
+        /// <summary>
+        /// 選択された文字の背景色(ブラシ)
+        /// </summary>
+        private Brush selectionCharBackBrush;
 
         /// <summary>
         /// 描画に使用するフォント
         /// </summary>
-        private Font font;
+        private Font displayFont;
 
         /// <summary>
         /// マウスの左ボタンを押している間 true にするフラグ
@@ -210,11 +315,11 @@
             // 選択された文字の背景色
             this.selectionCharBackColor = GetSystemColor(COLOR_HIGHLIGHT);
 
-            //@SELTABSTOP:// 選択された文字の背景色(ブラシ)
-            //@SELTABSTOP:this.selectionCharBackBrush = new SolidBrush(this.selectionCharBackColor);
+            // 選択された文字の背景色(ブラシ)
+            this.selectionCharBackBrush = new SolidBrush(this.selectionCharBackColor);
 
             // 描画に使用するフォント
-            this.font = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
+            this.displayFont = new Font(Commons.CONTENTS_FONT_NAME, Commons.CONTENTS_FONT_SIZE);
         }
 
         #endregion
@@ -314,8 +419,8 @@
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            SendMessage(this.Handle, WM_SETFONT, this.font.ToHfont(), 1);
-            //@SELTABSTOP:SendMessage(this.Handle, EM_SETTABSTOPS, 1, new int[] { 32 });  // TABSTOPS: 8 カラムに相当する
+            SendMessage(this.Handle, WM_SETFONT, this.displayFont.ToHfont(), 1);
+            SendMessage(this.Handle, EM_SETTABSTOPS, 1, new int[] { 32 });  // TABSTOPS: 8 カラムに相当する
             if (!this.DesignMode && this.Multiline) {
                 SendMessage(this.Handle, EM_SETWORDBREAKPROC, 0, this.editWordBreakProcDelegate);
             }
@@ -390,127 +495,59 @@
             Commons.RECT textBoxRect;
             SendMessage(this.Handle, EM_GETRECT, 0, out textBoxRect);
 
-            Size fontSize = TextRenderer.MeasureText(graphics, "あ", this.Font, new Size(), this.textFormatFlags);
-            //@SELTABSTOP:Size fontSizeHalf = TextRenderer.MeasureText(graphics, "A", this.Font, new Size(), this.textFormatFlags);
+            Size baseFontSize = TextRenderer.MeasureText(graphics, "あ", this.displayFont, new Size(), this.textFormatFlags);
 
-            // 描画対象の文字列インデックス範囲を得る
-            int firstCharIndex = 0;
-            int lastCharIndex = this.TextLength;
-            if (this.Multiline) {
-                // 最初の位置を得る
-                int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
-                if (0 <= firstVisibleLine) {
-                    int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
-                    if (0 <= firstIndex) {
-                        firstCharIndex = firstIndex;
-                    }
-                }
+            List<DrawDimension> drawDimensionList = this.CalcDrawDimensions(graphics, textBoxRect, baseFontSize);
 
-                // 表示行数を得る
-                int rows = this.ClientSize.Height / fontSize.Height;
+            foreach (DrawDimension drawDimension in drawDimensionList) {
 
-                // 最後の位置を得る
-                int lastIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
-                if (0 <= lastIndex) {
-                    lastCharIndex = lastIndex;
-                }
-            }
-
-            //@SELTABSTOP:int virColumn = 0;  // 仮想のカラム位置
-
-            // 範囲内文字列の絵文字等の表示を行う
-            string targetText = this.Text;
-            for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
-                if (chIndex < 0 || targetText.Length <= chIndex) {
-                    break;
-                }
-
-                string targetSChar = targetText.Substring(chIndex, 1);
-                char targetChar = targetSChar[0];
-
-                bool drawEmoji = false;
-                bool drawControlChar = false;
-                string controlChar = "";
-
-                Emoji emoji = DataBags.Emojis.GetFromUnicode(targetChar);
-                if (emoji != null) {
-                    drawEmoji = true;
-                } else if (targetChar == '\t') {
-                    controlChar = "\u02EA";
-                    drawControlChar = true;
-                } else if (targetChar == '\n') {
-                    controlChar = "\u21B2";
-                    drawControlChar = true;
-                }
-
-                Point pointOrig = this.GetPositionFromCharIndex(chIndex);
-                Point point = this.FixCharPosition(textBoxRect, pointOrig);
-
-                if (drawEmoji) {
-                    Image image = emoji.ImageForText;
+                if (drawDimension.Type == DrawType.Emoji) {
+                    Image image = drawDimension.Emoji.ImageForText;
                     Rectangle srcRect = new Rectangle(0, 0, image.Width, image.Height);
-                    Rectangle destRect = new Rectangle(point.X, point.Y, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
+                    Rectangle destRect = drawDimension.Area;
 
-                    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                    if (drawDimension.Selection) {
                         // 選択されている場合は、反転して描画する
-                        TextRenderer.DrawText(graphics, "\u3000", this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                        TextRenderer.DrawText(graphics, "\u3000", this.displayFont, new Point(drawDimension.Area.X, drawDimension.Area.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
                         graphics.DrawImage(image, destRect, srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height, GraphicsUnit.Pixel, this.negativeImageAttributes);
                     } else {
                         graphics.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);
                     }
 
-                    //@SELTABSTOP:virColumn += 2;
+                } else if (drawDimension.Type == DrawType.ControlChar) {
 
-                } else if (drawControlChar) {
-
-                    //@SELTABSTOP:int numColumn = 8 - (virColumn % 8);
                     if (!emojiOnly) {
-                        if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                            // 選択されている場合は、反転の背景を先に描画する
-                            if (targetChar == '\t') {
-                                //@SELTABSTOP:if (chIndex + 1 < targetText.Length) {
-                                //@SELTABSTOP:    Point pointNextOrig = this.GetPositionFromCharIndex(chIndex + 1);
-                                //@SELTABSTOP:    Point pointNext = this.FixCharPosition(textBoxRect, pointNextOrig);
-                                //@SELTABSTOP:    graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(point.X, point.Y, pointNext.X - point.X, fontSize.Height));
-                                //@SELTABSTOP:} else {
-                                //@SELTABSTOP:    int width = fontSizeHalf.Width * numColumn;
-                                //@SELTABSTOP:    graphics.FillRectangle(this.selectionCharBackBrush, new Rectangle(point.X, point.Y, width, fontSize.Height));
-                                //@SELTABSTOP:}
-                                TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
-                            } else if (targetChar == '\n') {
-                                TextRenderer.DrawText(graphics, "\x20", this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
-                            }
-                        }
-                        TextRenderer.DrawText(graphics, controlChar, this.Font, new Point(point.X, point.Y), controlCharColor, this.textFormatFlags);
-                    }
+                        Point drawPoint = new Point(drawDimension.Area.X, drawDimension.Area.Y);
 
-                    //@SELTABSTOP:// NOTE: '\r' は表示されないので数えない
-                    //@SELTABSTOP:if (targetChar == '\t') {
-                    //@SELTABSTOP:    virColumn += numColumn;
-                    //@SELTABSTOP:} else if (targetChar == '\n') {
-                    //@SELTABSTOP:    virColumn = 0;
-                    //@SELTABSTOP:}
+                        if (drawDimension.Selection) {
+                            // 選択されている場合は、反転の背景を先に描画する
+                            TextRenderer.DrawText(graphics, "\x20", this.displayFont, drawPoint, this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                        }
+                        TextRenderer.DrawText(graphics, drawDimension.ControlChar, this.displayFont, drawPoint, controlCharColor, this.textFormatFlags);
+                    }
 
                 } else if (drawNormalChar) {
 
-                    if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
-                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(point.X, point.Y), this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
-                    } else {
-                        TextRenderer.DrawText(graphics, targetSChar, this.Font, new Point(point.X, point.Y), this.ForeColor, this.BackColor, this.textFormatFlags);
-                    }
+                    Point drawPoint = new Point(drawDimension.Area.X, drawDimension.Area.Y);
 
-                    //@SELTABSTOP:if (StringUtils.IsHalfSizeDisplay(targetSChar)) {
-                    //@SELTABSTOP:    virColumn += 1;
-                    //@SELTABSTOP:} else {
-                    //@SELTABSTOP:    virColumn += 2;
-                    //@SELTABSTOP:}
+                    if (drawDimension.Selection) {
+                        TextRenderer.DrawText(graphics, drawDimension.OriginalSChar, this.displayFont, drawPoint, this.selectionCharForeColor, this.selectionCharBackColor, this.textFormatFlags);
+                    } else {
+                        TextRenderer.DrawText(graphics, drawDimension.OriginalSChar, this.displayFont, drawPoint, this.ForeColor, this.BackColor, this.textFormatFlags);
+                    }
+                }
+
+                if (drawDimension.Selection && !drawDimension.PaddingArea.IsEmpty) {
+                    graphics.FillRectangle(Brushes.Black, drawDimension.PaddingArea);
+                    graphics.FillRectangle(this.selectionCharBackBrush, drawDimension.PaddingArea);
                 }
             }
 
             if (!emojiOnly && 0 < this.ColumnLine) {
-                int x = textBoxRect.Left + (fontSize.Width * this.ColumnLine);
+                int x = textBoxRect.Left + (baseFontSize.Width * this.ColumnLine);
                 graphics.DrawLine(columnLinePen, new Point(x, 0), new Point(x, this.ClientSize.Height));
             }
+
         }
 
         /// <summary>
@@ -518,7 +555,8 @@
         /// FIXME: 無理矢理なので .NET Framework の実装によっては破綻する可能性あり
         /// </summary>
         /// <param name="textBoxRect">EM_GETRECT で取得した RECT 構造体</param>
-        /// <param name="point"></param>
+        /// <param name="point">調整対象の表示座標</param>
+        /// <returns>調整後の表示座標</returns>
         private Point FixCharPosition(Commons.RECT textBoxRect, Point point)
         {
             Point result = new Point(point.X, point.Y);
@@ -528,6 +566,116 @@
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 表示領域等を計算する(固定長のみ対応)
+        /// FIXME: 文字末尾にタブがある場合の位置計算がおかしい
+        /// </summary>
+        /// <param name="graphics">Graphics</param>
+        /// <param name="textBoxRect">テキストエリアの領域</param>
+        /// <param name="baseFontSize">ベースとなるフォントサイズ</param>
+        /// <returns>計算した領域情報</returns>
+        private List<DrawDimension> CalcDrawDimensions(Graphics graphics, Commons.RECT textBoxRect, Size baseFontSize)
+        {
+            Size baseFontSizeHalf = TextRenderer.MeasureText(graphics, "A", this.displayFont, new Size(), this.textFormatFlags);
+
+            // 描画対象の文字列インデックス範囲を得る
+            int firstCharIndex = 0;
+            int lastCharIndex = this.TextLength;
+            if (this.Multiline) {
+                // 最初の位置を得る
+                int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
+                System.Diagnostics.Debug.WriteLine(firstVisibleLine);
+                if (0 <= firstVisibleLine) {
+                    int firstIndex = this.GetFirstCharIndexFromLine(firstVisibleLine);
+                    if (0 <= firstIndex) {
+                        firstCharIndex = firstIndex;
+                    }
+                }
+
+                // 表示行数を得る
+                int rows = this.ClientSize.Height / baseFontSize.Height;
+
+                // 最後の位置を得る
+                int lastIndex = this.GetFirstCharIndexFromLine(firstVisibleLine + rows);
+                if (0 <= lastIndex) {
+                    lastCharIndex = lastIndex;
+                }
+            }
+
+            string targetText = this.Text;
+            List<DrawDimension> drawDimensionList = new List<DrawDimension>();
+
+            int columns = 0;
+            int prevLine = this.GetLineFromCharIndex(firstCharIndex);
+            for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
+                if (chIndex < 0 || targetText.Length <= chIndex) {
+                    break;
+                }
+
+                int currentLine = this.GetLineFromCharIndex(chIndex);
+
+                string targetSChar = targetText.Substring(chIndex, 1);
+
+                DrawDimension drawDimension = new DrawDimension(targetSChar);
+                Point pointOrig = this.GetPositionFromCharIndex(chIndex);
+                Point point = this.FixCharPosition(textBoxRect, pointOrig);
+
+                if (drawDimension.Type == DrawType.Emoji) {
+                    drawDimension.Area = new Rectangle(point.X, point.Y, Commons.TEXT_ICON_WIDTH, Commons.TEXT_ICON_HEIGHT);
+                    columns += 2;
+                } else if (drawDimension.Type == DrawType.ControlChar) {
+                    drawDimension.Area = new Rectangle(point.X, point.Y, baseFontSizeHalf.Width, baseFontSizeHalf.Height);
+
+                    if (drawDimension.OriginalChar == '\t') {
+                        int tabColumns = 8 - (columns % 8);
+
+                        if (chIndex + 1 < targetText.Length) {
+                            Point pointNextOrig = this.GetPositionFromCharIndex(chIndex + 1);
+                            Point pointNext = this.FixCharPosition(textBoxRect, pointNextOrig);
+                            drawDimension.PaddingArea = new Rectangle(point.X + baseFontSizeHalf.Width, point.Y, pointNext.X - point.X - baseFontSizeHalf.Width, baseFontSizeHalf.Height);
+                        } else {
+                            int width = baseFontSizeHalf.Width * tabColumns - baseFontSizeHalf.Width;
+                            drawDimension.PaddingArea = new Rectangle(point.X + baseFontSizeHalf.Width, point.Y, width, baseFontSizeHalf.Height);
+                        }
+
+                        columns += tabColumns;
+                    } else if (drawDimension.OriginalChar == '\n') {
+                        columns = 0;
+                    } else if (drawDimension.OriginalChar == '\r') {
+                        // 表示されないので数えない
+                    }
+
+                } else if (drawDimension.Type == DrawType.NormalChar) {
+                    // NOTE: とりあえず固定長で考える
+                    if (StringUtils.IsHalfSizeDisplay(targetSChar)) {
+                        drawDimension.Area = new Rectangle(point.X, point.Y, baseFontSizeHalf.Width, baseFontSizeHalf.Height);
+                        columns += 1;
+                    } else {
+                        drawDimension.Area = new Rectangle(point.X, point.Y, baseFontSize.Width, baseFontSize.Height);
+                        columns += 2;
+                    }
+                }
+                if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                    drawDimension.Selection = true;
+
+                    // 前行の文字末尾がタブの場合の処理
+                    if (prevLine != currentLine && this.SelectionStart <= chIndex - 1 && 0 < drawDimensionList.Count) {
+                        DrawDimension prevDrawDimension = drawDimensionList[drawDimensionList.Count - 1];
+                        if (prevDrawDimension.OriginalSChar == "\t") {
+                            Rectangle area = prevDrawDimension.Area;
+                            prevDrawDimension.PaddingArea = new Rectangle(area.X + area.Width, area.Y, textBoxRect.Right - (area.X + area.Width), area.Height);
+                        }
+                    }
+                }
+
+                prevLine = currentLine;
+
+                drawDimensionList.Add(drawDimension);
+            }
+
+            return drawDimensionList;
         }
 
         /// <summary>
@@ -559,6 +707,6 @@
             return Color.FromArgb(red, green, blue);
         }
 
-        #endregion
+#endregion
     }
 }
