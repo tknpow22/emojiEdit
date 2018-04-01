@@ -562,9 +562,13 @@
         {
             Size baseFontSizeHalf = TextRenderer.MeasureText(graphics, "A", this.displayFont, new Size(), this.textFormatFlags);
 
+            string textBoxText = this.Text;
+            int selectionStart = this.SelectionStart;
+            int selectionLength = this.SelectionLength;
+
             // 描画対象の文字列インデックス範囲を得る
             int firstCharIndex = 0;
-            int lastCharIndex = this.TextLength;
+            int lastCharIndex = textBoxText.Length;
             if (this.Multiline) {
                 // 最初の位置を得る
                 int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
@@ -585,19 +589,18 @@
                 }
             }
 
-            string targetText = this.Text;
             List<DrawDimension> drawDimensionList = new List<DrawDimension>();
 
             int columns = 0;
             int prevLine = this.GetLineFromCharIndex(firstCharIndex);
             for (int chIndex = firstCharIndex; chIndex < lastCharIndex; ++chIndex) {
-                if (chIndex < 0 || targetText.Length <= chIndex) {
+                if (chIndex < 0 || textBoxText.Length <= chIndex) {
                     break;
                 }
 
                 int currentLine = this.GetLineFromCharIndex(chIndex);
 
-                string targetSChar = targetText.Substring(chIndex, 1);
+                string targetSChar = textBoxText.Substring(chIndex, 1);
 
                 DrawDimension drawDimension = new DrawDimension(targetSChar);
                 Point point = this.GetFixedPositionFromCharIndex(textBoxRect, chIndex);
@@ -611,7 +614,7 @@
                     if (drawDimension.OriginalChar == '\t') {
                         int tabColumns = 8 - (columns % 8);
 
-                        if (chIndex + 1 < targetText.Length) {
+                        if (chIndex + 1 < textBoxText.Length) {
                             Point pointNext = this.GetFixedPositionFromCharIndex(textBoxRect, chIndex + 1);
                             drawDimension.PaddingArea = new Rectangle(point.X + baseFontSizeHalf.Width, point.Y, pointNext.X - point.X - baseFontSizeHalf.Width, baseFontSizeHalf.Height);
                         } else {
@@ -636,11 +639,11 @@
                         columns += 2;
                     }
                 }
-                if (this.SelectionStart <= chIndex && chIndex < this.SelectionStart + this.SelectionLength) {
+                if (selectionStart <= chIndex && chIndex < selectionStart + selectionLength) {
                     drawDimension.Selection = true;
 
                     // 前行の文字末尾がタブの場合の処理
-                    if (prevLine != currentLine && this.SelectionStart <= chIndex - 1 && 0 < drawDimensionList.Count) {
+                    if (prevLine != currentLine && selectionStart <= chIndex - 1 && 0 < drawDimensionList.Count) {
                         DrawDimension prevDrawDimension = drawDimensionList[drawDimensionList.Count - 1];
                         if (prevDrawDimension.OriginalChar == '\t') {
                             Rectangle area = prevDrawDimension.Area;
