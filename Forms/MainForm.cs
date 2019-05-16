@@ -92,20 +92,10 @@
         /// <param name="e"></param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            DataBags.Terminate();
-        }
+            DataBags.Config.MainWindowWidth = this.Size.Width;
+            DataBags.Config.MainWindowHeight = this.Size.Height;
 
-        /// <summary>
-        /// SizeChanged
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainForm_SizeChanged(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Normal) {
-                DataBags.Config.MainWindowWidth = this.Size.Width;
-                DataBags.Config.MainWindowHeight = this.Size.Height;
-            }
+            DataBags.Terminate();
         }
 
         /// <summary>

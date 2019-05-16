@@ -313,7 +313,7 @@
             this.emojiList.Location = new System.Drawing.Point(4, 4);
             this.emojiList.Name = "emojiList";
             this.emojiList.PlaybackFocusTextBox = null;
-            this.emojiList.Size = new System.Drawing.Size(460, 314);
+            this.emojiList.Size = new System.Drawing.Size(457, 314);
             this.emojiList.TabIndex = 0;
             // 
             // MainForm
@@ -333,7 +333,6 @@
             this.Text = "絵文字エディット";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.splitContainerMain.Panel1.ResumeLayout(false);
