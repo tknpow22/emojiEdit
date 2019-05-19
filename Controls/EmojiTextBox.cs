@@ -479,6 +479,12 @@
                 this.mouseLButtonDown = false;
                 invalidate = true;
                 break;
+            case WM_VSCROLL:
+                invalidate = true;
+                break;
+            case WM_MOUSEWHEEL:
+                invalidate = true;
+                break;
             }
 
             if (invalidate) {
