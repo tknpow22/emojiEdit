@@ -32,7 +32,6 @@
             this.buttonEmojiTest = new System.Windows.Forms.Button();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuLoadFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSaveFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEditSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,10 +39,11 @@
             this.menuVersion = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonSend = new System.Windows.Forms.Button();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.labelAttachments = new System.Windows.Forms.Label();
+            this.buttonSelAttachments = new System.Windows.Forms.Button();
+            this.textBoxAttachments = new System.Windows.Forms.TextBox();
             this.labelBody = new System.Windows.Forms.Label();
             this.checkBoxForceInsertLineFeed = new System.Windows.Forms.CheckBox();
-            this.textBoxMailBody = new emojiEdit.EmojiTextBox();
-            this.textBoxMailSubject = new emojiEdit.EmojiTextBox();
             this.buttonSelectMailFrom = new System.Windows.Forms.Button();
             this.buttonSelectMailTo = new System.Windows.Forms.Button();
             this.labelSubject = new System.Windows.Forms.Label();
@@ -51,6 +51,8 @@
             this.textBoxMailFrom = new System.Windows.Forms.TextBox();
             this.labelTo = new System.Windows.Forms.Label();
             this.lableFrom = new System.Windows.Forms.Label();
+            this.textBoxMailBody = new emojiEdit.EmojiTextBox();
+            this.textBoxMailSubject = new emojiEdit.EmojiTextBox();
             this.emojiList = new emojiEdit.EmojiList();
             this.mainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
@@ -83,23 +85,15 @@
             // menuFile
             // 
             this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuLoadFile,
             this.menuSaveFile});
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(67, 20);
             this.menuFile.Text = "ファイル(&F)";
             // 
-            // menuLoadFile
-            // 
-            this.menuLoadFile.Name = "menuLoadFile";
-            this.menuLoadFile.Size = new System.Drawing.Size(115, 22);
-            this.menuLoadFile.Text = "読込(&O)";
-            this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
-            // 
             // menuSaveFile
             // 
             this.menuSaveFile.Name = "menuSaveFile";
-            this.menuSaveFile.Size = new System.Drawing.Size(115, 22);
+            this.menuSaveFile.Size = new System.Drawing.Size(180, 22);
             this.menuSaveFile.Text = "保存(&S)";
             this.menuSaveFile.Click += new System.EventHandler(this.menuSaveFile_Click);
             // 
@@ -156,6 +150,9 @@
             // splitContainerMain.Panel1
             // 
             this.splitContainerMain.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.splitContainerMain.Panel1.Controls.Add(this.labelAttachments);
+            this.splitContainerMain.Panel1.Controls.Add(this.buttonSelAttachments);
+            this.splitContainerMain.Panel1.Controls.Add(this.textBoxAttachments);
             this.splitContainerMain.Panel1.Controls.Add(this.labelBody);
             this.splitContainerMain.Panel1.Controls.Add(this.checkBoxForceInsertLineFeed);
             this.splitContainerMain.Panel1.Controls.Add(this.textBoxMailBody);
@@ -178,6 +175,38 @@
             this.splitContainerMain.SplitterDistance = 300;
             this.splitContainerMain.TabIndex = 1;
             // 
+            // labelAttachments
+            // 
+            this.labelAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelAttachments.AutoSize = true;
+            this.labelAttachments.Location = new System.Drawing.Point(11, 270);
+            this.labelAttachments.Name = "labelAttachments";
+            this.labelAttachments.Size = new System.Drawing.Size(47, 12);
+            this.labelAttachments.TabIndex = 11;
+            this.labelAttachments.Text = "添付(&A):";
+            // 
+            // buttonSelAttachments
+            // 
+            this.buttonSelAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSelAttachments.Location = new System.Drawing.Point(398, 265);
+            this.buttonSelAttachments.Name = "buttonSelAttachments";
+            this.buttonSelAttachments.Size = new System.Drawing.Size(54, 23);
+            this.buttonSelAttachments.TabIndex = 13;
+            this.buttonSelAttachments.Text = "選択";
+            this.buttonSelAttachments.UseVisualStyleBackColor = true;
+            this.buttonSelAttachments.Click += new System.EventHandler(this.buttonSelAttachments_Click);
+            // 
+            // textBoxAttachments
+            // 
+            this.textBoxAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxAttachments.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.textBoxAttachments.Location = new System.Drawing.Point(78, 267);
+            this.textBoxAttachments.Name = "textBoxAttachments";
+            this.textBoxAttachments.Size = new System.Drawing.Size(314, 19);
+            this.textBoxAttachments.TabIndex = 12;
+            this.textBoxAttachments.Tag = "添付ファイル";
+            // 
             // labelBody
             // 
             this.labelBody.AutoSize = true;
@@ -191,48 +220,13 @@
             // 
             this.checkBoxForceInsertLineFeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxForceInsertLineFeed.AutoSize = true;
-            this.checkBoxForceInsertLineFeed.Location = new System.Drawing.Point(78, 281);
+            this.checkBoxForceInsertLineFeed.Location = new System.Drawing.Point(78, 245);
             this.checkBoxForceInsertLineFeed.Name = "checkBoxForceInsertLineFeed";
             this.checkBoxForceInsertLineFeed.Size = new System.Drawing.Size(293, 16);
             this.checkBoxForceInsertLineFeed.TabIndex = 10;
             this.checkBoxForceInsertLineFeed.Text = "送信時、メール本文に1行の文字数毎に改行を入れる(&L)";
             this.checkBoxForceInsertLineFeed.UseVisualStyleBackColor = true;
             this.checkBoxForceInsertLineFeed.Click += new System.EventHandler(this.checkBoxForceInsertLineFeed_CheckedChanged);
-            // 
-            // textBoxMailBody
-            // 
-            this.textBoxMailBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxMailBody.ColumnLine = 0;
-            this.textBoxMailBody.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F);
-            this.textBoxMailBody.HideSelection = false;
-            this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.textBoxMailBody.Location = new System.Drawing.Point(78, 98);
-            this.textBoxMailBody.Multiline = true;
-            this.textBoxMailBody.Name = "textBoxMailBody";
-            this.textBoxMailBody.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxMailBody.Size = new System.Drawing.Size(374, 177);
-            this.textBoxMailBody.TabIndex = 9;
-            this.textBoxMailBody.Tag = "本文";
-            this.textBoxMailBody.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
-            this.textBoxMailBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
-            // 
-            // textBoxMailSubject
-            // 
-            this.textBoxMailSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxMailSubject.ColumnLine = 0;
-            this.textBoxMailSubject.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxMailSubject.HideSelection = false;
-            this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.textBoxMailSubject.Location = new System.Drawing.Point(78, 53);
-            this.textBoxMailSubject.Name = "textBoxMailSubject";
-            this.textBoxMailSubject.Size = new System.Drawing.Size(374, 39);
-            this.textBoxMailSubject.TabIndex = 7;
-            this.textBoxMailSubject.Tag = "件名";
-            this.textBoxMailSubject.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
-            this.textBoxMailSubject.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
             // 
             // buttonSelectMailFrom
             // 
@@ -305,6 +299,41 @@
             this.lableFrom.TabIndex = 3;
             this.lableFrom.Text = "送信元(&T):";
             // 
+            // textBoxMailBody
+            // 
+            this.textBoxMailBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxMailBody.ColumnLine = 0;
+            this.textBoxMailBody.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F);
+            this.textBoxMailBody.HideSelection = false;
+            this.textBoxMailBody.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.textBoxMailBody.Location = new System.Drawing.Point(78, 98);
+            this.textBoxMailBody.Multiline = true;
+            this.textBoxMailBody.Name = "textBoxMailBody";
+            this.textBoxMailBody.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxMailBody.Size = new System.Drawing.Size(374, 141);
+            this.textBoxMailBody.TabIndex = 9;
+            this.textBoxMailBody.Tag = "本文";
+            this.textBoxMailBody.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
+            this.textBoxMailBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
+            // 
+            // textBoxMailSubject
+            // 
+            this.textBoxMailSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxMailSubject.ColumnLine = 0;
+            this.textBoxMailSubject.Font = new System.Drawing.Font("ＭＳ ゴシック", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textBoxMailSubject.HideSelection = false;
+            this.textBoxMailSubject.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.textBoxMailSubject.Location = new System.Drawing.Point(78, 53);
+            this.textBoxMailSubject.Name = "textBoxMailSubject";
+            this.textBoxMailSubject.Size = new System.Drawing.Size(374, 39);
+            this.textBoxMailSubject.TabIndex = 7;
+            this.textBoxMailSubject.Tag = "件名";
+            this.textBoxMailSubject.Enter += new System.EventHandler(this.EmojiTextBox_Enter);
+            this.textBoxMailSubject.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EmojiTextBox_KeyDown);
+            // 
             // emojiList
             // 
             this.emojiList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -351,7 +380,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuSettings;
         private System.Windows.Forms.ToolStripMenuItem menuEditSettings;
         private System.Windows.Forms.ToolStripMenuItem menuFile;
-        private System.Windows.Forms.ToolStripMenuItem menuLoadFile;
         private System.Windows.Forms.ToolStripMenuItem menuSaveFile;
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparatorVersion;
@@ -369,6 +397,9 @@
         private System.Windows.Forms.Label labelTo;
         private System.Windows.Forms.Label lableFrom;
         private EmojiList emojiList;
+        private System.Windows.Forms.Button buttonSelAttachments;
+        private System.Windows.Forms.TextBox textBoxAttachments;
+        private System.Windows.Forms.Label labelAttachments;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿namespace emojiEdit
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -46,7 +47,7 @@
         }
 
         /// <summary>
-        /// ファイルへ保存(宛先、送信元は保存しない)
+        /// ファイルへ保存(宛先、送信元、添付ファイルは保存しない)
         /// </summary>
         /// <param name="subjectText">件名</param>
         /// <param name="bodyText">本文</param>
@@ -58,7 +59,8 @@
                     "",
                     "",
                     subjectText,
-                    bodyText);
+                    bodyText,
+                    new List<string>());
 
                 MimeMessage mimeMessage = mailMessage.GetMimeMessage();
                 mimeMessage.WriteTo(fs);

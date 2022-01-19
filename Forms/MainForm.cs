@@ -288,7 +288,9 @@
                     this.textBoxMailTo.Text.Trim(),
                     this.textBoxMailFrom.Text.Trim(),
                     this.textBoxMailSubject.Text,
-                    this.textBoxMailBody.Text);
+                    this.textBoxMailBody.Text,
+                    new List<string>(new string[] { this.textBoxAttachments.Text.Trim() })
+                );
 
                 mimeMessage = mailMessage.GetMimeMessage();
 
@@ -301,7 +303,10 @@
                     message = string.Format("「{0}」を確認してください。", this.textBoxMailFrom.Tag);
                 } else if (ex is MailMessageEncodeSubjectException) {
                     message = string.Format("「{0}」を確認してください。", this.textBoxMailSubject.Tag);
-                } else {
+                } else if (ex is MailMessageAttachmentsException) {
+                    message = string.Format("「{0}」を確認してください。", this.textBoxAttachments.Tag);
+                }
+                else {
                     message = string.Format("以下のエラーが発生しました。\n\n{0}", ex.Message);
                 }
 
@@ -461,6 +466,23 @@
                     }
                 }
                 break;
+            }
+        }
+
+        /// <summary>
+        /// 添付ファイル選択
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonSelAttachments_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog()) {
+                dialog.Title = "添付ファイルを指定";
+                dialog.Filter = "jpeg file (*.jpg)|*.jpg|(*.jpeg)|*.jpeg";  // 今のところ jpeg のみとする
+                dialog.RestoreDirectory = true;
+                if (dialog.ShowDialog() == DialogResult.OK) {
+                    this.textBoxAttachments.Text = dialog.FileName;
+                }
             }
         }
         #endregion

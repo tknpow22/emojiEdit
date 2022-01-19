@@ -29,6 +29,13 @@
     {
     }
 
+    /// <summary>
+    /// 添付ファイルでの例外
+    /// </summary>
+    class MailMessageAttachmentsException : Exception
+    {
+    }
+
     #endregion
 
     /// <summary>
@@ -67,6 +74,11 @@
         /// </summary>
         private string body;
 
+        /// <summary>
+        /// 添付ファイル
+        /// </summary>
+        private List<string> attachments;
+
         #endregion
 
         #region 処理
@@ -78,7 +90,8 @@
         /// <param name="from">送信元</param>
         /// <param name="subject">件名</param>
         /// <param name="body">本文</param>
-        public MailMessage(string to, string from, string subject, string body)
+        /// <param name="attachments">添付ファイル</param>
+        public MailMessage(string to, string from, string subject, string body, List<string> attachments)
         {
             this.to = to;
             this.from = from;
@@ -98,6 +111,9 @@
                 body = StringUtils.ConvertOnlyHankakuToZenkaku(body);
             }
             this.body = body;
+
+            // 添付ファイル
+            this.attachments = attachments;
         }
 
         /// <summary>
@@ -133,19 +149,52 @@
                 throw ex;
             }
 
+            string attachmentFilepath = null;
             try {
+                if (0 < this.attachments.Count) {
+                    attachmentFilepath = this.attachments[0].ToString();
+                    if (!string.IsNullOrEmpty(attachmentFilepath) && !File.Exists(attachmentFilepath)) {
+                        throw new MailMessageAttachmentsException();
+                    }
+                }
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+
+            try {
+
 
                 MemoryStream bodyStream = GetBodyStream(this.body);
 
-                MimePart mimePart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
-                mimePart.ContentTransferEncoding = ContentEncoding.SevenBit;
-                mimePart.Content = new MimeContent(bodyStream);
+                MimePart textBodyPart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
+                textBodyPart.ContentTransferEncoding = ContentEncoding.SevenBit;
+                textBodyPart.Content = new MimeContent(bodyStream);
 
                 MimeMessage mimeMessage = new MimeMessage();
                 mimeMessage.From.Add(mailboxAddressFrom);
                 mimeMessage.To.AddRange(mailboxAddressToList);
                 mimeMessage.Headers.Replace(subjectHeader);
-                mimeMessage.Body = mimePart;
+
+                if (!string.IsNullOrEmpty(attachmentFilepath)) {
+                    Multipart multipart = new Multipart("mixed");
+
+                    multipart.Add(textBodyPart);
+
+                    MimePart attachmentPart = new MimePart("image", "jpeg")
+                    {
+                        Content = new MimeContent(File.OpenRead(attachmentFilepath)),
+                        ContentDisposition = new ContentDisposition(),
+                        ContentTransferEncoding = ContentEncoding.Base64,
+                        FileName = Path.GetFileName(attachmentFilepath)
+                    };
+                    multipart.Add(attachmentPart);
+
+                    mimeMessage.Body = multipart;
+                }
+                else {
+                    mimeMessage.Body = textBodyPart;
+                }
 
                 return mimeMessage;
 
