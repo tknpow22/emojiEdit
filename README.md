@@ -51,4 +51,4 @@ Visual Studio 2022 (Community)（C#）で作成しました。
 
 ## その他
 
-http://www.koutou-software.net/misc/emoji-edit.php
+http://www.tkb11.com/misc/emoji-edit.php
