@@ -152,34 +152,34 @@
             string attachmentFilepath = null;
             try {
                 if (0 < this.attachments.Count) {
+                    // NOTE: 今のところ添付ファイルは1つだけ対応する
                     attachmentFilepath = this.attachments[0].ToString();
                     if (!string.IsNullOrEmpty(attachmentFilepath) && !File.Exists(attachmentFilepath)) {
                         throw new MailMessageAttachmentsException();
                     }
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw ex;
             }
 
             try {
 
-
                 MemoryStream bodyStream = GetBodyStream(this.body);
 
-                MimePart textBodyPart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
-                textBodyPart.ContentTransferEncoding = ContentEncoding.SevenBit;
-                textBodyPart.Content = new MimeContent(bodyStream);
+                MimePart textPart = new MimePart("text/plain; charset=ISO-2022-JP; format=flowed; delsp=yes");
+                textPart.ContentTransferEncoding = ContentEncoding.SevenBit;
+                textPart.Content = new MimeContent(bodyStream);
 
                 MimeMessage mimeMessage = new MimeMessage();
                 mimeMessage.From.Add(mailboxAddressFrom);
                 mimeMessage.To.AddRange(mailboxAddressToList);
                 mimeMessage.Headers.Replace(subjectHeader);
 
+                // NOTE: 今のところ添付ファイルは1つだけ対応する
                 if (!string.IsNullOrEmpty(attachmentFilepath)) {
                     Multipart multipart = new Multipart("mixed");
 
-                    multipart.Add(textBodyPart);
+                    multipart.Add(textPart);
 
                     MimePart attachmentPart = new MimePart("image", "jpeg")
                     {
@@ -191,9 +191,9 @@
                     multipart.Add(attachmentPart);
 
                     mimeMessage.Body = multipart;
-                }
-                else {
-                    mimeMessage.Body = textBodyPart;
+
+                } else {
+                    mimeMessage.Body = textPart;
                 }
 
                 return mimeMessage;

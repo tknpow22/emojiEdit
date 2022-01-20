@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.IO;
     using System.Text;
     using System.Windows.Forms;
     using MimeKit;
@@ -281,6 +282,17 @@
                 }
             }
 
+            // 添付ファイル
+            {
+                string attachmentFilepath = this.textBoxAttachments.Text.Trim();
+                if (!string.IsNullOrEmpty(attachmentFilepath) && !File.Exists(attachmentFilepath)) {
+                    MsgBox.Show(this, string.Format("「{0}」が存在しません。", this.textBoxAttachments.Tag), "添付ファイル", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    this.textBoxAttachments.Focus();
+                    return;
+                }
+
+            }
+
             MimeMessage mimeMessage;
             try {
 
@@ -305,8 +317,7 @@
                     message = string.Format("「{0}」を確認してください。", this.textBoxMailSubject.Tag);
                 } else if (ex is MailMessageAttachmentsException) {
                     message = string.Format("「{0}」を確認してください。", this.textBoxAttachments.Tag);
-                }
-                else {
+                } else {
                     message = string.Format("以下のエラーが発生しました。\n\n{0}", ex.Message);
                 }
 

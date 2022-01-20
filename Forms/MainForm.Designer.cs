@@ -54,6 +54,7 @@
             this.textBoxMailBody = new emojiEdit.EmojiTextBox();
             this.textBoxMailSubject = new emojiEdit.EmojiTextBox();
             this.emojiList = new emojiEdit.EmojiList();
+            this.menuLoadFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -85,6 +86,7 @@
             // menuFile
             // 
             this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuLoadFile,
             this.menuSaveFile});
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(67, 20);
@@ -345,6 +347,13 @@
             this.emojiList.Size = new System.Drawing.Size(457, 314);
             this.emojiList.TabIndex = 0;
             // 
+            // menuLoadFile
+            // 
+            this.menuLoadFile.Name = "menuLoadFile";
+            this.menuLoadFile.Size = new System.Drawing.Size(180, 22);
+            this.menuLoadFile.Text = "読込(&O)";
+            this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -400,6 +409,7 @@
         private System.Windows.Forms.Button buttonSelAttachments;
         private System.Windows.Forms.TextBox textBoxAttachments;
         private System.Windows.Forms.Label labelAttachments;
+        private System.Windows.Forms.ToolStripMenuItem menuLoadFile;
     }
 }
 

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("emojiEdit")]
-[assembly: AssemblyCopyright("Copyleft 2018 Koutou Software.")]
+[assembly: AssemblyCopyright("Copyleft 2020 Koutou Software.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
