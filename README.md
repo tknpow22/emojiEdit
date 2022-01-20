@@ -34,7 +34,7 @@ https://www.au.com/mobile/service/featurephone/communication/emoji/
 
 ## ビルド環境
 
-Visual Studio 2017（C#）で作成しました。
+Visual Studio 2022 (Community)（C#）で作成しました。
 
 ※ビルド後イベントで powershell を使用して、
 出力先ディレクトリにアイコンを展開しています。
