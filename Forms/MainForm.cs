@@ -496,6 +496,64 @@
                 }
             }
         }
+
+        /// <summary>
+        /// 添付ファイルドラッグイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBoxAttachments_DragEnter(object sender, DragEventArgs e)
+        {
+            string[] filenames = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+                bool bCopyOK = false;
+                foreach (string filename in filenames) {
+                    string ucFilename = filename.ToUpper();
+
+                    if (!ucFilename.EndsWith("JPEG") && !ucFilename.EndsWith("JPG")) {
+                        // JPEG 以外が含まれているときは処理しない
+                        return;
+                    }
+
+                    if (!File.Exists(filename)) {
+                        // ファイルが存在しないものが含まれているときは処理しない
+                        return;
+                    }
+
+                    bCopyOK = true;
+                }
+
+                if (bCopyOK) {
+                    e.Effect = DragDropEffects.Copy;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添付ファイルドロップイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBoxAttachments_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] filenames = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (filenames.Length <= 0) {
+                return;
+            }
+
+            // ドロップ先がテキストボックスであるか一応チェックする
+            TextBox targetTextBox = sender as TextBox;
+            if (targetTextBox == null) {
+                return;
+            }
+
+            textBoxAttachments.Text = filenames[0]; // 最初の1つのみ
+        }
+
         #endregion
+
+
     }
 }

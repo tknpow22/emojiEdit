@@ -32,6 +32,7 @@
             this.buttonEmojiTest = new System.Windows.Forms.Button();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuLoadFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSaveFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEditSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,7 +55,6 @@
             this.textBoxMailBody = new emojiEdit.EmojiTextBox();
             this.textBoxMailSubject = new emojiEdit.EmojiTextBox();
             this.emojiList = new emojiEdit.EmojiList();
-            this.menuLoadFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -92,10 +92,17 @@
             this.menuFile.Size = new System.Drawing.Size(67, 20);
             this.menuFile.Text = "ファイル(&F)";
             // 
+            // menuLoadFile
+            // 
+            this.menuLoadFile.Name = "menuLoadFile";
+            this.menuLoadFile.Size = new System.Drawing.Size(115, 22);
+            this.menuLoadFile.Text = "読込(&O)";
+            this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
+            // 
             // menuSaveFile
             // 
             this.menuSaveFile.Name = "menuSaveFile";
-            this.menuSaveFile.Size = new System.Drawing.Size(180, 22);
+            this.menuSaveFile.Size = new System.Drawing.Size(115, 22);
             this.menuSaveFile.Text = "保存(&S)";
             this.menuSaveFile.Click += new System.EventHandler(this.menuSaveFile_Click);
             // 
@@ -200,6 +207,7 @@
             // 
             // textBoxAttachments
             // 
+            this.textBoxAttachments.AllowDrop = true;
             this.textBoxAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxAttachments.ImeMode = System.Windows.Forms.ImeMode.NoControl;
@@ -208,6 +216,8 @@
             this.textBoxAttachments.Size = new System.Drawing.Size(314, 19);
             this.textBoxAttachments.TabIndex = 12;
             this.textBoxAttachments.Tag = "添付ファイル";
+            this.textBoxAttachments.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxAttachments_DragDrop);
+            this.textBoxAttachments.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBoxAttachments_DragEnter);
             // 
             // labelBody
             // 
@@ -346,13 +356,6 @@
             this.emojiList.PlaybackFocusTextBox = null;
             this.emojiList.Size = new System.Drawing.Size(457, 314);
             this.emojiList.TabIndex = 0;
-            // 
-            // menuLoadFile
-            // 
-            this.menuLoadFile.Name = "menuLoadFile";
-            this.menuLoadFile.Size = new System.Drawing.Size(180, 22);
-            this.menuLoadFile.Text = "読込(&O)";
-            this.menuLoadFile.Click += new System.EventHandler(this.menuLoadFile_Click);
             // 
             // MainForm
             // 
