@@ -507,7 +507,6 @@
             string[] filenames = (string[])e.Data.GetData(DataFormats.FileDrop);
 
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                bool bCopyOK = false;
                 foreach (string filename in filenames) {
                     string ucFilename = filename.ToUpper();
 
@@ -520,13 +519,9 @@
                         // ファイルが存在しないものが含まれているときは処理しない
                         return;
                     }
-
-                    bCopyOK = true;
                 }
 
-                if (bCopyOK) {
-                    e.Effect = DragDropEffects.Copy;
-                }
+                e.Effect = DragDropEffects.Copy;
             }
         }
 
