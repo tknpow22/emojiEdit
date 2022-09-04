@@ -489,7 +489,7 @@
         {
             using (OpenFileDialog dialog = new OpenFileDialog()) {
                 dialog.Title = "添付ファイルを指定";
-                dialog.Filter = "jpeg file (*.jpg)|*.jpg|(*.jpeg)|*.jpeg";  // 今のところ jpeg のみとする
+                dialog.Filter = "jpeg file|*.jpg;*.jpeg";  // 今のところ jpeg のみとする
                 dialog.RestoreDirectory = true;
                 if (dialog.ShowDialog() == DialogResult.OK) {
                     this.textBoxAttachments.Text = dialog.FileName;
